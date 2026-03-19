@@ -69,3 +69,46 @@ class EquipmentItem(BaseModel):
     total_hours: float
     reservation_count: int
     unique_users: int
+
+
+class PIChargeItem(BaseModel):
+    billing_date: str
+    fiscal_year: str
+    charge_name: str
+    category: str
+    service_id: str
+    quantity: float
+    unit_price: float
+    total_price: float
+    payment_index: str
+    is_iids: bool
+    status: str
+    user: str
+    user_email: str
+
+
+class PIProposalItem(BaseModel):
+    proposal_number: str
+    title: str
+    sponsor: str
+    department: str
+    status: str
+    agreement_type: str
+    submission_date: str
+    direct_cost: float
+    indirect_cost: float
+    total_cost: float
+    iids_affiliated: bool
+
+
+class PIDetailResponse(BaseModel):
+    pi_email: str
+    pi_name: str
+    department: str
+    total_revenue: float
+    iids_revenue: float
+    non_iids_revenue: float
+    iids_percentage: float
+    charge_count: int
+    charges: list[PIChargeItem]
+    proposals: list[PIProposalItem]

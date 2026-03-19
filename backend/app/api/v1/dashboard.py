@@ -7,11 +7,12 @@ from app.schemas.dashboard import (
     CRCYearData,
     EquipmentItem,
     PIBreakdownItem,
+    PIDetailResponse,
     ServiceCategoryItem,
     SummaryResponse,
     TrendsResponse,
 )
-from app.services.checkbox_data import get_dashboard_data, get_raw_data
+from app.services.checkbox_data import get_dashboard_data, get_pi_charges, get_raw_data
 
 router = APIRouter(dependencies=[Depends(verify_dashboard_token)])
 
@@ -56,6 +57,17 @@ async def get_equipment():
     """Return equipment reservation hours."""
     data = get_dashboard_data()
     return data["equipment"]
+
+
+@router.get("/pi/{pi_email}", response_model=PIDetailResponse)
+async def get_pi_detail(pi_email: str):
+    """Return detailed charge data for a specific PI."""
+    from fastapi import HTTPException
+
+    result = get_pi_charges(pi_email)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"PI '{pi_email}' not found")
+    return result
 
 
 @router.get("/raw/{table}")
