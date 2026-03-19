@@ -4,11 +4,13 @@ import ChartCard from './ChartCard'
 
 interface PIDetailTableProps {
   data: PIBreakdown[]
+  onPIClick?: (piEmail: string) => void
+  selectedPI?: string | null
 }
 
 type SortKey = 'pi_name' | 'department' | 'total_revenue' | 'iids_revenue' | 'non_iids_revenue' | 'iids_percentage' | 'charge_count'
 
-export default function PIDetailTable({ data }: PIDetailTableProps) {
+export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('non_iids_revenue')
   const [sortAsc, setSortAsc] = useState(false)
   const [filter, setFilter] = useState('')
@@ -79,7 +81,11 @@ export default function PIDetailTable({ data }: PIDetailTableProps) {
           </thead>
           <tbody>
             {sorted.map((pi) => (
-              <tr key={pi.pi_email} className={`border-b border-neutral-100 ${getRowBg(pi.iids_percentage)}`}>
+              <tr
+                key={pi.pi_email}
+                className={`border-b border-neutral-100 ${getRowBg(pi.iids_percentage)} ${onPIClick ? 'cursor-pointer hover:bg-neutral-100' : ''} ${selectedPI === pi.pi_email ? 'ring-2 ring-[#f1b300] ring-inset' : ''}`}
+                onClick={() => onPIClick?.(pi.pi_email)}
+              >
                 <td className="py-2 px-3 text-neutral-900 font-medium">{pi.pi_name}</td>
                 <td className="py-2 px-3 text-neutral-600 text-right">{pi.department || '—'}</td>
                 <td className="py-2 px-3 text-right text-neutral-900">${pi.total_revenue.toLocaleString()}</td>

@@ -335,6 +335,122 @@ def get_dashboard_data() -> dict:
     }
 
 
+def _load_proposals() -> list[dict]:
+    """Load and parse the proposals CSV."""
+    path = _data_dir() / "proposals.csv"
+    if not path.exists():
+        return []
+    proposals = []
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            proposals.append(row)
+    return proposals
+
+
+def _match_proposals_for_pi(pi_name: str) -> list[dict]:
+    """Find all proposals for a given PI name."""
+    proposals = _load_proposals()
+    pi_name_lower = pi_name.strip().lower()
+    matched = []
+    for p in proposals:
+        proposal_pi = p.get("PI", "").strip().lower()
+        if proposal_pi == pi_name_lower:
+            iids_checked = bool(p.get("IIDS", "").strip())
+            total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+            matched.append({
+                "proposal_number": p.get("PROPOSAL_NUMBER", "").strip(),
+                "title": p.get("PROJECT_TITLE", "").strip(),
+                "sponsor": p.get("SPONSOR", "").strip() or p.get("PRIME", "").strip(),
+                "department": p.get("DEPARTMENT", "").strip(),
+                "status": p.get("PROJECT_STATUS", "").strip(),
+                "agreement_type": p.get("AGREEMENT_TYPE", "").strip(),
+                "submission_date": p.get("SUBMISSION_DATE", "").strip(),
+                "direct_cost": _parse_float(p.get("DIRECT_COST", "0")),
+                "indirect_cost": _parse_float(p.get("INDIRECT_COST", "0")),
+                "total_cost": total_cost,
+                "iids_affiliated": iids_checked,
+            })
+    matched.sort(key=lambda x: x["submission_date"], reverse=True)
+    return matched
+
+
+def get_pi_charges(pi_email: str) -> dict | None:
+    """Return detailed charge breakdown for a specific PI."""
+    iids_indices = _load_iids_index_set()
+    charges = _load_charges()
+
+    pi_email_lower = pi_email.strip().lower()
+    pi_charges = []
+    pi_name = ""
+    department = ""
+    total_revenue = 0.0
+    iids_revenue = 0.0
+
+    for c in charges:
+        email = c.get("PI Email", "").strip().lower()
+        if email != pi_email_lower:
+            continue
+
+        total_price = _parse_float(c.get("Total Price", "0"))
+        if total_price <= 0:
+            continue
+
+        dt = _parse_date(c.get("Billing Date", "") or c.get("Purchase Date", ""))
+        fy = _fiscal_year(dt) if dt else None
+        if not fy or fy < 2023:
+            continue
+
+        payment_info = c.get("Payment Information", "").strip()
+        is_iids = payment_info in iids_indices
+
+        if not pi_name:
+            pi_name = _extract_pi_name(c.get("Customer Lab", ""))
+            department = c.get("Customer Department", "").strip()
+
+        total_revenue += total_price
+        if is_iids:
+            iids_revenue += total_price
+
+        pi_charges.append({
+            "billing_date": dt.strftime("%Y-%m-%d") if dt else "",
+            "fiscal_year": f"FY{str(fy)[-2:]}" if fy else "",
+            "charge_name": c.get("Charge Name", "").strip(),
+            "category": c.get("Category", "").strip(),
+            "service_id": c.get("Service ID", "").strip(),
+            "quantity": _parse_float(c.get("Quantity", "0")),
+            "unit_price": _parse_float(c.get("Price", "0")),
+            "total_price": total_price,
+            "payment_index": payment_info,
+            "is_iids": is_iids,
+            "status": c.get("Status", "").strip(),
+            "user": c.get("Customer Name", "").strip(),
+            "user_email": c.get("User Login Email", "").strip(),
+        })
+
+    if not pi_charges:
+        return None
+
+    pi_charges.sort(key=lambda x: x["billing_date"], reverse=True)
+    non_iids_revenue = total_revenue - iids_revenue
+
+    # Match proposals by PI name
+    proposals = _match_proposals_for_pi(pi_name)
+
+    return {
+        "pi_email": pi_email_lower,
+        "pi_name": pi_name,
+        "department": department,
+        "total_revenue": round(total_revenue, 2),
+        "iids_revenue": round(iids_revenue, 2),
+        "non_iids_revenue": round(non_iids_revenue, 2),
+        "iids_percentage": round(iids_revenue / total_revenue * 100, 1) if total_revenue > 0 else 0,
+        "charge_count": len(pi_charges),
+        "charges": pi_charges,
+        "proposals": proposals,
+    }
+
+
 @lru_cache(maxsize=1)
 def get_raw_data() -> dict:
     """Return raw data rows for the data inspector panel."""

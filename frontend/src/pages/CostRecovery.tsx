@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react'
 import { useDashboardAuth, useDashboardData } from '../hooks/useDashboardData'
 import DashboardAuth from '../components/dashboard/DashboardAuth'
 import StatCard from '../components/dashboard/StatCard'
@@ -7,6 +8,7 @@ import FYComparisonChart from '../components/dashboard/FYComparisonChart'
 import ServicePieChart from '../components/dashboard/ServicePieChart'
 import CRCGrowthChart from '../components/dashboard/CRCGrowthChart'
 import PIDetailTable from '../components/dashboard/PIDetailTable'
+import PIdrilldownPanel from '../components/dashboard/PIdrilldownPanel'
 import DataInspector from '../components/dashboard/DataInspector'
 
 function formatCurrency(value: number): string {
@@ -18,6 +20,13 @@ function formatCurrency(value: number): string {
 
 function DashboardContent({ token }: { token: string }) {
   const { summary, piBreakdown, trends, services, crcUsers, equipment, loading, error } = useDashboardData(token, true)
+  const [selectedPI, setSelectedPI] = useState<string | null>(null)
+  const drilldownRef = useRef<HTMLDivElement>(null)
+
+  const handlePIClick = (piEmail: string) => {
+    setSelectedPI((prev) => (prev === piEmail ? null : piEmail))
+    setTimeout(() => drilldownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
+  }
 
   if (loading) {
     return (
@@ -77,7 +86,18 @@ function DashboardContent({ token }: { token: string }) {
       </div>
 
       {/* PI Revenue Gap */}
-      <PIBarChart data={piBreakdown} />
+      <PIBarChart data={piBreakdown} onPIClick={handlePIClick} selectedPI={selectedPI} />
+
+      {/* PI Drill-down Panel */}
+      {selectedPI && (
+        <div ref={drilldownRef}>
+          <PIdrilldownPanel
+            piEmail={selectedPI}
+            token={token}
+            onClose={() => setSelectedPI(null)}
+          />
+        </div>
+      )}
 
       {/* Trends */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -94,7 +114,7 @@ function DashboardContent({ token }: { token: string }) {
       </div>
 
       {/* PI Detail Table */}
-      <PIDetailTable data={piBreakdown} />
+      <PIDetailTable data={piBreakdown} onPIClick={handlePIClick} selectedPI={selectedPI} />
 
       {/* Data Inspector */}
       <DataInspector token={token} />
