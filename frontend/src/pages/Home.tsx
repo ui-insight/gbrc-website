@@ -10,15 +10,15 @@ import {
   Cpu,
   Workflow,
 } from 'lucide-react'
+import DnaHelix from '../components/DnaHelix'
 
 export default function Home() {
   return (
     <>
       {/* Hero Section */}
       <section className="relative bg-neutral-900 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-uidaho-gold/20 to-transparent" />
-        </div>
+        <DnaHelix />
+        <div className="absolute inset-0 bg-gradient-to-br from-uidaho-gold/10 to-transparent" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-6">
