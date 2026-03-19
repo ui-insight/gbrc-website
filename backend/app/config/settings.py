@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     debug: bool = False
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    # Dashboard access token (empty = no auth required, for dev)
+    dashboard_token: str = ""
+    dashboard_data_dir: str = ""
+
     # Future: database, iLabs integration, etc.
     # database_url: str = ""
     # ilabs_api_key: str = ""

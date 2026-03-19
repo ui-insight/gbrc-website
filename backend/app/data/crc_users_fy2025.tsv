@@ -1,0 +1,292 @@
+fname	lname	username	email	type	serviceid	service	dept	college	inst
+Alexey	Egorov	alexeye	alexeye@uidaho.edu	Post Doc	67	Boschetti	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Austin	Kobernuss	akobernuss	akobernuss@uidaho.edu		68	GRC Staff	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Keeya	Beausoleil	beau4371	beau4371@vandals.uidaho.edu	Undergraduate Student	39	Kennicott	Geological Sciences	Science	University of Idaho
+Matthew	McKinney	matthewmckinney	matthewmckinney@uidaho.edu		93	Non-HPC	Earth and Spatial Sciences	Science	University of Idaho
+Jerry	Fairley	jfairley	jfairley@uidaho.edu	Research Faculty	93	Non-HPC	Geological Sciences	Science	University of Idaho
+Andrew	Anderson	andersond	andersond@reed.edu	Post Doc	57	Research	Biology	Mathematics and Natural Sciences	Reed College
+Timothy	Johnson	trjohns	trjohns@uidaho.edu	Research Faculty	85	Standard Account 2024	Mathematics	Science	University of Idaho
+Trevor	Griffin	tgriffin	tgriffin@uidaho.edu	Post Doc	85	Standard Account 2024	Mathematics	Science	University of Idaho
+Syed Nazmus	Sakib	ssakib	ssakib@uidaho.edu	Graduate Student	85	Standard Account 2024	Computer Science	Engineering	University of Idaho
+Emily	Skoro	skor5428	skor5428@vandals.uidaho.edu	Graduate Student	85	Standard Account 2024	Civil & Environmental Engineering	Engineering	University of Idaho
+Samuel	Cupp	scupp	scupp@uidaho.edu	Post Doc	85	Standard Account 2024	Physics	Science	University of Idaho
+Mc	Rapoza	rapo7440	rapo7440@vandals.uidaho.edu	Graduate Student	85	Standard Account 2024	Geological Sciences	Science	University of Idaho
+Natalie	Cowan	ncowan	ncowan@uidaho.edu	Graduate Student	85	Standard Account 2024	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Linus	Kittan	kitt0507	kitt0507@vandals.uidaho.edu	Undergraduate Student	85	Standard Account 2024	Physics	Science	University of Idaho
+Ilaria	Bacchiocchi	ilariab	ilariab@uidaho.edu	Graduate Student	85	Standard Account 2024	Biological Sciences	Science	University of Idaho
+Hayleigh	Holmgren	holm5013	holm5013@vandals.uidaho.edu	Undergraduate Student	85	Standard Account 2024	Civil & Environmental Engineering	Engineering	University of Idaho
+Lily	Givens	give8984	give8984@vandals.uidaho.edu	Undergraduate Student	85	Standard Account 2024	Biological Sciences	Science	University of Idaho
+Gabrielle	Feber	gfeber	gfeber@uidaho.edu	Graduate Student	85	Standard Account 2024	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Aaron	Sparks	asparks	asparks@uidaho.edu	Research Faculty	85	Standard Account 2024	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Noah	Arts	arts7686	arts7686@vandals.uidaho.edu	Undergraduate Student	85	Standard Account 2024	Biological Sciences	Science	University of Idaho
+Habeebu	Adenuga	aden7101	aden7101@vandals.uidaho.edu	Undergraduate Student	85	Standard Account 2024	Biological Sciences	Science	University of Idaho
+Zoe	Wilson	zoewilson	zoe.wilson@wsu.edu	Graduate Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Zhongqi	Chen	zhongqic	zhongqic@uidaho.edu	Post Doc	96	Standard Account 2025	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
+Benqi	Zhang	zhan4669	zhan4669@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Civil & Environmental Engineering	Engineering	University of Idaho
+Zachariah	Etienne	zetienne	zetienne@uidaho.edu	Research Faculty	96	Standard Account 2025	Physics	Science	University of Idaho
+Zara	Burgoyne	zarab	zarab@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Yufei	Guo	yufeig	yufeig@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Michael	Youngwirth	youn4490	youn4490@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Louise	Hsu	yhsu	yhsu@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Yin Hong	Cheah	yhcheah	yhcheah@uidaho.edu	Research Faculty	96	Standard Account 2025	Curriculum and Instruction	Graduate Studies	University of Idaho
+Matt	Wamelduff	wome5579	wome5579@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Zoe	Wilson	wils6251	wils6251@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Jennifer	Wilcox	wilc0697	wilc0697@vandals.uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Ian	Wettlaufer2	wett5950	wett5950@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Craig	Wells	well0766	well0766@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+John	Weber	webe2384	webe2384@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Iris	Wang	wang6095	wang6095@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Jingshu	Wang	wang0869	wang0869@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Ginny	Lane	vlane	vlane@uidaho.edu	Research Faculty	96	Standard Account 2025	School of Family and Consumer Sciences	Agriculture and Life Sciences	University of Idaho
+Verity	Lectka	verityl	verityl@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Kurt	Vedros	vedr0217	vedr0217@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Vanessa	Otero Jimenez	vanessao	vanessao@uidaho.edu	Post Doc	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Edmund	Ampofo	twum2416	twum2416@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Terrence	Soule	tsoule	tsoule@uidaho.edu	Research Faculty	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Geraline	Trossi-Torres	tros2500	tros2500@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+TraceyPeters	External	tpeters-ext	tpeters@uidaho.edu	Private	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Tracey	Peters	tpeters	tpeters@uidaho.edu		96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Temitayo	Olagunju	tolagunju	tolagunju@uidaho.edu	Post Doc	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Tristan	Moxley	tmoxley	tmoxley@uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Tais	Ribeiro	tmattoso	tmattoso@umd.edu	Graduate Student	96	Standard Account 2025	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland
+Hengyi	Tian	tian6555	tian6555@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Tiago	Belintani	tiagobelintani	tiagobelintani@uidaho.edu	Research Faculty	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Jacob	Thorne	thor1897	thor1897@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Prabin	Thapa	thap0446	thap0446@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Tinashe	Gashirai	tgashirai	tgashirai@uidaho.edu	Post Doc	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Travis	Chiarelli	tchiarelli	chia4149@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Tollan	Berhanu	tberhanu	tberhanu@uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Henok	Tadele	tade4165	tade4165@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Nuclear Engineering & Industrial Management	Engineering	University of Idaho
+Shangqian	Xie	sxie	sxie@uidaho.edu	Post Doc	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Torrey	Stephenson	step8904	step8904@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Jason	Starace	star0874	star0874@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Solana	Narum	srnarum	srnarum@uidaho.edu	Student	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Simona	Picardi	spicardi	spicardi@uidaho.edu	Research Faculty	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Gezhang	Song	song3402	song3402@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Morjina	Solaiman	sola4859	sola4859@vandals.uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Scott	Nuismer	snuismer	snuismer@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+David	Sneddon	sned7690	sned7690@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Dristanta	Silwal	silw8620	silw8620@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Karina	Silvestre Bringas	silv0869	silv0869@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Carson	Silsby	sils7953	sils7953@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Chemical and Materials Engineering	Engineering	University of Idaho
+Luke	Sheneman	sheneman	sheneman@uidaho.edu	Research Faculty	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Sarah	Hendricks	shendricks	shendricks@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Akorede	Seriki	seri5256	seri5256@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Samuel	Tootle	sdtootle	sdtootle@uidaho.edu	Post Doc	96	Standard Account 2025	Physics	Science	University of Idaho
+Scott	Grieshaber	scottg	scottg@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Spencer	Lake	sclake	sclake@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Shannon	Blair	sblair	sblair@uidaho.edu		96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Adebola	Saseyi	sase3600	sase3600@vandals.uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Yesol	Sapozhnikov	sapo2075	sapo2075@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Manuel	Santiago Plata	sant9899	sant9899@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Sameer	Mankotia	sameerm	sameerm@uidaho.edu	Graduate Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Sam	Fox	samanthafox	samanthafox@uidaho.edu	Post Doc	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Steevensen	Alcius	salcius	salcius@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Ryan	Vosbigian	rvosbigian	rvosbigian@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Ruizhe	Liu	ruizhel	ruizhel@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Carson	Rueber	rueb8071	rueb8071@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Robbie	Reinhardt	rreinhardt	rreinhardt@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Mairin	Rogers	roge9114	roge9114@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Riley	Robenstein	robe7161	robe7161@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Ryan	Maxwell	rmaxwell	rmaxwell@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Kameron	Richardson	rich0859	rich0859@vandals.uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Rafael	Ferreira	rferreira	rferreira@uidaho.edu	Research Faculty	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+David	Reetz	reet6145	reet6145@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Raee Suresh	Bhagat	rbhagat	rbhagat@uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Ray	Anderson	ray	ray@uidaho.edu		96	Standard Account 2025	Electrical and Computer Engineering	Engineering	University of Idaho
+Paul	Refalo	prefalo	prefalo@uidaho.edu		96	Standard Account 2025	Mathematics	Science	University of Idaho
+Daniel	Pope	pope	pope@uidaho.edu	Staff	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Clay	Pollock	poll0732	poll0732@vandals.uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Phinehas	Lampman	plampman	plampman@uidaho.edu	Graduate Student	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Peter	Goebel	petergoebel	petergoebel@uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Pallavi	Deol	pdeol	pdeol@uidaho.edu	Post Doc	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Shubham	Pandey	pand2623	pand2623@vandals.uidaho.edu	Student	96	Standard Account 2025	Chemical & Biological Engineering	Engineering	University of Idaho
+Mahib	Ornob	orno3564	orno3564@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Kwaku	Opoku-Ware	opok2621	opok2621@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Olamide	Oluwatade	oluw5072	oluw5072@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Statistical Science	Science	University of Idaho
+Ian	Oiler	oile6353	oile6353@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Odbayar	Tumendemberel	odbayar	odbayar@uidaho.edu	Graduate Student	96	Standard Account 2025	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
+Nathan	Redman	nredman	nredman@uidaho.edu	Post Doc	96	Standard Account 2025	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
+Nishita	Jadoo	njadoo	njadoo@uidaho.edu	Post Doc	96	Standard Account 2025	Physics	Science	University of Idaho
+Clinton	Nichols	nich0269	nich0269@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Nicole	Grieshaber	ngrieshaber	ngrieshaber@uidaho.edu		96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Noel	Daugherty	ndaugherty	ndaugherty@uidaho.edu	Post Doc	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Marty	Ytreberg	mytrebe	ytreberg@uidaho.edu	Research Faculty	96	Standard Account 2025	Physics	Science	University of Idaho
+Megean	Myers	myer6023	myer6023@alumni.uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Min	Xian	mxian	mxian@uidaho.edu	Research Faculty	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Waiguru	Muriuki	muri1492	muri1492@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Morgan	Stegemiller	mstegemiller	mstegemiller@uidaho.edu	Graduate Student	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Michael	Overton	moverton	moverton@uidaho.edu	Research Faculty	96	Standard Account 2025	Politics and Philosophy	Letters, Arts and Social Sciences	University of Idaho
+Madeline	Moody	mood6079	mood6079@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Michelle	Mousel	mmousel	mousel@vetmed.wsu.edu	Research Faculty	96	Standard Account 2025	Veterinary Medicine 	Veterinary Medicine	Washington State University
+Michael	Lowry	mlowry	mlowry@uidaho.edu	Research Faculty	96	Standard Account 2025	Civil & Environmental Engineering	Engineering	University of Idaho
+Matthew	Dunning	mldunning	mldunning@uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Mark	Kimsey	mkimsey	mkimsey@uidaho.edu	Research Faculty	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Poolakkal	Jaslam	mjaslam	mjaslam@uidaho.edu	Post Doc	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Matt	Falcy	mfalcy	mfalcy@uidaho.edu	Research Faculty	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Meng	Zhao	mengz	mengz@uidaho.edu	Research Faculty	96	Standard Account 2025	Earth and Spatial Sciences	Science	University of Idaho
+Meggan	Alston	megganalston	meggan.alston@ndsu.edu	Post Doc	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Didarul	Islam	mddidaruli	mddidaruli@uidaho.edu		96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Taylor	McNees	mcne2703	mcne2703@vandals.uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Jonathan	Masingale	masi5704	masi5704@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
+Martyna	Lukaszewicz	martyna	martyna@uidaho.edu	Graduate Student	96	Standard Account 2025	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
+Kyle	Martin2	mart9831	mart9831@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Akshat	Mall	mall6305	mall6305@vandals.uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Kyle	Lucke	luck0692	luck0692@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Lorena	Sobrino	lsobrino	lsobrino@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Lea	Dussurget	lrdussurget	lrdussurget@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Jeffrey	Logan	loga1045	loga1045@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Laurel	Nunez	lnunez	lnunez@uidaho.edu		96	Standard Account 2025	WWAMI Medical Education	Education, Health, and Human Sciences	University of Idaho
+Laurel	Lynch	llynch	llynch@uidaho.edu	Research Faculty	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Leda	Kobziar	lkobziar	lkobziar@uidaho.edu	Research Faculty	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Johnny	Li	liujunl	liujunl@uidaho.edu	Research Faculty	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Xia	Liu	liu2139	liu2139@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Zewei	Liu	liu0246	liu0246@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Mason	Linscott	lins5684	mason.linscott@gmail.com	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Lindsay	Wright	lindsaywright	lindsay.piel@usda.gov		96	Standard Account 2025	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government
+Lan	Li	li3992	li3992@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Lucas	Bernardelli Hoeltgebaum	lhoeltgebaum	lhoeltgebaum@uidaho.edu	Post Doc	96	Standard Account 2025	Earth and Spatial Sciences	Science	University of Idaho
+Leonardo	Rosa Werneck	leonardo	leonardo@uidaho.edu	Post Doc	96	Standard Account 2025	Physics	Science	University of Idaho
+Lawhori	Chakrabarti	lchakrabarti	lchakrabarti@uidaho.edu	Post Doc	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Kyle	Martin	kyleam	kyleam@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Gayatri	Kurmatey	kurm6102	kurm6102@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Klas	Udekwu	kudekwu	kudekwu@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Koffi	Anderson	koff9454	koff9454@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Kamal	Kumar	kkumar	kkumar@uidaho.edu	Research Faculty	96	Standard Account 2025	Mechanical Engineering	Engineering	University of Idaho
+Kira	Long	kiralong	kiralong@uidaho.edu	Post Doc	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Matt	Kinahan	kina4823	kina4823@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Sarem	Khilji	khil9988	khil9988@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Sierra	Keele	keel8101	keel8101@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	WWAMI Medical Education	Education, Health, and Human Sciences	University of Idaho
+Koryna	Boudinot	kboudinot	kboudinot@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Krista	Bonfantine	kbonfantine	kbonfantine@uidaho.edu	Post Doc	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Kanghyun	Lee	kanghyun	kanghyun@uidaho.edu	Research Faculty	96	Standard Account 2025	Landscape Architecture	Art and Architecture	University of Idaho
+Kimberly	Andrews	kandrews	kimberlya@uidaho.edu	Staff	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+James	VanLeuven	jvanleuven	jvanleuven@uidaho.edu	Faculty	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Justice	Kessie	justicek	justicek@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jagdish	Patel	jspatel	jspatel@uidaho.edu	Research Faculty	96	Standard Account 2025	Chemical & Biological Engineering	Engineering	University of Idaho
+Jose	Ortiz	joseortiz	joseortiz@uidaho.edu		96	Standard Account 2025	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
+John	McFarland	johnm	johnm@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Joseph	Leister	jleister	jleister@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jennifer	Dodd	jkdodd	jkdodd@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Joe	Hirsch	jhirsch	jhirsch@uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Jennifer	Hinds	jhinds	jhinds@uidaho.edu	Staff	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+John	Hiller	jhiller	jhiller@uidaho.edu	Research Faculty	96	Standard Account 2025	Physics	Science	University of Idaho
+Joshua	Heishman	jheishman	jheishman@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Jacob	Heil	jheil	jheil@uidaho.edu	Post Doc	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Jennifer	Johnson Leung	jenfns	jenfns@uidaho.edu	Research Faculty	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Jane	Dostart	jedostart	jedostart@uidaho.edu		96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Jonathan	Barnes	jebarnes	jebarnes@uidaho.edu	Post Doc	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Jennifer	Dahan	jdahan	jdahan@uidaho.edu	Post Doc	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+John	Brunsfeld	jbrunsfeld	jbrunsfeld@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jo	Ash	jash	jash@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Janet	Williams	janetw	janetw@uidaho.edu	Graduate Student	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Islamiyat	Bolarinwa	islamiyatb	islamiyatb@uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Ian	Wettlaufer	ianw	ianw@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Hongxi	Zhu	hongxi	hongxi@uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Haley	Ohms	hohms	hohms@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Paul	Hohenlohe	hohenlo	hohenlohe@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Nicholas	Hoffman	hoff7655	hoff7655@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Weston	Hobbs	hobb6719	hobb6719@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	WWAMI Medical Education	Education, Health, and Human Sciences	University of Idaho
+Heather	Greaves	hgreaves	hgreaves@uidaho.edu		96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Henry	Trujillo	henryt	henryt@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jake	Hayden	hayd8826	hayd8826@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Sabid	Hasan	hasa5595	hasa5595@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Chris	Hamilton	hamiltonlab	hamiltonlab@uidaho.edu	Research Faculty	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Lukas	Grossfurthner	gros3875	gros3875@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
+Brendan	Grieshaber	grie8041	grie8041@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+Guriqbal Singh	Dhillon	gdhillon	gdhillon@uidaho.edu	Post Doc	96	Standard Account 2025	Plant Sciences	Agriculture and Life Sciences	University of Idaho
+Gabrielle	Becker	gbecker	gbecker@uidaho.edu	Postdoc	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Molly	Garrett	garr0808	garr0808@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Ava	Gardiner	gard4352	gard4352@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Samuel	Fulbright	fulb4186	fulb4186@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Francesca	Sammarruca	fsammarr	fsammarr@uidaho.edu	Research Faculty	96	Standard Account 2025	Physics	Science	University of Idaho
+Farirai	Rusere	frusere	frusere@uidaho.edu	Post Doc	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Edward	Flathers	flathers	flathers@uidaho.edu		96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Kaveesha	Fernando	fern5249	fern5249@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Statistical Science	Science	University of Idaho
+Evan	Eskew	evane	evane@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Elise	Stacy	estacy	estacy@uidaho.edu	Staff	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Emma	Spencer	espencer	espencer@uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Erich	Seamon	erichs	erichs@uidaho.edu	Post Doc	96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Eric	Mittelstaedt	emittelstaedt	emittelstaedt@uidaho.edu	Research Faculty	96	Standard Account 2025	Geological Sciences	Science	University of Idaho
+Emily	Martin	emilymartin	emilymartin@uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Marwa	Elsayed	elsayed	elsayed@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Emily	Lowrimore	elowrimore	elowrimore@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Elizabeth	Milano	elizabethmilano	Elizabeth.Milano@usda.gov		96	Standard Account 2025	Rocky Mountain Research Station	United States Dept of Agriculture	US Government
+Yva	Eline	elin1473	elin1473@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Labib	Ehsan	ehsa7909	ehsa7909@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Emma	Hakanson	ehakanson	ehakanson@uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Ernest	Osburn	edosburn	edosburn@uidaho.edu	Post Doc	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Edison	Reyes Proano	edison	edison@uidaho.edu	Graduate Student	96	Standard Account 2025	Plant Sciences	Agriculture and Life Sciences	University of Idaho
+Ethan	Briggs	ebriggs	ebriggs@uidaho.edu	Post Doc	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Erin	Mack	eamack	eamack@uidaho.edu	Post Doc	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Daniel	Turck	dturck	dturck@uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+David	Herndon	dherndon	herndon@vetmed.wsu.edu	Research Faculty	96	Standard Account 2025	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government
+Dev	Shrestha	devs	devs@uidaho.edu	Research Faculty	96	Standard Account 2025	Chemical and Materials Engineering	Engineering	University of Idaho
+Sharon	DeChenne	dech7229	dech7229@vandals.uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+David	Condon	dcondon	dcondon@uidaho.edu		96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Elijah	Danquah Darko	danq7270	danq7270@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Dan	Du	dandu	dandu@uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Chenangnon	Tovissode	ctovissode	ctovissode@uidaho.edu	Post Doc	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Claire	Shaw	cshaw	cshaw@uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jack	Creagh-Grave	crea4321	crea4321@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Sarah	Coss	coss2120	coss2120@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Colin	Xu	colinxu	colinxu@uidaho.edu	Research Faculty	96	Standard Account 2025	Politics and Philosophy	Letters, Arts and Social Sciences	University of Idaho
+Christian	Marzan	cmarzan	cmarzan@uidaho.edu	Graduate Student	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Clifford	Swanson	cliffords	cliffords@uidaho.edu	Research Faculty	96	Standard Account 2025	Civil & Environmental Engineering	Engineering	University of Idaho
+Erik	Ciaccio	ciac1074	ciac1074@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Betsy	Church	chur2588	chur2588@vandals.uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Jeremiah	Chapleski	chap8518	chap8518@vandals.uidaho.edu	Student	96	Standard Account 2025	Chemical & Biological Engineering	Engineering	University of Idaho
+Chanda	Moumita	chan1286	chan1286@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Christine	Parent	ceparent	ceparent@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Clinton	Elg	celg	celg@uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Caroline	Brose	cbrose1	cbrose1@uwyo.edu	Graduate Student	96	Standard Account 2025	Biology	Agriculture, Life Sciences & Natural Resources	University of Wyoming
+Clinton	Bradford	cbradford	cbradford@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Salvador	Castaneda Barba	cast9836	cast9836@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Scott	Campbell	camp6674	camp6674@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Mathematics	Science	University of Idaho
+John	Cambareri	camb6486	camb6486@vandals.uidaho.edu	Student	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Calatayud	Mascarell	cala5572	cala5572@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
+Benjamin	Spei	bspei	bspei@uidaho.edu	Post Doc	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Bronte	Sone	bsone	bsone@uidaho.edu	Graduate Student	96	Standard Account 2025	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
+Benjamin	Romanjenko	bromanje	bromanje@uwyo.edu	Graduate Student	96	Standard Account 2025	Biology	Agriculture, Life Sciences & Natural Resources	University of Wyoming
+Barrie	Robison	brobison	brobison@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Bruce	Ripley	bripley	bripley@uidaho.edu		96	Standard Account 2025	Natural Resouces and Society	Natural Resources	University of Idaho
+Benjamin	Ridenhour	bridenho	bridenhour@uidaho.edu	Research Faculty	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Boyu	Zhang	boyuz	boyuz@uidaho.edu	Faculty	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Brenda	Murdoch	bmurdoch	bmurdoch@uidaho.edu	Research Faculty	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Brandon	Light	blight	blight@uidaho.edu	Post Doc	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Jake	Bledsoe	bledsoe	bledsoe@uidaho.edu	Faculty	96	Standard Account 2025	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
+Aqsa	Bibi	bibi8250	bibi8250@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Bert	Baumgaertner	bbaum	bbaum@uidaho.edu	Research Faculty	96	Standard Account 2025	Politics and Philosophy	Letters, Arts and Social Sciences	University of Idaho
+Sulaimon	Balogun	balo9259	balo9259@vandals.uidaho.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Andrew	Child	awchild	awchild@uidaho.edu	Staff	96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Afiya	Aunjum	aunj2547	aunj2547@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Audrey	Fu	audreyf	audreyf@uidaho.edu	Research Faculty	96	Standard Account 2025	Statistical Science	Science	University of Idaho
+Jo	Ash	ash8800	ash8800@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Arnab	Roy	arnabroy	arnabroy@uidaho.edu	Post Doc	96	Standard Account 2025	Geological Sciences	Science	University of Idaho
+Cody	Appa	appa0328	appa0328@vandals.uidaho.edu	Staff	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Arpan	Pal	apal	apal@uidaho.edu		96	Standard Account 2025	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
+Anuja	Shrestha	anujas	anujas@uidaho.edu	Post Doc	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Anita	Paneru	anitapaneru	anita.paneru@wsu.edu	Student	96	Standard Account 2025	Center for Modeling Complex Interactions	Science	University of Idaho
+Andreas	Vasdekis	andreasv	andreasv@uidaho.edu	Research Faculty	96	Standard Account 2025	Physics	Science	University of Idaho
+Anahi	Espindola	anahi	anahiesp@umd.edu	Post Doc	96	Standard Account 2025	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland
+Angel	Monsalve Sepulveda	amonsalve	amonsalve@uidaho.edu	Faculty	96	Standard Account 2025	Civil & Environmental Engineering	Engineering	University of Idaho
+Alexis	Means	ameans	ameans@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Amanda	May	amay	amay@uidaho.edu	Graduate Student	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Alonso	Longoria	alonso	alonso@uidaho.edu	Graduate Student	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Alexander	Alleman	alleman	alleman@uidaho.edu	Post Doc	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Qasem	Alharbi	alha0230	alha0230@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Andrei	Kulumbetov	akulumbetov	akulumbetov@uidaho.edu	Graduate Student	96	Standard Account 2025	Business	Letters, Arts and Social Sciences	University of Idaho
+Amandeep	Kaur	akaur	akaur@uidaho.edu	Post Doc	96	Standard Account 2025	Plant Sciences	Agriculture and Life Sciences	University of Idaho
+Tominwa	Ajagbonna	ajag8146	ajag8146@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Physics	Science	University of Idaho
+Alexandra	Fraik	afraik	afraik@uidaho.edu	Post Doc	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Jennifer	Adams	adamsj	adamsj@uidaho.edu	Post Doc	96	Standard Account 2025	Fish and Wildlife Sciences	Natural Resources	University of Idaho
+Adam	Jones	adamjones	adamjones@uidaho.edu	Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+Keaton	Adams	adam8152	adam8152@vandals.uidaho.edu	Undergraduate Student	96	Standard Account 2025	Biological Sciences	Science	University of Idaho
+America	Chi Uluac	achi	achi@uidaho.edu	Post Doc	96	Standard Account 2025	Physics	Science	University of Idaho
+Mohammad	Abbaspour Motlagh Moghaddam	abba9661	abba9661@vandals.uidaho.edu	Graduate Student	96	Standard Account 2025	Computer Science	Engineering	University of Idaho
+Mosope	Abanikannda	aban3311	aban3311@vandals.uidaho.edu	Student	96	Standard Account 2025	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
+Ann	Abbott	aabbott	aabbott@uidaho.edu	Post Doc	96	Standard Account 2025	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
+Tommy	Shi	tomshi	tomshi@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
+Paul-Pierre	Boutet	pboutet	pboutet@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
+Keiki	Miller	keikim	keikim@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
+Bella	Hopewell	bhopewell	bhopewell@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
