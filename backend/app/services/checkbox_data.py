@@ -124,13 +124,25 @@ def _extract_pi_name(lab_field: str) -> str:
     return name
 
 
+# University of Idaho email domains
+_UI_EMAIL_DOMAINS = {"uidaho.edu"}
+
+
+def _is_ui_email(email: str) -> bool:
+    """Check if an email address belongs to University of Idaho."""
+    if not email or "@" not in email:
+        return False
+    domain = email.strip().lower().split("@")[1]
+    return domain in _UI_EMAIL_DOMAINS
+
+
 @lru_cache(maxsize=1)
 def get_dashboard_data() -> dict:
     """Compute all dashboard data. Cached after first call."""
     iids_indices = _load_iids_index_set()
     charges = _load_charges()
 
-    # Annotate charges with IIDS affiliation and fiscal year
+    # Annotate charges with IIDS affiliation, fiscal year, and source type
     for charge in charges:
         payment_info = charge.get("Payment Information", "").strip()
         charge["_is_iids"] = payment_info in iids_indices
@@ -142,68 +154,179 @@ def get_dashboard_data() -> dict:
         charge["_pi_name"] = _extract_pi_name(charge.get("Customer Lab", ""))
         charge["_department"] = charge.get("Customer Department", "").strip()
         charge["_category"] = charge.get("Category", "").strip()
+        charge["_price_type"] = charge.get("Price Type", "").strip() or "Internal"
+        charge["_customer_institute"] = charge.get("Customer Institute", "").strip()
 
     # Filter to charges within FY2023-FY2025 range (billing date July 2022+)
     valid_charges = [c for c in charges if c["_fy"] and c["_fy"] >= 2023]
 
-    # --- Summary KPIs ---
-    total_revenue = sum(c["_total_price"] for c in valid_charges)
-    iids_revenue = sum(c["_total_price"] for c in valid_charges if c["_is_iids"])
-    non_iids_revenue = total_revenue - iids_revenue
-    total_charges = len(valid_charges)
-    iids_charges = sum(1 for c in valid_charges if c["_is_iids"])
+    # --- Helpers for per-FY computation ---
+    fy_keys_all = sorted(set(c["_fy"] for c in valid_charges if c["_fy"]))
+    fy_labels_map = {fy: f"FY{str(fy)[-2:]}" for fy in fy_keys_all}
+    available_fiscal_years = ["total"] + [fy_labels_map[fy] for fy in fy_keys_all]
 
-    pi_emails = set(c["_pi_email"] for c in valid_charges if c["_pi_email"])
-    pis_with_zero = set()
-    for pi in pi_emails:
-        pi_charges = [c for c in valid_charges if c["_pi_email"] == pi]
-        pi_iids = sum(c["_total_price"] for c in pi_charges if c["_is_iids"])
-        if pi_iids == 0:
-            pis_with_zero.add(pi)
+    def _compute_summary(charge_list: list[dict]) -> dict:
+        tot_rev = sum(c["_total_price"] for c in charge_list)
+        iids_rev = sum(c["_total_price"] for c in charge_list if c["_is_iids"])
+        non_iids_rev = tot_rev - iids_rev
+        tot_charges = len(charge_list)
+        iids_chrg = sum(1 for c in charge_list if c["_is_iids"])
+        int_charges = [
+            c for c in charge_list
+            if c["_price_type"] == "Internal" and _is_ui_email(c["_pi_email"])
+        ]
+        pi_em = set(c["_pi_email"] for c in int_charges if c["_pi_email"])
+        pis_zero = set()
+        for pi in pi_em:
+            pi_chrgs = [c for c in int_charges if c["_pi_email"] == pi]
+            if sum(c["_total_price"] for c in pi_chrgs if c["_is_iids"]) == 0:
+                pis_zero.add(pi)
+        return {
+            "total_revenue": round(tot_rev, 2),
+            "iids_revenue": round(iids_rev, 2),
+            "non_iids_revenue": round(non_iids_rev, 2),
+            "iids_percentage": round(iids_rev / tot_rev * 100, 1) if tot_rev > 0 else 0,
+            "total_charges": tot_charges,
+            "iids_charges": iids_chrg,
+            "unique_pis": len(pi_em),
+            "pis_with_zero_affiliation": len(pis_zero),
+        }
 
-    summary = {
-        "total_revenue": round(total_revenue, 2),
-        "iids_revenue": round(iids_revenue, 2),
-        "non_iids_revenue": round(non_iids_revenue, 2),
-        "iids_percentage": round(iids_revenue / total_revenue * 100, 1) if total_revenue > 0 else 0,
-        "total_charges": total_charges,
-        "iids_charges": iids_charges,
-        "unique_pis": len(pi_emails),
-        "pis_with_zero_affiliation": len(pis_with_zero),
-    }
+    def _compute_pi_breakdown(charge_list: list[dict], proposals_list: list[dict] | None = None) -> list[dict]:
+        from app.services.college_mapping import get_college_for_pi, get_college_display_name
+        int_charges = [
+            c for c in charge_list
+            if c["_price_type"] == "Internal" and _is_ui_email(c["_pi_email"])
+        ]
+        pd: dict[str, dict] = {}
+        _pi_college_cache: dict[str, str] = {}
+        for c in int_charges:
+            pi = c["_pi_email"]
+            if not pi:
+                continue
+            if pi not in pd:
+                pi_name = c["_pi_name"]
+                if pi_name not in _pi_college_cache:
+                    _pi_college_cache[pi_name] = get_college_for_pi(
+                        pi_name, proposals_list or []
+                    )
+                college_code = _pi_college_cache[pi_name]
+                pd[pi] = {
+                    "pi_email": pi, "pi_name": pi_name,
+                    "department": get_college_display_name(college_code),
+                    "total_revenue": 0.0, "iids_revenue": 0.0,
+                    "non_iids_revenue": 0.0, "charge_count": 0,
+                }
+            pd[pi]["total_revenue"] += c["_total_price"]
+            if c["_is_iids"]:
+                pd[pi]["iids_revenue"] += c["_total_price"]
+            else:
+                pd[pi]["non_iids_revenue"] += c["_total_price"]
+            pd[pi]["charge_count"] += 1
+        result = []
+        for pi_info in pd.values():
+            t = pi_info["total_revenue"]
+            pi_info["iids_percentage"] = round(pi_info["iids_revenue"] / t * 100, 1) if t > 0 else 0
+            pi_info["total_revenue"] = round(t, 2)
+            pi_info["iids_revenue"] = round(pi_info["iids_revenue"], 2)
+            pi_info["non_iids_revenue"] = round(pi_info["non_iids_revenue"], 2)
+            result.append(pi_info)
+        result.sort(key=lambda x: x["non_iids_revenue"], reverse=True)
+        return result
 
-    # --- PI Breakdown ---
-    pi_data = {}
-    for c in valid_charges:
-        pi = c["_pi_email"]
-        if not pi:
-            continue
-        if pi not in pi_data:
-            pi_data[pi] = {
-                "pi_email": pi,
-                "pi_name": c["_pi_name"],
-                "department": c["_department"],
-                "total_revenue": 0.0,
-                "iids_revenue": 0.0,
-                "non_iids_revenue": 0.0,
-                "charge_count": 0,
-            }
-        pi_data[pi]["total_revenue"] += c["_total_price"]
-        if c["_is_iids"]:
-            pi_data[pi]["iids_revenue"] += c["_total_price"]
-        else:
-            pi_data[pi]["non_iids_revenue"] += c["_total_price"]
-        pi_data[pi]["charge_count"] += 1
+    def _compute_services(charge_list: list[dict]) -> list[dict]:
+        cat_data: dict[str, dict] = {}
+        for c in charge_list:
+            cat = c["_category"] or "Uncategorized"
+            if cat not in cat_data:
+                cat_data[cat] = {"category": cat, "total_revenue": 0.0, "iids_revenue": 0.0, "non_iids_revenue": 0.0, "charge_count": 0}
+            cat_data[cat]["total_revenue"] += c["_total_price"]
+            if c["_is_iids"]:
+                cat_data[cat]["iids_revenue"] += c["_total_price"]
+            else:
+                cat_data[cat]["non_iids_revenue"] += c["_total_price"]
+            cat_data[cat]["charge_count"] += 1
+        result = []
+        for entry in cat_data.values():
+            t = entry["total_revenue"]
+            entry["iids_percentage"] = round(entry["iids_revenue"] / t * 100, 1) if t > 0 else 0
+            entry["total_revenue"] = round(t, 2)
+            entry["iids_revenue"] = round(entry["iids_revenue"], 2)
+            entry["non_iids_revenue"] = round(entry["non_iids_revenue"], 2)
+            result.append(entry)
+        result.sort(key=lambda x: x["total_revenue"], reverse=True)
+        return result
 
-    pi_breakdown = []
-    for pi_info in pi_data.values():
-        total = pi_info["total_revenue"]
-        pi_info["iids_percentage"] = round(pi_info["iids_revenue"] / total * 100, 1) if total > 0 else 0
-        pi_info["total_revenue"] = round(pi_info["total_revenue"], 2)
-        pi_info["iids_revenue"] = round(pi_info["iids_revenue"], 2)
-        pi_info["non_iids_revenue"] = round(pi_info["non_iids_revenue"], 2)
-        pi_breakdown.append(pi_info)
-    pi_breakdown.sort(key=lambda x: x["non_iids_revenue"], reverse=True)
+    proposals = _load_proposals()
+
+    def _compute_college_breakdown(charge_list: list[dict]) -> list[dict]:
+        from app.services.college_mapping import (
+            get_college_for_pi,
+            get_college_display_name,
+        )
+        int_charges = [
+            c for c in charge_list
+            if c["_price_type"] == "Internal" and _is_ui_email(c["_pi_email"])
+        ]
+        col_data: dict[str, dict] = {}
+        _pi_cache: dict[str, str] = {}
+        for c in int_charges:
+            pi_name = c["_pi_name"]
+            if pi_name not in _pi_cache:
+                _pi_cache[pi_name] = get_college_for_pi(pi_name, proposals)
+            college = _pi_cache[pi_name]
+            if college not in col_data:
+                col_data[college] = {
+                    "college": college,
+                    "college_display": get_college_display_name(college),
+                    "total_revenue": 0.0,
+                    "iids_revenue": 0.0,
+                    "non_iids_revenue": 0.0,
+                    "charge_count": 0,
+                    "pi_emails": set(),
+                }
+            col_data[college]["total_revenue"] += c["_total_price"]
+            col_data[college]["charge_count"] += 1
+            if c["_pi_email"]:
+                col_data[college]["pi_emails"].add(c["_pi_email"])
+            if c["_is_iids"]:
+                col_data[college]["iids_revenue"] += c["_total_price"]
+            else:
+                col_data[college]["non_iids_revenue"] += c["_total_price"]
+        result = []
+        for entry in col_data.values():
+            t = entry["total_revenue"]
+            result.append({
+                "college": entry["college"],
+                "college_display": entry["college_display"],
+                "total_revenue": round(t, 2),
+                "iids_revenue": round(entry["iids_revenue"], 2),
+                "non_iids_revenue": round(entry["non_iids_revenue"], 2),
+                "iids_percentage": round(entry["iids_revenue"] / t * 100, 1) if t > 0 else 0,
+                "charge_count": entry["charge_count"],
+                "unique_pis": len(entry["pi_emails"]),
+            })
+        result.sort(key=lambda x: x["total_revenue"], reverse=True)
+        return result
+
+    # --- Compute totals and per-FY ---
+    summary = _compute_summary(valid_charges)
+    pi_breakdown = _compute_pi_breakdown(valid_charges, proposals)
+    services_total = _compute_services(valid_charges)
+    college_breakdown_total = _compute_college_breakdown(valid_charges)
+
+    summary_by_fy: dict[str, dict] = {"total": summary}
+    pi_breakdown_by_fy: dict[str, list] = {"total": pi_breakdown}
+    services_by_fy: dict[str, list] = {"total": services_total}
+    college_breakdown_by_fy: dict[str, list] = {"total": college_breakdown_total}
+
+    for fy_num in fy_keys_all:
+        fy_label = fy_labels_map[fy_num]
+        fy_charges = [c for c in valid_charges if c["_fy"] == fy_num]
+        summary_by_fy[fy_label] = _compute_summary(fy_charges)
+        pi_breakdown_by_fy[fy_label] = _compute_pi_breakdown(fy_charges, proposals)
+        services_by_fy[fy_label] = _compute_services(fy_charges)
+        college_breakdown_by_fy[fy_label] = _compute_college_breakdown(fy_charges)
 
     # --- Fiscal Year Trends ---
     fy_data: dict[int, dict] = {}
@@ -253,29 +376,6 @@ def get_dashboard_data() -> dict:
         entry["iids_revenue"] = round(entry["iids_revenue"], 2)
         entry["non_iids_revenue"] = round(entry["non_iids_revenue"], 2)
         monthly_series.append(entry)
-
-    # --- Service Categories ---
-    category_data: dict[str, dict] = {}
-    for c in valid_charges:
-        cat = c["_category"] or "Uncategorized"
-        if cat not in category_data:
-            category_data[cat] = {"category": cat, "total_revenue": 0.0, "iids_revenue": 0.0, "non_iids_revenue": 0.0, "charge_count": 0}
-        category_data[cat]["total_revenue"] += c["_total_price"]
-        if c["_is_iids"]:
-            category_data[cat]["iids_revenue"] += c["_total_price"]
-        else:
-            category_data[cat]["non_iids_revenue"] += c["_total_price"]
-        category_data[cat]["charge_count"] += 1
-
-    services = []
-    for entry in category_data.values():
-        total = entry["total_revenue"]
-        entry["iids_percentage"] = round(entry["iids_revenue"] / total * 100, 1) if total > 0 else 0
-        entry["total_revenue"] = round(entry["total_revenue"], 2)
-        entry["iids_revenue"] = round(entry["iids_revenue"], 2)
-        entry["non_iids_revenue"] = round(entry["non_iids_revenue"], 2)
-        services.append(entry)
-    services.sort(key=lambda x: x["total_revenue"], reverse=True)
 
     # --- CRC Users ---
     crc_users = []
@@ -327,11 +427,17 @@ def get_dashboard_data() -> dict:
     return {
         "summary": summary,
         "pi_breakdown": pi_breakdown,
+        "college_breakdown": college_breakdown_total,
         "fy_trends": fy_trends,
         "monthly_series": monthly_series,
-        "services": services,
+        "services": services_total,
         "crc_users": crc_users,
         "equipment": equipment,
+        "available_fiscal_years": available_fiscal_years,
+        "summary_by_fy": summary_by_fy,
+        "pi_breakdown_by_fy": pi_breakdown_by_fy,
+        "college_breakdown_by_fy": college_breakdown_by_fy,
+        "services_by_fy": services_by_fy,
     }
 
 
@@ -423,6 +529,7 @@ def get_pi_charges(pi_email: str) -> dict | None:
             "total_price": total_price,
             "payment_index": payment_info,
             "is_iids": is_iids,
+            "price_type": c.get("Price Type", "").strip() or "Internal",
             "status": c.get("Status", "").strip(),
             "user": c.get("Customer Name", "").strip(),
             "user_email": c.get("User Login Email", "").strip(),
@@ -481,6 +588,8 @@ def get_raw_data() -> dict:
             "total_price": _parse_float(c.get("Total Price", "0")),
             "payment_index": payment_info,
             "is_iids": payment_info in iids_indices,
+            "price_type": c.get("Price Type", "").strip() or "Internal",
+            "customer_institute": c.get("Customer Institute", "").strip(),
             "status": c.get("Status", "").strip(),
             "billing_status": c.get("Billing Status", "").strip(),
             "core_name": c.get("Core Name", "").strip(),
@@ -524,8 +633,852 @@ def get_raw_data() -> dict:
                 "institution": u.get("inst", "").strip(),
             })
 
+    # --- Raw Proposals ---
+    proposals = _load_proposals()
+    raw_proposals = []
+    for p in proposals:
+        raw_proposals.append({
+            "proposal_number": p.get("PROPOSAL_NUMBER", "").strip(),
+            "title": p.get("PROJECT_TITLE", "").strip(),
+            "pi": p.get("PI", "").strip(),
+            "department": p.get("DEPARTMENT", "").strip(),
+            "status": p.get("PROJECT_STATUS", "").strip(),
+            "agreement_type": p.get("AGREEMENT_TYPE", "").strip(),
+            "sponsor": p.get("SPONSOR", "").strip() or p.get("PRIME", "").strip(),
+            "submission_date": p.get("SUBMISSION_DATE", "").strip(),
+            "direct_cost": _parse_float(p.get("DIRECT_COST", "0")),
+            "indirect_cost": _parse_float(p.get("INDIRECT_COST", "0")),
+            "total_cost": _parse_float(p.get("TOTAL_COST", "0")),
+            "iids": bool(p.get("IIDS", "").strip()),
+            "imci": bool(p.get("IMCI", "").strip()),
+            "ari": bool(p.get("ARI", "").strip()),
+            "igs": bool(p.get("IGS", "").strip()),
+            "ihhe": bool(p.get("IHHE", "").strip()),
+            "iics": bool(p.get("IICS", "").strip()),
+            "fii": bool(p.get("FII", "").strip()),
+        })
+    raw_proposals.sort(key=lambda x: x["submission_date"], reverse=True)
+
     return {
         "charges": raw_charges,
         "events": raw_events,
         "crc_users": raw_crc,
+        "proposals": raw_proposals,
+    }
+
+
+def _parse_proposal_date(date_str: str) -> datetime | None:
+    """Parse proposal date strings like '7/26/23' or '7/26/2023'."""
+    if not date_str or not date_str.strip():
+        return None
+    date_str = date_str.strip()
+    for fmt in ("%m/%d/%y", "%m/%d/%Y"):
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _is_proposal_awarded(status: str) -> bool:
+    """Check if a proposal status indicates it was awarded/funded."""
+    s = status.lower()
+    return any(kw in s for kw in (
+        "awarded", "completed", "closed", "early setup",
+        "early to full", "intent to award",
+    ))
+
+
+def _classify_sponsor(sponsor: str) -> str:
+    """Classify a sponsor into a category."""
+    s = sponsor.lower()
+    federal_keywords = [
+        "national science foundation", "national institutes of health",
+        "national institute of food", "usda", "national aeronautic",
+        "nasa", "us geological survey", "department of energy",
+        "bureau of land management", "department of defense",
+        "department of interior", "army research", "navy",
+        "air force", "environmental protection agency",
+        "fish and wildlife service", "national oceanic",
+        "forest service", "animal and plant health",
+    ]
+    state_keywords = [
+        "idaho department", "idaho state", "idaho wheat",
+        "idaho potato", "idaho barley", "idaho oilseed",
+        "idaho stem", "idaho board", "idaho space grant",
+    ]
+    university_keywords = [
+        "university", "college", "boise state",
+        "washington state", "montana state", "brigham young",
+    ]
+    for kw in federal_keywords:
+        if kw in s:
+            return "Federal"
+    for kw in state_keywords:
+        if kw in s:
+            return "State"
+    for kw in university_keywords:
+        if kw in s:
+            return "University"
+    if any(kw in s for kw in ["inc.", "llc", "corp", "ltd", "laboratories"]):
+        return "Private/Corporate"
+    if any(kw in s for kw in ["foundation", "commission", "consortium", "society", "association", "institute"]):
+        return "Foundation/NGO"
+    return "Other"
+
+
+@lru_cache(maxsize=1)
+def get_analytics_data() -> dict:
+    """Compute all extended analytics data. Cached after first call."""
+    from app.services.college_mapping import (
+        get_college_for_pi,
+        get_college_from_department,
+        get_college_display_name,
+    )
+
+    iids_indices = _load_iids_index_set()
+    charges = _load_charges()
+    proposals = _load_proposals()
+
+    # Annotate charges
+    for charge in charges:
+        payment_info = charge.get("Payment Information", "").strip()
+        charge["_is_iids"] = payment_info in iids_indices
+        charge["_total_price"] = _parse_float(charge.get("Total Price", "0"))
+        dt = _parse_date(
+            charge.get("Billing Date", "") or charge.get("Purchase Date", "")
+        )
+        charge["_date"] = dt
+        charge["_fy"] = _fiscal_year(dt) if dt else None
+        charge["_pi_email"] = charge.get("PI Email", "").strip().lower()
+        charge["_pi_name"] = _extract_pi_name(charge.get("Customer Lab", ""))
+        charge["_price_type"] = charge.get("Price Type", "").strip() or "Internal"
+        charge["_customer_institute"] = charge.get("Customer Institute", "").strip()
+
+    valid_charges = [c for c in charges if c["_fy"] and c["_fy"] >= 2023]
+
+    # ----------------------------------------------------------------
+    # (a) Revenue by source type (Internal/External/Corporate) per FY
+    # ----------------------------------------------------------------
+    fy_source: dict[int, dict] = {}
+    for c in valid_charges:
+        fy = c["_fy"]
+        if fy not in fy_source:
+            fy_source[fy] = {
+                "fiscal_year": f"FY{str(fy)[-2:]}",
+                "internal": 0.0,
+                "external": 0.0,
+                "corporate": 0.0,
+                "total": 0.0,
+            }
+        price = c["_total_price"]
+        pt = c["_price_type"]
+        fy_source[fy]["total"] += price
+        if pt == "External":
+            fy_source[fy]["external"] += price
+        elif pt == "Corporate":
+            fy_source[fy]["corporate"] += price
+        else:
+            fy_source[fy]["internal"] += price
+
+    fy_source_list = []
+    for fy in sorted(fy_source.keys()):
+        entry = fy_source[fy]
+        for k in ("internal", "external", "corporate", "total"):
+            entry[k] = round(entry[k], 2)
+        fy_source_list.append(entry)
+
+    source_summary = {
+        "internal": round(
+            sum(c["_total_price"] for c in valid_charges if c["_price_type"] == "Internal"), 2
+        ),
+        "external": round(
+            sum(c["_total_price"] for c in valid_charges if c["_price_type"] == "External"), 2
+        ),
+        "corporate": round(
+            sum(c["_total_price"] for c in valid_charges if c["_price_type"] == "Corporate"), 2
+        ),
+    }
+
+    # Internal revenue by college and PI (UI emails only), tracked per FY
+    internal_charges = [
+        c for c in valid_charges
+        if c["_price_type"] == "Internal" and _is_ui_email(c["_pi_email"])
+    ]
+    pi_college_cache: dict[str, str] = {}
+
+    # Build per-FY + total college→PI data in one pass
+    # Structure: { fy_key: { college: { "pis": { email: {...} }, ... } } }
+    fy_keys = sorted(set(c["_fy"] for c in internal_charges if c["_fy"]))
+    fy_labels = {fy: f"FY{str(fy)[-2:]}" for fy in fy_keys}
+    all_fy_keys = ["total"] + [fy_labels[fy] for fy in fy_keys]  # ["total", "FY23", ...]
+
+    college_by_fy: dict[str, dict[str, dict]] = {k: {} for k in all_fy_keys}
+
+    for c in internal_charges:
+        pi_name = c["_pi_name"]
+        pi_email = c["_pi_email"]
+        price = c["_total_price"]
+        is_iids = c["_is_iids"]
+        fy_label = fy_labels.get(c["_fy"])
+        if not fy_label:
+            continue
+
+        if pi_name not in pi_college_cache:
+            pi_college_cache[pi_name] = get_college_for_pi(pi_name, proposals)
+        college = pi_college_cache[pi_name]
+
+        # Update both "total" and specific FY buckets
+        for bucket_key in ("total", fy_label):
+            bucket = college_by_fy[bucket_key]
+            if college not in bucket:
+                bucket[college] = {
+                    "college": college,
+                    "revenue": 0.0,
+                    "iids_revenue": 0.0,
+                    "charge_count": 0,
+                    "pis": {},
+                }
+            bucket[college]["revenue"] += price
+            bucket[college]["charge_count"] += 1
+            if is_iids:
+                bucket[college]["iids_revenue"] += price
+
+            if pi_email not in bucket[college]["pis"]:
+                bucket[college]["pis"][pi_email] = {
+                    "pi_name": pi_name,
+                    "pi_email": pi_email,
+                    "revenue": 0.0,
+                    "iids_revenue": 0.0,
+                    "charge_count": 0,
+                }
+            bucket[college]["pis"][pi_email]["revenue"] += price
+            bucket[college]["pis"][pi_email]["charge_count"] += 1
+            if is_iids:
+                bucket[college]["pis"][pi_email]["iids_revenue"] += price
+
+    def _build_college_list(bucket: dict[str, dict]) -> list[dict]:
+        result = []
+        for entry in bucket.values():
+            pis = list(entry["pis"].values())
+            for pi in pis:
+                pi_rev = pi["revenue"]
+                pi["revenue"] = round(pi_rev, 2)
+                pi["iids_revenue"] = round(pi["iids_revenue"], 2)
+                pi["iids_percentage"] = (
+                    round(pi["iids_revenue"] / pi_rev * 100, 1) if pi_rev > 0 else 0
+                )
+            pis.sort(key=lambda x: x["revenue"], reverse=True)
+            col_rev = entry["revenue"]
+            result.append({
+                "college": entry["college"],
+                "college_display": get_college_display_name(entry["college"]),
+                "revenue": round(col_rev, 2),
+                "iids_revenue": round(entry["iids_revenue"], 2),
+                "iids_percentage": (
+                    round(entry["iids_revenue"] / col_rev * 100, 1) if col_rev > 0 else 0
+                ),
+                "charge_count": entry["charge_count"],
+                "pis": pis,
+            })
+        result.sort(key=lambda x: x["revenue"], reverse=True)
+        return result
+
+    internal_by_college_by_fy = {
+        fy_key: _build_college_list(college_by_fy[fy_key])
+        for fy_key in all_fy_keys
+    }
+
+    # ----------------------------------------------------------------
+    # External revenue by institution (grouped by email domain / Customer Institute)
+    # ----------------------------------------------------------------
+    def _is_corporate_email(email: str) -> bool:
+        """Exclude corporate/commercial (.com) domains from external breakdown."""
+        if not email or "@" not in email:
+            return False
+        domain = email.strip().lower().split("@")[1]
+        return domain.endswith(".com")
+
+    external_charges = [
+        c for c in valid_charges
+        if c["_price_type"] == "External" and not _is_corporate_email(c["_pi_email"])
+    ]
+
+    # Map email domains to institution display names
+    _INSTITUTION_NAMES: dict[str, str] = {
+        "ag.arizona.edu": "University of Arizona",
+        "arizona.edu": "University of Arizona",
+        "caryinstitute.org": "Cary Institute",
+        "unr.edu": "University of Nevada, Reno",
+        "wsu.edu": "Washington State University",
+        "usda.gov": "USDA",
+        "berkeley.edu": "UC Berkeley",
+        "mso.umt.edu": "University of Montana",
+        "ohsu.edu": "Oregon Health & Science University",
+        "pugetsound.edu": "University of Puget Sound",
+        "vmrd.com": "VMRD Inc.",
+        "oregonstate.edu": "Oregon State University",
+        "nih.gov": "NIH",
+        "uidaho.edu": "University of Idaho",
+    }
+
+    def _institution_from_email(email: str) -> str:
+        if not email or "@" not in email:
+            return "Unknown"
+        domain = email.strip().lower().split("@")[1]
+        # Check exact match first, then parent domain
+        if domain in _INSTITUTION_NAMES:
+            return _INSTITUTION_NAMES[domain]
+        parts = domain.split(".")
+        if len(parts) > 2:
+            parent = ".".join(parts[-2:])
+            if parent in _INSTITUTION_NAMES:
+                return _INSTITUTION_NAMES[parent]
+        # Fall back to a cleaned-up domain name
+        return domain.split(".")[0].upper() if domain else "Unknown"
+
+    ext_inst_by_fy: dict[str, dict[str, dict]] = {k: {} for k in all_fy_keys}
+
+    for c in external_charges:
+        pi_name = c["_pi_name"]
+        pi_email = c["_pi_email"]
+        price = c["_total_price"]
+        is_iids = c["_is_iids"]
+        fy_label = fy_labels.get(c["_fy"])
+        if not fy_label:
+            continue
+
+        # Use Customer Institute if available, else derive from email
+        inst = c.get("_customer_institute", "").strip()
+        if not inst:
+            inst = _institution_from_email(pi_email)
+
+        for bucket_key in ("total", fy_label):
+            bucket = ext_inst_by_fy[bucket_key]
+            if inst not in bucket:
+                bucket[inst] = {
+                    "college": inst,  # Reuse "college" field for institution name
+                    "revenue": 0.0,
+                    "iids_revenue": 0.0,
+                    "charge_count": 0,
+                    "pis": {},
+                }
+            bucket[inst]["revenue"] += price
+            bucket[inst]["charge_count"] += 1
+            if is_iids:
+                bucket[inst]["iids_revenue"] += price
+
+            if pi_email not in bucket[inst]["pis"]:
+                bucket[inst]["pis"][pi_email] = {
+                    "pi_name": pi_name,
+                    "pi_email": pi_email,
+                    "revenue": 0.0,
+                    "iids_revenue": 0.0,
+                    "charge_count": 0,
+                }
+            bucket[inst]["pis"][pi_email]["revenue"] += price
+            bucket[inst]["pis"][pi_email]["charge_count"] += 1
+            if is_iids:
+                bucket[inst]["pis"][pi_email]["iids_revenue"] += price
+
+    external_by_college_by_fy = {
+        fy_key: _build_college_list(ext_inst_by_fy[fy_key])
+        for fy_key in all_fy_keys
+    }
+
+    revenue_sources = {
+        "fiscal_years": fy_source_list,
+        "source_summary": source_summary,
+        "internal_by_college": internal_by_college_by_fy.get("total", []),
+        "internal_by_college_by_fy": internal_by_college_by_fy,
+        "external_by_college": external_by_college_by_fy.get("total", []),
+        "external_by_college_by_fy": external_by_college_by_fy,
+        "available_fiscal_years": all_fy_keys,
+    }
+
+    # ----------------------------------------------------------------
+    # (b) Proposal portfolio analysis
+    # ----------------------------------------------------------------
+    proposal_fy_data: dict[str, dict] = {}
+    agreement_data: dict[str, dict] = {}
+    total_proposals = 0
+    total_awarded = 0
+    total_awarded_cost = 0.0
+
+    for p in proposals:
+        dt = _parse_proposal_date(p.get("SUBMISSION_DATE", ""))
+        fy_label = f"FY{str(_fiscal_year(dt))[-2:]}" if dt else "Unknown"
+        status = p.get("PROJECT_STATUS", "").strip()
+        total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+        agreement_type = p.get("AGREEMENT_TYPE", "").strip() or "Unknown"
+
+        total_proposals += 1
+        status_lower = status.lower()
+        is_awarded = _is_proposal_awarded(status)
+
+        if fy_label not in proposal_fy_data:
+            proposal_fy_data[fy_label] = {
+                "fiscal_year": fy_label,
+                "submitted": 0,
+                "awarded": 0,
+                "declined": 0,
+                "pending": 0,
+                "other": 0,
+                "total_awarded_cost": 0.0,
+            }
+        proposal_fy_data[fy_label]["submitted"] += 1
+        if is_awarded:
+            proposal_fy_data[fy_label]["awarded"] += 1
+            proposal_fy_data[fy_label]["total_awarded_cost"] += total_cost
+            total_awarded += 1
+            total_awarded_cost += total_cost
+        elif "decline" in status_lower or "not funded" in status_lower:
+            proposal_fy_data[fy_label]["declined"] += 1
+        elif "pending" in status_lower or "submitted" in status_lower or "in process" in status_lower or "negotiation" in status_lower:
+            proposal_fy_data[fy_label]["pending"] += 1
+        else:
+            proposal_fy_data[fy_label]["other"] += 1
+
+        if agreement_type not in agreement_data:
+            agreement_data[agreement_type] = {
+                "agreement_type": agreement_type,
+                "count": 0,
+                "awarded_count": 0,
+                "awarded_cost": 0.0,
+            }
+        agreement_data[agreement_type]["count"] += 1
+        if is_awarded:
+            agreement_data[agreement_type]["awarded_count"] += 1
+            agreement_data[agreement_type]["awarded_cost"] += total_cost
+
+    proposal_fy_list = []
+    for fy_label in sorted(proposal_fy_data.keys()):
+        entry = proposal_fy_data[fy_label]
+        entry["total_awarded_cost"] = round(entry["total_awarded_cost"], 2)
+        proposal_fy_list.append(entry)
+
+    agreement_list = []
+    for entry in agreement_data.values():
+        entry["awarded_cost"] = round(entry["awarded_cost"], 2)
+        agreement_list.append(entry)
+    agreement_list.sort(key=lambda x: x["count"], reverse=True)
+
+    proposal_portfolio = {
+        "by_fiscal_year": proposal_fy_list,
+        "by_agreement_type": agreement_list,
+        "success_rate": round(total_awarded / total_proposals * 100, 1) if total_proposals > 0 else 0,
+        "total_proposals": total_proposals,
+        "total_awarded_cost": round(total_awarded_cost, 2),
+    }
+
+    # ----------------------------------------------------------------
+    # (c) Checkbox analysis
+    # ----------------------------------------------------------------
+    checkbox_names = ["IIDS", "IMCI", "ARI", "IGS", "IHHE", "IICS", "FII"]
+    checkbox_counts = {name: 0 for name in checkbox_names}
+    checkbox_fy: dict[str, dict] = {}
+    co_occurrence: dict[str, int] = {}
+    no_checkbox_count = 0
+
+    for p in proposals:
+        dt = _parse_proposal_date(p.get("SUBMISSION_DATE", ""))
+        fy_label = f"FY{str(_fiscal_year(dt))[-2:]}" if dt else "Unknown"
+
+        checked = [name for name in checkbox_names if p.get(name, "").strip()]
+        if not checked:
+            no_checkbox_count += 1
+
+        for name in checked:
+            checkbox_counts[name] += 1
+
+        if fy_label not in checkbox_fy:
+            checkbox_fy[fy_label] = {
+                "fiscal_year": fy_label,
+                **{name.lower(): 0 for name in checkbox_names},
+            }
+        for name in checked:
+            checkbox_fy[fy_label][name.lower()] += 1
+
+        # Co-occurrence pairs
+        for i, a in enumerate(checked):
+            for b in checked[i + 1 :]:
+                pair = f"{a}+{b}"
+                co_occurrence[pair] = co_occurrence.get(pair, 0) + 1
+
+    by_checkbox = []
+    for name in checkbox_names:
+        by_checkbox.append({
+            "name": name,
+            "count": checkbox_counts[name],
+            "percentage": round(
+                checkbox_counts[name] / total_proposals * 100, 1
+            )
+            if total_proposals > 0
+            else 0,
+        })
+
+    checkbox_fy_list = []
+    for fy_label in sorted(checkbox_fy.keys()):
+        checkbox_fy_list.append(checkbox_fy[fy_label])
+
+    co_occurrence_list = [
+        {"pair": pair, "count": count}
+        for pair, count in sorted(co_occurrence.items(), key=lambda x: -x[1])
+    ]
+
+    checkbox_analysis = {
+        "by_checkbox": by_checkbox,
+        "by_fiscal_year": checkbox_fy_list,
+        "co_occurrence": co_occurrence_list,
+        "no_checkbox_count": no_checkbox_count,
+    }
+
+    # ----------------------------------------------------------------
+    # (d) Sponsor analysis
+    # ----------------------------------------------------------------
+    sponsor_data: dict[str, dict] = {}
+    sponsor_cat_data: dict[str, dict] = {}
+
+    for p in proposals:
+        sponsor = p.get("SPONSOR", "").strip() or p.get("PRIME", "").strip()
+        if not sponsor:
+            continue
+        status = p.get("PROJECT_STATUS", "").strip()
+        total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+        is_awarded = _is_proposal_awarded(status)
+        iids_checked = bool(p.get("IIDS", "").strip())
+
+        if sponsor not in sponsor_data:
+            sponsor_data[sponsor] = {
+                "sponsor": sponsor,
+                "count": 0,
+                "awarded_count": 0,
+                "total_cost": 0.0,
+                "iids_count": 0,
+            }
+        sponsor_data[sponsor]["count"] += 1
+        if is_awarded:
+            sponsor_data[sponsor]["awarded_count"] += 1
+            sponsor_data[sponsor]["total_cost"] += total_cost
+        if iids_checked:
+            sponsor_data[sponsor]["iids_count"] += 1
+
+        category = _classify_sponsor(sponsor)
+        if category not in sponsor_cat_data:
+            sponsor_cat_data[category] = {
+                "category": category,
+                "count": 0,
+                "awarded_count": 0,
+                "total_cost": 0.0,
+            }
+        sponsor_cat_data[category]["count"] += 1
+        if is_awarded:
+            sponsor_cat_data[category]["awarded_count"] += 1
+            sponsor_cat_data[category]["total_cost"] += total_cost
+
+    top_sponsors = []
+    for entry in sponsor_data.values():
+        entry["total_cost"] = round(entry["total_cost"], 2)
+        entry["iids_percentage"] = (
+            round(entry["iids_count"] / entry["count"] * 100, 1)
+            if entry["count"] > 0
+            else 0
+        )
+        top_sponsors.append(entry)
+    top_sponsors.sort(key=lambda x: x["count"], reverse=True)
+    top_sponsors = top_sponsors[:25]
+
+    by_sponsor_category = []
+    for entry in sponsor_cat_data.values():
+        entry["total_cost"] = round(entry["total_cost"], 2)
+        by_sponsor_category.append(entry)
+    by_sponsor_category.sort(key=lambda x: x["count"], reverse=True)
+
+    sponsor_analysis = {
+        "top_sponsors": top_sponsors,
+        "by_category": by_sponsor_category,
+    }
+
+    # ----------------------------------------------------------------
+    # (e) Department insights — college-level scorecard
+    # ----------------------------------------------------------------
+    # Proposal side: aggregate by college
+    college_proposals: dict[str, dict] = {}
+    for p in proposals:
+        dept = p.get("DEPARTMENT", "").strip()
+        college = get_college_from_department(dept)
+        status = p.get("PROJECT_STATUS", "").strip()
+        total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+        is_awarded = _is_proposal_awarded(status)
+        iids_checked = bool(p.get("IIDS", "").strip())
+
+        if college not in college_proposals:
+            college_proposals[college] = {
+                "college": college,
+                "proposal_count": 0,
+                "awarded_count": 0,
+                "awarded_cost": 0.0,
+                "iids_checkbox_count": 0,
+            }
+        college_proposals[college]["proposal_count"] += 1
+        if is_awarded:
+            college_proposals[college]["awarded_count"] += 1
+            college_proposals[college]["awarded_cost"] += total_cost
+        if iids_checked:
+            college_proposals[college]["iids_checkbox_count"] += 1
+
+    # Charge side: aggregate internal charges by college
+    college_charges: dict[str, dict] = {}
+    for c in internal_charges:
+        pi_name = c["_pi_name"]
+        college = pi_college_cache.get(pi_name, "Unknown")
+
+        if college not in college_charges:
+            college_charges[college] = {
+                "charge_revenue": 0.0,
+                "charge_count": 0,
+                "pi_emails": set(),
+                "iids_charge_count": 0,
+            }
+        college_charges[college]["charge_revenue"] += c["_total_price"]
+        college_charges[college]["charge_count"] += 1
+        college_charges[college]["pi_emails"].add(c["_pi_email"])
+        if c["_is_iids"]:
+            college_charges[college]["iids_charge_count"] += 1
+
+    # Merge proposal + charge data per college
+    all_colleges = set(college_proposals.keys()) | set(college_charges.keys())
+    by_college = []
+    for college in all_colleges:
+        prop = college_proposals.get(college, {})
+        chrg = college_charges.get(college, {})
+        prop_count = prop.get("proposal_count", 0)
+        chrg_count = chrg.get("charge_count", 0)
+        by_college.append({
+            "college": college,
+            "college_display": get_college_display_name(college),
+            "proposal_count": prop_count,
+            "awarded_count": prop.get("awarded_count", 0),
+            "awarded_cost": round(prop.get("awarded_cost", 0), 2),
+            "charge_revenue": round(chrg.get("charge_revenue", 0), 2),
+            "charge_pi_count": len(chrg.get("pi_emails", set())),
+            "iids_checkbox_rate": (
+                round(prop.get("iids_checkbox_count", 0) / prop_count * 100, 1)
+                if prop_count > 0
+                else 0
+            ),
+            "iids_charge_rate": (
+                round(chrg.get("iids_charge_count", 0) / chrg_count * 100, 1)
+                if chrg_count > 0
+                else 0
+            ),
+        })
+    by_college.sort(key=lambda x: x["proposal_count"], reverse=True)
+
+    department_insights = {"by_college": by_college}
+
+    # ----------------------------------------------------------------
+    # (f) Cross-linkage: charges PIs vs proposal PIs (UI PIs only)
+    # ----------------------------------------------------------------
+    charge_pi_names = {}
+    for c in internal_charges:
+        name = c["_pi_name"]
+        email = c["_pi_email"]
+        if name == "Unknown" or not email:
+            continue
+        if name not in charge_pi_names:
+            charge_pi_names[name] = {
+                "pi_name": name,
+                "pi_email": email,
+                "charge_revenue": 0.0,
+            }
+        charge_pi_names[name]["charge_revenue"] += c["_total_price"]
+
+    proposal_pi_names: dict[str, dict] = {}
+    for p in proposals:
+        pi = p.get("PI", "").strip()
+        if not pi:
+            continue
+        status = p.get("PROJECT_STATUS", "").strip()
+        total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+        is_awarded = _is_proposal_awarded(status)
+        dept = p.get("DEPARTMENT", "").strip()
+
+        if pi not in proposal_pi_names:
+            proposal_pi_names[pi] = {
+                "pi_name": pi,
+                "department": dept,
+                "proposal_count": 0,
+                "awarded_cost": 0.0,
+            }
+        proposal_pi_names[pi]["proposal_count"] += 1
+        if is_awarded:
+            proposal_pi_names[pi]["awarded_cost"] += total_cost
+
+    # Match by name (case-insensitive)
+    charge_names_lower = {n.lower(): n for n in charge_pi_names}
+    proposal_names_lower = {n.lower(): n for n in proposal_pi_names}
+
+    matched_set = set(charge_names_lower.keys()) & set(proposal_names_lower.keys())
+    charges_only_set = set(charge_names_lower.keys()) - set(proposal_names_lower.keys())
+    proposals_only_set = set(proposal_names_lower.keys()) - set(charge_names_lower.keys())
+
+    matched_pis = []
+    for name_lower in matched_set:
+        cn = charge_pi_names[charge_names_lower[name_lower]]
+        pn = proposal_pi_names[proposal_names_lower[name_lower]]
+        matched_pis.append({
+            "pi_name": cn["pi_name"],
+            "pi_email": cn["pi_email"],
+            "charge_revenue": round(cn["charge_revenue"], 2),
+            "proposal_count": pn["proposal_count"],
+            "awarded_cost": round(pn["awarded_cost"], 2),
+        })
+    matched_pis.sort(key=lambda x: x["charge_revenue"], reverse=True)
+
+    charges_only_pis = []
+    for name_lower in charges_only_set:
+        cn = charge_pi_names[charge_names_lower[name_lower]]
+        charges_only_pis.append({
+            "pi_name": cn["pi_name"],
+            "pi_email": cn["pi_email"],
+            "charge_revenue": round(cn["charge_revenue"], 2),
+        })
+    charges_only_pis.sort(key=lambda x: x["charge_revenue"], reverse=True)
+
+    proposals_only_pis = []
+    for name_lower in proposals_only_set:
+        pn = proposal_pi_names[proposal_names_lower[name_lower]]
+        proposals_only_pis.append({
+            "pi_name": pn["pi_name"],
+            "department": pn["department"],
+            "proposal_count": pn["proposal_count"],
+            "awarded_cost": round(pn["awarded_cost"], 2),
+        })
+    proposals_only_pis.sort(key=lambda x: x["proposal_count"], reverse=True)
+
+    total_unique = len(matched_set) + len(charges_only_set) + len(proposals_only_set)
+    cross_linkage = {
+        "matched_pis": matched_pis,
+        "charges_only_pis": charges_only_pis,
+        "proposals_only_pis": proposals_only_pis[:50],
+        "match_rate": round(len(matched_set) / total_unique * 100, 1) if total_unique > 0 else 0,
+    }
+
+    # ----------------------------------------------------------------
+    # (g) Equipment enrichment: by department + monthly trends
+    # ----------------------------------------------------------------
+    events = _load_events()
+    equip_enriched: dict[str, dict] = {}
+    monthly_equip: dict[str, float] = {}
+
+    from app.services.college_mapping import get_college_from_charge_dept
+
+    for e in events:
+        equip = e.get("Equipment Name", "").strip()
+        if not equip:
+            continue
+        hours = _parse_hours(e.get("Actual Hours", "0"))
+        raw_dept = e.get("Customer Department", "").strip() or "Unknown"
+        dept = get_college_from_charge_dept(raw_dept) if raw_dept != "Unknown" else "Unknown"
+        dt = _parse_date(e.get("Scheduled Start", ""))
+
+        if equip not in equip_enriched:
+            equip_enriched[equip] = {
+                "equipment": equip,
+                "total_hours": 0.0,
+                "reservation_count": 0,
+                "unique_users": set(),
+                "departments": {},
+            }
+        equip_enriched[equip]["total_hours"] += hours
+        equip_enriched[equip]["reservation_count"] += 1
+        user_email = e.get("User Login Email", "").strip()
+        if user_email:
+            equip_enriched[equip]["unique_users"].add(user_email)
+        equip_enriched[equip]["departments"][dept] = (
+            equip_enriched[equip]["departments"].get(dept, 0) + 1
+        )
+
+        if dt:
+            month_key = dt.strftime("%Y-%m")
+            monthly_equip[month_key] = monthly_equip.get(month_key, 0) + hours
+
+    by_equipment = []
+    for entry in equip_enriched.values():
+        by_equipment.append({
+            "equipment": entry["equipment"],
+            "total_hours": round(entry["total_hours"], 1),
+            "reservation_count": entry["reservation_count"],
+            "unique_users": len(entry["unique_users"]),
+            "departments": dict(
+                sorted(entry["departments"].items(), key=lambda x: -x[1])
+            ),
+        })
+    by_equipment.sort(key=lambda x: x["total_hours"], reverse=True)
+
+    equip_monthly_trend = [
+        {"month": m, "total_hours": round(h, 1)}
+        for m, h in sorted(monthly_equip.items())
+    ]
+
+    equipment_enriched = {
+        "by_equipment": by_equipment,
+        "monthly_trend": equip_monthly_trend,
+    }
+
+    # ----------------------------------------------------------------
+    # (h) CRC user growth: retention/churn + type breakdown
+    # ----------------------------------------------------------------
+    fy_usernames: dict[int, set] = {}
+    fy_types: dict[int, dict] = {}
+    for fy in [2023, 2024, 2025]:
+        users = _load_crc_users(fy)
+        usernames = set()
+        type_counts: dict[str, int] = {}
+        for u in users:
+            uname = u.get("username", "").strip()
+            if uname:
+                usernames.add(uname)
+            utype = u.get("type", "").strip() or "Unknown"
+            type_counts[utype] = type_counts.get(utype, 0) + 1
+        fy_usernames[fy] = usernames
+        fy_types[fy] = type_counts
+
+    retention = []
+    prev_users: set[str] = set()
+    for fy in [2023, 2024, 2025]:
+        current = fy_usernames.get(fy, set())
+        returning = current & prev_users if prev_users else set()
+        new = current - prev_users if prev_users else current
+        departed = prev_users - current if prev_users else set()
+        retention.append({
+            "fiscal_year": f"FY{str(fy)[-2:]}",
+            "total_users": len(current),
+            "new_users": len(new),
+            "returning_users": len(returning),
+            "departed_users": len(departed),
+        })
+        prev_users = current
+
+    by_type = []
+    for fy in [2023, 2024, 2025]:
+        entry = {"fiscal_year": f"FY{str(fy)[-2:]}"}
+        entry.update(fy_types.get(fy, {}))
+        by_type.append(entry)
+
+    crc_growth = {
+        "retention": retention,
+        "by_type": by_type,
+    }
+
+    return {
+        "revenue_sources": revenue_sources,
+        "proposal_portfolio": proposal_portfolio,
+        "checkbox_analysis": checkbox_analysis,
+        "sponsor_analysis": sponsor_analysis,
+        "department_insights": department_insights,
+        "cross_linkage": cross_linkage,
+        "equipment_enriched": equipment_enriched,
+        "crc_growth": crc_growth,
     }

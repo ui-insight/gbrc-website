@@ -1,11 +1,22 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type {
   DashboardSummary,
   PIBreakdown,
+  PIBreakdownResponse,
+  CollegeSummary,
   TrendsData,
   ServiceCategory,
+  ServicesResponse,
   CRCYearData,
   EquipmentData,
+  RevenueSourcesData,
+  ProposalPortfolioData,
+  CheckboxAnalysisData,
+  SponsorAnalysisData,
+  DepartmentInsightsData,
+  CrossLinkageData,
+  EquipmentEnrichedData,
+  CRCGrowthData,
 } from '../types/dashboard'
 
 const TOKEN_KEY = 'gbrc_dashboard_token'
@@ -77,10 +88,15 @@ export function useDashboardAuth() {
 export function useDashboardData(token: string, isAuthenticated: boolean) {
   const [summary, setSummary] = useState<DashboardSummary | null>(null)
   const [piBreakdown, setPiBreakdown] = useState<PIBreakdown[]>([])
+  const [piBreakdownByFY, setPiBreakdownByFY] = useState<Record<string, PIBreakdown[]>>({})
+  const [collegeBreakdown, setCollegeBreakdown] = useState<CollegeSummary[]>([])
+  const [collegeBreakdownByFY, setCollegeBreakdownByFY] = useState<Record<string, CollegeSummary[]>>({})
   const [trends, setTrends] = useState<TrendsData | null>(null)
   const [services, setServices] = useState<ServiceCategory[]>([])
+  const [servicesByFY, setServicesByFY] = useState<Record<string, ServiceCategory[]>>({})
   const [crcUsers, setCrcUsers] = useState<CRCYearData[]>([])
   const [equipment, setEquipment] = useState<EquipmentData[]>([])
+  const [availableFYs, setAvailableFYs] = useState<string[]>(['total'])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -92,19 +108,24 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
 
     Promise.all([
       fetchWithAuth<DashboardSummary>('/summary', token),
-      fetchWithAuth<PIBreakdown[]>('/pi-breakdown', token),
+      fetchWithAuth<PIBreakdownResponse>('/pi-breakdown', token),
       fetchWithAuth<TrendsData>('/trends', token),
-      fetchWithAuth<ServiceCategory[]>('/services', token),
+      fetchWithAuth<ServicesResponse>('/services', token),
       fetchWithAuth<CRCYearData[]>('/crc-users', token),
       fetchWithAuth<EquipmentData[]>('/equipment', token),
     ])
-      .then(([s, pi, t, svc, crc, eq]) => {
+      .then(([s, piResp, t, svcResp, crc, eq]) => {
         setSummary(s)
-        setPiBreakdown(pi)
+        setPiBreakdown(piResp.pis)
+        setPiBreakdownByFY(piResp.by_fy)
+        setCollegeBreakdown(piResp.colleges)
+        setCollegeBreakdownByFY(piResp.colleges_by_fy)
         setTrends(t)
-        setServices(svc)
+        setServices(svcResp.services)
+        setServicesByFY(svcResp.by_fy)
         setCrcUsers(crc)
         setEquipment(eq)
+        setAvailableFYs(s.available_fiscal_years ?? ['total'])
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data')
@@ -114,5 +135,64 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
       })
   }, [token, isAuthenticated])
 
-  return { summary, piBreakdown, trends, services, crcUsers, equipment, loading, error }
+  return { summary, piBreakdown, piBreakdownByFY, collegeBreakdown, collegeBreakdownByFY, trends, services, servicesByFY, crcUsers, equipment, availableFYs, loading, error }
+}
+
+/** Lazy-loading hook for tab-specific analytics data. */
+export function useTabData<T>(token: string, isAuthenticated: boolean, endpoint: string, active: boolean) {
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const fetched = useRef(false)
+
+  useEffect(() => {
+    if (!active || !isAuthenticated || fetched.current) return
+
+    fetched.current = true
+    setLoading(true)
+    setError(null)
+
+    fetchWithAuth<T>(endpoint, token)
+      .then(setData)
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : 'Failed to load data')
+        fetched.current = false
+      })
+      .finally(() => setLoading(false))
+  }, [active, token, isAuthenticated, endpoint])
+
+  return { data, loading, error }
+}
+
+// Pre-typed hooks for each tab
+export function useRevenueSourcesData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<RevenueSourcesData>(token, isAuthenticated, '/revenue-sources', active)
+}
+
+export function useProposalPortfolioData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<ProposalPortfolioData>(token, isAuthenticated, '/proposal-portfolio', active)
+}
+
+export function useCheckboxAnalysisData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<CheckboxAnalysisData>(token, isAuthenticated, '/checkbox-analysis', active)
+}
+
+export function useSponsorAnalysisData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<SponsorAnalysisData>(token, isAuthenticated, '/sponsor-analysis', active)
+}
+
+export function useDepartmentInsightsData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<DepartmentInsightsData>(token, isAuthenticated, '/department-insights', active)
+}
+
+export function useCrossLinkageData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<CrossLinkageData>(token, isAuthenticated, '/cross-linkage', active)
+}
+
+export function useEquipmentEnrichedData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<EquipmentEnrichedData>(token, isAuthenticated, '/equipment-enriched', active)
+}
+
+export function useCRCGrowthData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<CRCGrowthData>(token, isAuthenticated, '/crc-growth', active)
 }

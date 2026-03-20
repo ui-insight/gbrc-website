@@ -40,8 +40,8 @@ export default function PIBarChart({ data, onPIClick, selectedPI }: PIBarChartPr
     name: pi.pi_name.length > 20 ? pi.pi_name.slice(0, 18) + '...' : pi.pi_name,
     fullName: pi.pi_name,
     piEmail: pi.pi_email,
-    'Non-IIDS Revenue': pi.non_iids_revenue,
-    'IIDS Revenue': pi.iids_revenue,
+    'Non-Checkbox Revenue': pi.non_iids_revenue,
+    'IIDS Checkbox Revenue': pi.iids_revenue,
     department: pi.department,
     iids_pct: pi.iids_percentage,
   }))
@@ -70,12 +70,12 @@ export default function PIBarChart({ data, onPIClick, selectedPI }: PIBarChartPr
           <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 12 }} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey="IIDS Revenue" stackId="a" fill="#f1b300" onClick={handleBarClick} style={{ cursor: onPIClick ? 'pointer' : undefined }}>
+          <Bar dataKey="IIDS Checkbox Revenue" stackId="a" fill="#f1b300" onClick={handleBarClick} style={{ cursor: onPIClick ? 'pointer' : undefined }}>
             {chartData.map((entry, index) => (
               <Cell key={`iids-${index}`} fill={selectedPI === entry.piEmail ? '#d4a017' : '#f1b300'} />
             ))}
           </Bar>
-          <Bar dataKey="Non-IIDS Revenue" stackId="a" fill="#a3a3a3" onClick={handleBarClick} style={{ cursor: onPIClick ? 'pointer' : undefined }}>
+          <Bar dataKey="Non-Checkbox Revenue" stackId="a" fill="#a3a3a3" onClick={handleBarClick} style={{ cursor: onPIClick ? 'pointer' : undefined }}>
             {chartData.map((entry, index) => (
               <Cell key={`non-${index}`} fill={selectedPI === entry.piEmail ? '#737373' : '#a3a3a3'} />
             ))}

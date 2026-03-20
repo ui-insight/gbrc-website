@@ -37,7 +37,7 @@ export default function TrendChart({ data }: TrendChartProps) {
   return (
     <ChartCard
       title="Revenue Trend Over Time"
-      subtitle="Monthly revenue and IIDS affiliation rate"
+      subtitle="Monthly revenue and IIDS checkbox compliance rate"
     >
       <ResponsiveContainer width="100%" height={350}>
         <ComposedChart data={data} margin={{ left: 10, right: 10, top: 5, bottom: 5 }}>
@@ -47,8 +47,8 @@ export default function TrendChart({ data }: TrendChartProps) {
           <YAxis yAxisId="pct" orientation="right" tickFormatter={formatPct} domain={[0, 100]} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Area yAxisId="revenue" type="monotone" dataKey="iids_revenue" name="IIDS Revenue" fill="#f1b300" fillOpacity={0.3} stroke="#f1b300" stackId="rev" />
-          <Area yAxisId="revenue" type="monotone" dataKey="non_iids_revenue" name="Non-IIDS Revenue" fill="#a3a3a3" fillOpacity={0.3} stroke="#a3a3a3" stackId="rev" />
+          <Area yAxisId="revenue" type="monotone" dataKey="iids_revenue" name="IIDS Checkbox Revenue" fill="#f1b300" fillOpacity={0.3} stroke="#f1b300" stackId="rev" />
+          <Area yAxisId="revenue" type="monotone" dataKey="non_iids_revenue" name="Non-Checkbox Revenue" fill="#a3a3a3" fillOpacity={0.3} stroke="#a3a3a3" stackId="rev" />
           <Line yAxisId="pct" type="monotone" dataKey="iids_percentage" name="IIDS %" stroke="#16a34a" strokeWidth={2} dot={false} />
         </ComposedChart>
       </ResponsiveContainer>
