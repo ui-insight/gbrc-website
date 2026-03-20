@@ -96,8 +96,6 @@ export function useChat(submissionId: string | null) {
 
           for (const line of lines) {
             if (line.startsWith('event: ')) {
-              const eventType = line.slice(7).trim()
-              // Next line should be data
               continue
             }
             if (line.startsWith('data: ')) {

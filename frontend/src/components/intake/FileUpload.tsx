@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Upload, FileText, X } from 'lucide-react'
+import { Upload, FileText } from 'lucide-react'
 import type { FileUpload as FileUploadType } from '../../hooks/useIntakeForm'
 
 interface FileUploadProps {
