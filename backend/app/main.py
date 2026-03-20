@@ -7,12 +7,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import api_router
 from app.config.settings import settings
+from app.db.base import Base
+from app.db.engine import engine
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan handler."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
+    await engine.dispose()
 
 
 app = FastAPI(

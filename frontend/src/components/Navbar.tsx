@@ -8,6 +8,7 @@ const navLinks = [
   { to: '/getting-started', label: 'Getting Started' },
   { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
+  { to: '/project-intake', label: 'Project Intake' },
 ]
 
 export default function Navbar() {

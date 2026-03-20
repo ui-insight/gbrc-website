@@ -6,6 +6,7 @@ import GettingStarted from './pages/GettingStarted'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import CostRecovery from './pages/CostRecovery'
+import ProjectIntake from './pages/ProjectIntake'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cost-recovery" element={<CostRecovery />} />
+          <Route path="/project-intake" element={<ProjectIntake />} />
         </Route>
       </Routes>
     </BrowserRouter>
