@@ -123,5 +123,10 @@ class MindRouterClient:
 
 
 def get_mindrouter_client() -> MindRouterClient:
-    """Factory function returning a configured MindRouter client."""
+    """Factory function returning a configured MindRouter client (gpt-oss-120b)."""
     return MindRouterClient()
+
+
+def get_ocr_client() -> MindRouterClient:
+    """Factory function returning a MindRouter client configured for OCR (dots.ocr)."""
+    return MindRouterClient(model=settings.mindrouter_ocr_model)

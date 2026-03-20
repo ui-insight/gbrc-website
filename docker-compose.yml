@@ -23,6 +23,9 @@ services:
       - GBRC_CORS_ORIGINS=["http://localhost:9200","http://localhost:5173"]
       - GBRC_DEBUG=true
       - GBRC_DATABASE_URL=postgresql+asyncpg://gbrc:gbrc@postgres:5432/gbrc
+      - GBRC_MINDROUTER_API_KEY=${GBRC_MINDROUTER_API_KEY}
+      - GBRC_MINDROUTER_MODEL=openai/gpt-oss-120b
+      - GBRC_MINDROUTER_OCR_MODEL=dots.OCR
     depends_on:
       postgres:
         condition: service_healthy

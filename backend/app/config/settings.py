@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     # MindRouter AI
     mindrouter_base_url: str = "https://mindrouter.uidaho.edu"
     mindrouter_api_key: str = ""
-    mindrouter_model: str = "Qwen/Qwen3-32B"
+    mindrouter_model: str = "openai/gpt-oss-120b"
+    mindrouter_ocr_model: str = "dots.OCR"
 
     model_config = {"env_prefix": "GBRC_", "env_file": ".env"}
 
