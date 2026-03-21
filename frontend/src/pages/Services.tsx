@@ -5,6 +5,7 @@ import {
   BarChart3,
   Microscope,
   ArrowRight,
+  ExternalLink,
 } from 'lucide-react'
 
 const serviceCategories = [
@@ -96,9 +97,20 @@ export default function Services() {
               </div>
               <div className="divide-y divide-neutral-100">
                 {category.services.map((service) => (
-                  <div key={service.name} className="p-6 hover:bg-neutral-50 transition-colors">
-                    <h3 className="font-semibold text-neutral-900">{service.name}</h3>
-                    <p className="text-neutral-600 text-sm mt-1">{service.detail}</p>
+                  <div key={service.name} className="p-6 hover:bg-neutral-50 transition-colors flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold text-neutral-900">{service.name}</h3>
+                      <p className="text-neutral-600 text-sm mt-1">{service.detail}</p>
+                    </div>
+                    <a
+                      href="https://my.ilabsolutions.com/service_center/3232/?tab=services"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-uidaho-gold hover:text-yellow-600 whitespace-nowrap no-underline shrink-0"
+                    >
+                      View Pricing
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
                   </div>
                 ))}
               </div>
@@ -118,7 +130,7 @@ export default function Services() {
             our iLab portal.
           </p>
           <a
-            href="https://my.ilabsolutions.com/service_center/show_external/3232/"
+            href="https://my.ilabsolutions.com/service_center/3232/?tab=services"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-lg font-semibold hover:bg-neutral-800 transition-colors no-underline"
