@@ -1,4 +1,4 @@
-import { Target, Award, Users, BookOpen } from 'lucide-react'
+import { Target, Award, Users, BookOpen, Mail, Phone, ExternalLink } from 'lucide-react'
 
 export default function About() {
   return (
@@ -77,15 +77,68 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team - placeholder for real content */}
+      {/* Team */}
       <section className="bg-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-8 text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-neutral-900 mb-10 text-center">
             Our Team
           </h2>
-          <p className="text-center text-neutral-500 italic">
-            Team member profiles coming soon. Contact us at the information below for
-            inquiries.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Sarah Hendricks */}
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+              <img src="https://www.iids.uidaho.edu/img/people/shendricks.jpg" alt="Sarah Hendricks" className="w-20 h-20 rounded-full object-cover mx-auto mb-4" />
+              <h3 className="font-semibold text-neutral-900 text-lg">Sarah Hendricks</h3>
+              <p className="text-uidaho-gold font-medium text-sm mb-4">Bioinformatic Data Scientist</p>
+              <div className="space-y-2 text-sm text-neutral-600">
+                <a href="mailto:shendricks@uidaho.edu" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <Mail className="h-4 w-4" />
+                  shendricks@uidaho.edu
+                </a>
+                <a href="https://sarahhendricks.weebly.com/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <ExternalLink className="h-4 w-4" />
+                  Personal Website
+                </a>
+              </div>
+            </div>
+
+            {/* Dan New */}
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+              <div className="w-20 h-20 bg-uidaho-gold rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-white">DN</span>
+              </div>
+              <h3 className="font-semibold text-neutral-900 text-lg">Dan New</h3>
+              <p className="text-uidaho-gold font-medium text-sm mb-4">Lab Manager</p>
+              <div className="space-y-2 text-sm text-neutral-600">
+                <a href="mailto:dnew@uidaho.edu" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <Mail className="h-4 w-4" />
+                  dnew@uidaho.edu
+                </a>
+                <a href="tel:208-885-7023" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <Phone className="h-4 w-4" />
+                  208-885-7023
+                </a>
+              </div>
+            </div>
+
+            {/* Austin Kobernuss */}
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+              <img src="https://www.iids.uidaho.edu/img/people/akobernuss.jpg" alt="Austin Kobernuss" className="w-20 h-20 rounded-full object-cover mx-auto mb-4" />
+              <h3 className="font-semibold text-neutral-900 text-lg">Austin Kobernuss</h3>
+              <p className="text-uidaho-gold font-medium text-sm mb-4">Lab Coordinator</p>
+              <div className="space-y-2 text-sm text-neutral-600">
+                <a href="mailto:akobernuss@uidaho.edu" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <Mail className="h-4 w-4" />
+                  akobernuss@uidaho.edu
+                </a>
+                <a href="tel:208-885-7023" className="flex items-center justify-center gap-2 hover:text-uidaho-gold transition-colors">
+                  <Phone className="h-4 w-4" />
+                  208-885-7023
+                </a>
+              </div>
+            </div>
+          </div>
+          <p className="text-center text-neutral-500 italic mt-10">
+            Steering Committee — coming soon.
           </p>
         </div>
       </section>
