@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -9,12 +9,15 @@ import {
   GraduationCap,
   CheckCircle2,
   PlayCircle,
+  Search,
+  X,
 } from 'lucide-react'
 import {
   learningPaths,
   type LearningPath,
   resources,
   type ResourceType,
+  type TrainingResource,
   workshops,
 } from '../data/training'
 
@@ -59,15 +62,17 @@ const audienceCards = [
 
 export default function Training() {
   const [selectedPathSlug, setSelectedPathSlug] = useState(learningPaths[0]?.slug ?? '')
+  const [resourceSearch, setResourceSearch] = useState('')
   const [resourceFilter, setResourceFilter] = useState<'All' | ResourceType>('All')
+  const [audienceFilter, setAudienceFilter] = useState('All')
+  const [topicFilter, setTopicFilter] = useState('All')
+  const deferredResourceSearch = useDeferredValue(resourceSearch)
   const selectedPath =
     learningPaths.find((path) => path.slug === selectedPathSlug) ?? learningPaths[0]
-  const filteredResources =
-    resourceFilter === 'All'
-      ? resources
-      : resources.filter((resource) => resource.type === resourceFilter)
-  const featuredWorkshop = workshops[0]
-  const upcomingWorkshops = workshops.slice(1)
+  const upcomingWorkshops = workshops.filter((workshop) => workshop.status === 'upcoming')
+  const archivedWorkshops = workshops.filter((workshop) => workshop.status === 'archived')
+  const featuredWorkshop = upcomingWorkshops[0]
+  const secondaryUpcomingWorkshops = upcomingWorkshops.slice(1)
   const resourceFilters: Array<'All' | ResourceType> = [
     'All',
     'Tutorial',
@@ -76,6 +81,32 @@ export default function Training() {
     'Template',
     'Guide',
   ]
+  const audienceFilters = ['All', ...new Set(resources.map((resource) => resource.audience))]
+  const topicFilters = ['All', ...new Set(resources.map((resource) => resource.topic))]
+  const resourcesBySlug = Object.fromEntries(
+    resources.map((resource) => [resource.slug, resource] as const)
+  )
+  const normalizedSearch = deferredResourceSearch.trim().toLowerCase()
+  const filteredResources = resources.filter((resource) => {
+    const matchesType = resourceFilter === 'All' || resource.type === resourceFilter
+    const matchesAudience =
+      audienceFilter === 'All' || resource.audience === audienceFilter
+    const matchesTopic = topicFilter === 'All' || resource.topic === topicFilter
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      [
+        resource.title,
+        resource.description,
+        resource.topic,
+        resource.audience,
+        resource.type,
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(normalizedSearch)
+
+    return matchesType && matchesAudience && matchesTopic && matchesSearch
+  })
 
   return (
     <>
@@ -137,8 +168,8 @@ export default function Training() {
               What This Center Will Include
             </h2>
             <p className="text-neutral-600 text-lg">
-              The first release focuses on a clear, curated content hub that can grow
-              into richer discovery, events, and learning experiences over time.
+              The first release focuses on clear, curated GBRC training content that can
+              grow into richer discovery, events, and learning experiences over time.
             </p>
           </div>
 
@@ -193,12 +224,11 @@ export default function Training() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-bold text-neutral-900 mb-3">
-              Starter Content
+              Current Training Content
             </h2>
             <p className="text-neutral-600 text-lg">
-              The Training Center now reads from a local content model so we can ship a
-              useful MVP first, then evolve it later into richer discovery and
-              integrations.
+              This release curates practical GBRC-specific learning content now, while
+              leaving room for richer discovery and integrations later.
             </p>
           </div>
 
@@ -244,13 +274,16 @@ export default function Training() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
                     {selectedPath.modules.map((module, index) => (
                       <div
-                        key={module}
+                        key={module.title}
                         className="rounded-2xl bg-white/5 border border-white/10 p-5"
                       >
                         <div className="text-xs uppercase tracking-wide text-neutral-400 mb-2">
                           Module {index + 1}
                         </div>
-                        <div className="font-medium text-white">{module}</div>
+                        <div className="font-medium text-white mb-4">{module.title}</div>
+                        <LearningModuleLink
+                          resource={resourcesBySlug[module.resourceSlug]}
+                        />
                       </div>
                     ))}
                   </div>
@@ -274,19 +307,19 @@ export default function Training() {
                 Upcoming Workshops
               </h3>
               <p className="text-neutral-600 max-w-3xl">
-                Starter workshop entries establish the content pattern for future live
-                offerings and integrations.
+                Workshop topics are framed around the real planning, submission, and data
+                interpretation moments where GBRC users most often need training.
               </p>
             </div>
-            {workshops.length === 0 ? (
+            {upcomingWorkshops.length === 0 ? (
               <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded-2xl p-8">
                 <div className="text-lg font-semibold text-neutral-900 mb-2">
-                  No workshops are listed yet.
+                  No upcoming workshops are listed right now.
                 </div>
                 <p className="text-neutral-600 mb-5 max-w-2xl">
-                  The Training Center is ready for workshop publishing. Until sessions are
-                  scheduled, users should contact GBRC directly to ask about training
-                  availability and recommended next steps.
+                  The Training Center can still guide users through archived sessions and
+                  current resources. For live training needs, contact GBRC directly about
+                  upcoming offerings and consultation options.
                 </p>
                 <Link
                   to="/contact"
@@ -310,6 +343,9 @@ export default function Training() {
                     <h4 className="text-3xl font-semibold mb-4">
                       {featuredWorkshop.title}
                     </h4>
+                    <p className="text-neutral-300 leading-relaxed mb-6 max-w-2xl">
+                      {featuredWorkshop.summary}
+                    </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                       <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
                         <div className="text-xs uppercase tracking-wide text-neutral-400 mb-1">
@@ -325,18 +361,18 @@ export default function Training() {
                       </div>
                     </div>
                     <Link
-                      to={featuredWorkshop.registrationUrl}
+                      to={featuredWorkshop.actionUrl}
                       className="inline-flex items-center gap-2 px-5 py-3 bg-uidaho-gold text-neutral-900 rounded-xl font-semibold no-underline hover:bg-uidaho-gold-dark transition-colors"
                     >
-                      {featuredWorkshop.registrationLabel}
+                      {featuredWorkshop.actionLabel}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 )}
 
                 <div className="space-y-4">
-                  {upcomingWorkshops.length > 0 ? (
-                    upcomingWorkshops.map((workshop) => (
+                  {secondaryUpcomingWorkshops.length > 0 ? (
+                    secondaryUpcomingWorkshops.map((workshop) => (
                       <div
                         key={workshop.slug}
                         className="bg-white border border-neutral-200 rounded-2xl p-5"
@@ -347,15 +383,16 @@ export default function Training() {
                         <h4 className="text-xl font-semibold text-neutral-900 mb-2">
                           {workshop.title}
                         </h4>
+                        <p className="text-sm text-neutral-600 mb-4">{workshop.summary}</p>
                         <div className="space-y-1 text-sm text-neutral-600 mb-4">
                           <div>Format: {workshop.format}</div>
                           <div>Audience: {workshop.audience}</div>
                         </div>
                         <Link
-                          to={workshop.registrationUrl}
+                          to={workshop.actionUrl}
                           className="inline-flex items-center gap-2 text-uidaho-gold-dark font-semibold no-underline hover:underline"
                         >
-                          {workshop.registrationLabel}
+                          {workshop.actionLabel}
                           <ChevronRight className="h-4 w-4" />
                         </Link>
                       </div>
@@ -374,6 +411,67 @@ export default function Training() {
                 </div>
               </div>
             )}
+
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <h4 className="text-xl font-semibold text-neutral-900 mb-1">
+                    Workshop Archive
+                  </h4>
+                  <p className="text-neutral-600">
+                    Past sessions and evergreen workshop topics users can still learn from
+                    while waiting for the next live offering.
+                  </p>
+                </div>
+                <div className="text-sm text-neutral-500">
+                  {archivedWorkshops.length} archived session
+                  {archivedWorkshops.length === 1 ? '' : 's'}
+                </div>
+              </div>
+
+              {archivedWorkshops.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {archivedWorkshops.map((workshop) => (
+                    <div
+                      key={workshop.slug}
+                      className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5"
+                    >
+                      <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-neutral-200 text-neutral-700 text-xs font-semibold uppercase tracking-wide mb-3">
+                        Archived
+                      </div>
+                      <div className="text-sm font-medium text-uidaho-gold mb-2">
+                        {workshop.dateLabel}
+                      </div>
+                      <h5 className="text-xl font-semibold text-neutral-900 mb-2">
+                        {workshop.title}
+                      </h5>
+                      <p className="text-sm text-neutral-600 mb-4">{workshop.summary}</p>
+                      <div className="space-y-1 text-sm text-neutral-600 mb-4">
+                        <div>Format: {workshop.format}</div>
+                        <div>Audience: {workshop.audience}</div>
+                      </div>
+                      <Link
+                        to={workshop.actionUrl}
+                        className="inline-flex items-center gap-2 text-uidaho-gold-dark font-semibold no-underline hover:underline"
+                      >
+                        {workshop.actionLabel}
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded-2xl p-6">
+                  <div className="font-semibold text-neutral-900 mb-2">
+                    No archived sessions yet
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    Once GBRC starts publishing workshop history, recordings and evergreen
+                    session summaries can live here for ongoing reuse.
+                  </p>
+                </div>
+              )}
+            </div>
           </section>
 
           <section className="space-y-5">
@@ -382,25 +480,73 @@ export default function Training() {
                 Resource Library
               </h3>
               <p className="text-neutral-600 max-w-3xl">
-                A starter library of tutorials, guides, videos, SOPs, and templates for
+                A curated library of tutorials, guides, videos, SOPs, and templates for
                 common GBRC learning needs.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {resourceFilters.map((filter) => (
+            <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5 lg:p-6 space-y-4">
+              <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+                <label className="relative block lg:w-[26rem]">
+                  <Search className="h-4 w-4 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={resourceSearch}
+                    onChange={(event) => setResourceSearch(event.target.value)}
+                    placeholder="Search resources by title, topic, audience, or description"
+                    className="w-full rounded-xl border border-neutral-200 bg-white pl-11 pr-11 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-uidaho-gold/40 focus:border-uidaho-gold/40"
+                  />
+                  {resourceSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setResourceSearch('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-700"
+                      aria-label="Clear resource search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </label>
+
                 <button
-                  key={filter}
                   type="button"
-                  onClick={() => setResourceFilter(filter)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    resourceFilter === filter
-                      ? 'bg-neutral-900 text-white'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
+                  onClick={() => {
+                    setResourceSearch('')
+                    setResourceFilter('All')
+                    setAudienceFilter('All')
+                    setTopicFilter('All')
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition-colors"
                 >
-                  {filter}
+                  Reset filters
                 </button>
-              ))}
+              </div>
+
+              <div className="space-y-3">
+                <FilterRow
+                  label="Type"
+                  options={resourceFilters}
+                  selected={resourceFilter}
+                  onSelect={(value) => setResourceFilter(value as 'All' | ResourceType)}
+                />
+                <FilterRow
+                  label="Audience"
+                  options={audienceFilters}
+                  selected={audienceFilter}
+                  onSelect={setAudienceFilter}
+                />
+                <FilterRow
+                  label="Topic"
+                  options={topicFilters}
+                  selected={topicFilter}
+                  onSelect={setTopicFilter}
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {resourceFilter !== 'All' && <ActiveFilterChip label={`Type: ${resourceFilter}`} />}
+              {audienceFilter !== 'All' && <ActiveFilterChip label={`Audience: ${audienceFilter}`} />}
+              {topicFilter !== 'All' && <ActiveFilterChip label={`Topic: ${topicFilter}`} />}
+              {normalizedSearch && <ActiveFilterChip label={`Search: ${resourceSearch}`} />}
             </div>
             <div className="text-sm text-neutral-500">
               Showing {filteredResources.length} resource
@@ -507,6 +653,80 @@ export default function Training() {
         </div>
       </section>
     </>
+  )
+}
+
+function LearningModuleLink({
+  resource,
+}: {
+  resource?: TrainingResource
+}) {
+  if (!resource) {
+    return <div className="text-sm text-neutral-400">Linked resource coming soon.</div>
+  }
+
+  return (
+    <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <span className="text-xs uppercase tracking-wide text-uidaho-gold">
+          {resource.type}
+        </span>
+        {resource.duration && (
+          <span className="text-xs text-neutral-400">{resource.duration}</span>
+        )}
+      </div>
+      <div className="font-medium text-white mb-1">{resource.title}</div>
+      <div className="text-sm text-neutral-300 mb-3">{resource.description}</div>
+      <Link
+        to={resource.linkUrl}
+        className="inline-flex items-center gap-2 text-uidaho-gold font-semibold no-underline hover:underline"
+      >
+        {resource.linkLabel}
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
+  )
+}
+
+function FilterRow({
+  label,
+  options,
+  selected,
+  onSelect,
+}: {
+  label: string
+  options: string[]
+  selected: string
+  onSelect: (value: string) => void
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="text-sm font-medium text-neutral-600 sm:w-20 shrink-0">{label}</div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onSelect(option)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selected === option
+                ? 'bg-neutral-900 text-white'
+                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ActiveFilterChip({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 text-sm font-medium">
+      {label}
+    </span>
   )
 }
 

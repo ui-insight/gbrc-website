@@ -1,4 +1,6 @@
-import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowRight, CheckCircle2, GraduationCap, BookOpen } from 'lucide-react'
+import { learningPaths, resources } from '../data/training'
 
 const steps = [
   {
@@ -42,6 +44,15 @@ const sampleGuidelines = [
   'Store samples at appropriate temperature during transport',
 ]
 
+const trainingPathSlugs = new Set(['new-to-gbrc', 'sample-preparation'])
+const resourceSlugs = new Set([
+  'new-user-onboarding-guide',
+  'sample-submission-guidelines',
+  'project-intake-guide',
+])
+const featuredTrainingPaths = learningPaths.filter((path) => trainingPathSlugs.has(path.slug))
+const featuredResources = resources.filter((resource) => resourceSlugs.has(resource.slug))
+
 export default function GettingStarted() {
   return (
     <>
@@ -78,6 +89,96 @@ export default function GettingStarted() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Training Handoff */}
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_0.95fr] gap-8 items-start">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-uidaho-gold/15 text-uidaho-gold-dark text-sm font-medium mb-5">
+                <GraduationCap className="h-4 w-4" />
+                Extend the onboarding flow
+              </div>
+              <h2 className="text-3xl font-bold text-neutral-900 mb-4">
+                Keep going with guided GBRC training paths.
+              </h2>
+              <p className="text-lg text-neutral-600 max-w-2xl mb-8">
+                Getting Started covers the first handoff steps. The Training Center helps
+                your team prepare samples, choose the right workflow, and decide when to
+                move into consultation or project intake.
+              </p>
+
+              <div className="space-y-4">
+                {featuredTrainingPaths.map((path) => (
+                  <div
+                    key={path.slug}
+                    className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5"
+                  >
+                    <div className="text-xs uppercase tracking-wide text-neutral-500 mb-2">
+                      {path.audience}
+                    </div>
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                      {path.title}
+                    </h3>
+                    <p className="text-neutral-600 leading-relaxed mb-3">{path.summary}</p>
+                    <p className="text-sm text-neutral-700">{path.nextStep}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-neutral-50 border border-neutral-200 rounded-3xl p-7">
+              <div className="inline-flex items-center gap-2 text-neutral-900 text-sm font-medium mb-4">
+                <BookOpen className="h-4 w-4 text-uidaho-gold-dark" />
+                Quick training links
+              </div>
+              <div className="space-y-4">
+                {featuredResources.map((resource) => (
+                  <div
+                    key={resource.slug}
+                    className="bg-white border border-neutral-200 rounded-2xl p-5"
+                  >
+                    <div className="flex flex-wrap items-center gap-2 mb-2 text-xs uppercase tracking-wide text-neutral-500">
+                      <span>{resource.type}</span>
+                      <span>{resource.topic}</span>
+                      <span>{resource.audience}</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                      {resource.title}
+                    </h3>
+                    <p className="text-neutral-600 text-sm leading-relaxed mb-4">
+                      {resource.description}
+                    </p>
+                    <Link
+                      to={resource.linkUrl}
+                      className="inline-flex items-center gap-2 text-uidaho-gold-dark font-semibold hover:underline no-underline"
+                    >
+                      {resource.linkLabel}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-4 mt-6">
+                <Link
+                  to="/training"
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-neutral-900 text-white rounded-lg font-semibold hover:bg-neutral-800 transition-colors no-underline"
+                >
+                  Open Training Center
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/project-intake"
+                  className="inline-flex items-center gap-2 px-5 py-3 border border-neutral-300 text-neutral-900 rounded-lg font-semibold hover:bg-white transition-colors no-underline"
+                >
+                  Start Project Intake
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

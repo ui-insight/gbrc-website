@@ -9,8 +9,14 @@ import {
   Microscope,
   Cpu,
   Workflow,
+  CalendarDays,
+  GraduationCap,
 } from 'lucide-react'
 import DnaHelix from '../components/DnaHelix'
+import { learningPaths, workshops } from '../data/training'
+
+const featuredTrainingPaths = learningPaths.slice(0, 3)
+const featuredWorkshop = workshops.find((workshop) => workshop.status === 'upcoming')
 
 export default function Home() {
   return (
@@ -138,6 +144,94 @@ export default function Home() {
               View full service catalog
               <ArrowRight className="h-4 w-4" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Training Center */}
+      <section className="bg-white py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-uidaho-gold/15 text-uidaho-gold-dark text-sm font-medium mb-5">
+                <GraduationCap className="h-4 w-4" />
+                Training & Learning Center
+              </div>
+              <h2 className="text-3xl font-bold text-neutral-900 mb-4">
+                Learn the GBRC workflow before your next project handoff.
+              </h2>
+              <p className="text-lg text-neutral-600 max-w-2xl mb-8">
+                Use guided paths for onboarding, sample readiness, sequencing strategy,
+                and data interpretation so your team can move into consultation or
+                submission with fewer surprises.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {featuredTrainingPaths.map((path) => (
+                  <div
+                    key={path.slug}
+                    className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5"
+                  >
+                    <div className="text-xs uppercase tracking-wide text-neutral-500 mb-2">
+                      {path.audience}
+                    </div>
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                      {path.title}
+                    </h3>
+                    <p className="text-sm text-neutral-600 leading-relaxed">
+                      {path.summary}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-neutral-900 text-white rounded-3xl p-7">
+              <div className="inline-flex items-center gap-2 text-uidaho-gold text-sm font-medium mb-4">
+                <CalendarDays className="h-4 w-4" />
+                Featured training moment
+              </div>
+              {featuredWorkshop ? (
+                <>
+                  <h3 className="text-2xl font-semibold mb-3">{featuredWorkshop.title}</h3>
+                  <p className="text-neutral-300 leading-relaxed mb-5">
+                    {featuredWorkshop.summary}
+                  </p>
+                  <div className="space-y-2 text-sm text-neutral-300 mb-6">
+                    <div>{featuredWorkshop.dateLabel}</div>
+                    <div>{featuredWorkshop.format}</div>
+                    <div>{featuredWorkshop.audience}</div>
+                  </div>
+                  <Link
+                    to={featuredWorkshop.actionUrl}
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-uidaho-gold text-neutral-900 rounded-lg font-semibold hover:bg-uidaho-gold-dark transition-colors no-underline"
+                  >
+                    {featuredWorkshop.actionLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-2xl font-semibold mb-3">
+                    No workshop is featured this week.
+                  </h3>
+                  <p className="text-neutral-300 leading-relaxed mb-6">
+                    The Training Center still includes guided paths and practical
+                    references you can use right away while the next live session is
+                    being scheduled.
+                  </p>
+                </>
+              )}
+              <div className="pt-6 mt-6 border-t border-white/10">
+                <Link
+                  to="/training"
+                  className="inline-flex items-center gap-2 text-white font-semibold hover:text-uidaho-gold transition-colors no-underline"
+                >
+                  Explore the Training Center
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
