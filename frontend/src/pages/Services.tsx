@@ -1,41 +1,49 @@
+import { useState } from 'react'
 import {
   Dna,
   FlaskConical,
-  Workflow,
   BarChart3,
   Microscope,
   ArrowRight,
+  ChevronDown,
+  ExternalLink,
 } from 'lucide-react'
+
+const ILAB_SERVICES_URL = 'https://my.ilabsolutions.com/service_center/3232/?tab=services'
 
 const serviceCategories = [
   {
+    icon: <Microscope className="h-7 w-7" />,
+    name: 'Sample Preparation',
+    description: 'DNA extraction, quality assessment, and sample processing.',
+    services: [
+      { name: 'Fragment Analysis', detail: 'Agilent and AATI fragment analysis for size and quality' },
+      { name: 'Nanodrop Quantification', detail: 'UV-Vis spectrophotometric measurement of nucleic acid concentration and purity' },
+      { name: 'Qubit Quantification', detail: 'Fluorometric quantification for accurate DNA and RNA concentration measurement' },
+      { name: 'Size Selection', detail: 'Blue Pippin and bead-based size selection' },
+      { name: 'DNA Isolation (time pending)', detail: 'High-quality genomic DNA extraction from diverse sample types' },
+    ],
+  },
+  {
     icon: <Dna className="h-7 w-7" />,
-    name: 'PacBio Sequencing',
-    description: 'Long-read sequencing on the PacBio platform for genome assembly, structural variants, and isoform analysis.',
+    name: 'Library Preparation',
+    description: 'Comprehensive library construction services for sequencing on multiple platforms.',
     services: [
       { name: 'PacBio Library Preparation', detail: 'SMRTbell library construction for HiFi and CLR sequencing' },
-      { name: 'PacBio SMRTcell Sequencing', detail: 'HiFi and CLR sequencing runs with real-time quality monitoring' },
-      { name: 'Iso-Seq Library Prep', detail: 'Full-length isoform sequencing for transcriptome characterization' },
+      { name: 'Whole Genome Library Preparation', detail: 'Comprehensive genomic DNA library construction for whole genome sequencing' },
+      { name: 'Targeted Library Preparation', detail: 'Enrichment-based library construction for targeted sequencing panels' },
+      { name: 'Amplicon Library Preparation', detail: 'PCR-based amplicon library construction for targeted regions' },
+      { name: 'RNA-seq Library Preparation', detail: 'mRNA and total RNA library construction with ribosomal depletion' },
+      { name: 'Oxford Nanopore Library Preparation', detail: 'Library construction for long-read nanopore sequencing' },
+      { name: 'Iso-Seq Library Preparation', detail: 'Full-length isoform sequencing for transcriptome characterization' },
     ],
   },
   {
     icon: <FlaskConical className="h-7 w-7" />,
-    name: 'Illumina Sequencing',
-    description: 'Short-read sequencing on NextSeq, MiSeq, and NovaSeq platforms for diverse genomic applications.',
+    name: 'Aviti Sequencing',
+    description: 'Short-read sequencing on the Aviti platform, fully compatible with Illumina libraries, for diverse genomic applications.',
     services: [
-      { name: 'DNA Library Preparation', detail: 'Whole genome, targeted, and amplicon library construction' },
-      { name: 'Illumina Sequencing Run', detail: 'Flexible run configurations across multiple platforms' },
-      { name: 'Genotyping', detail: 'SNP genotyping and amplicon-based variant detection' },
-    ],
-  },
-  {
-    icon: <Workflow className="h-7 w-7" />,
-    name: 'RNA Sequencing',
-    description: 'Transcriptome analysis from bulk RNA-seq to single-cell approaches.',
-    services: [
-      { name: 'RNA-seq Library Prep', detail: 'mRNA and total RNA library construction with ribosomal depletion' },
-      { name: 'Single-cell RNA-seq', detail: '10x Genomics Chromium workflows for single-cell transcriptomics' },
-      { name: 'Small RNA Sequencing', detail: 'miRNA and small RNA profiling' },
+      { name: 'Aviti Sequencing Run', detail: 'Flexible run configurations for high-throughput sequencing' },
     ],
   },
   {
@@ -43,25 +51,90 @@ const serviceCategories = [
     name: 'Bioinformatics',
     description: 'Computational analysis and custom consultation from QC to publication-ready figures.',
     services: [
-      { name: 'Standard Analysis', detail: 'Alignment, QC, differential expression, and variant calling' },
       { name: 'Custom Consultation', detail: 'Project-specific bioinformatics pipelines and analysis' },
-      { name: 'Training & Workshops', detail: 'Hands-on bioinformatics training for researchers' },
-    ],
-  },
-  {
-    icon: <Microscope className="h-7 w-7" />,
-    name: 'Sample Preparation',
-    description: 'DNA/RNA extraction, quality assessment, and sample processing.',
-    services: [
-      { name: 'DNA Isolation', detail: 'High-quality genomic DNA extraction from diverse sample types' },
-      { name: 'RNA Isolation', detail: 'Total RNA extraction with RIN quality assessment' },
-      { name: 'Fragment Analysis', detail: 'Agilent and AATI fragment analysis for size and quality' },
-      { name: 'Size Selection', detail: 'Blue Pippin and bead-based size selection' },
+      { name: 'Standard Analysis', detail: '• QC\n• Alignment\n• Variant calling\n• Differential expression' },
+      { name: 'Training', detail: 'Hands-on bioinformatics training for researchers' },
     ],
   },
 ]
 
+const libraryPrepDetails: Record<string, { description: string; faqs: { q: string; a: string }[] }> = {
+  'PacBio Library Preparation': {
+    description:
+      'SMRTbell libraries are constructed by ligating hairpin adapters to both ends of double-stranded DNA, creating a circular template that the PacBio polymerase reads continuously. This produces HiFi reads (>Q20 accuracy, typically 10–25 kb) ideal for de novo genome assembly, structural variant detection, and phasing. CLR (continuous long read) mode can generate reads exceeding 50 kb for ultra-long-range applications.',
+    faqs: [
+      { q: 'What is the recommended input amount?', a: 'HiFi libraries typically require 5–10 µg of high-molecular-weight (HMW) DNA with a mean fragment size >15 kb. Lower inputs may be possible but can reduce yield.' },
+      { q: 'What is the typical turnaround time?', a: 'Library preparation takes 1–2 days. Sequencing time depends on the number of SMRTcells and movie collection time (typically 24–30 hours per SMRTcell).' },
+      { q: 'What organisms or sample types work best?', a: 'Any organism with extractable HMW DNA. Common applications include plant, animal, and microbial genome assemblies.' },
+      { q: 'What is the difference between HiFi and CLR?', a: 'HiFi reads are generated by multiple passes around the circular template, yielding shorter but highly accurate reads (>Q20). CLR mode makes a single pass for maximum read length but lower per-read accuracy.' },
+    ],
+  },
+  'Whole Genome Library Preparation': {
+    description:
+      'Whole genome sequencing (WGS) libraries are constructed by fragmenting genomic DNA (mechanically or enzymatically), end-repairing, A-tailing, and ligating sequencing adapters. This unbiased approach captures the entire genome, enabling variant discovery, copy number analysis, and population genomics studies.',
+    faqs: [
+      { q: 'How much DNA do I need?', a: 'Standard protocols require 100 ng–1 µg of genomic DNA. Low-input protocols are available for samples as low as 1–10 ng, though library complexity may be reduced.' },
+      { q: 'What fragment sizes are produced?', a: 'Typical insert sizes range from 300–500 bp for short-read sequencing. Size can be adjusted based on the application and sequencing platform.' },
+      { q: 'What coverage do I need?', a: 'For variant calling in human/mammalian genomes, 30× is standard. For population studies or screening, 10–15× may be sufficient. For de novo assembly with short reads, 50–100× is often recommended.' },
+      { q: 'Can degraded or FFPE samples be used?', a: 'Yes, but highly degraded samples may yield shorter insert sizes and reduced library complexity. We can assess sample quality beforehand and recommend the best approach.' },
+    ],
+  },
+  'Targeted Library Preparation': {
+    description:
+      'Targeted sequencing libraries use hybridization capture (baits) or other enrichment strategies to selectively sequence specific genomic regions, such as exomes, custom gene panels, or regions of interest. This dramatically reduces sequencing costs while increasing depth of coverage in the target regions.',
+    faqs: [
+      { q: 'What enrichment platforms do you support?', a: 'We support major hybridization capture platforms including IDT xGen, Twist Bioscience, and Agilent SureSelect panels. Custom panel design consultation is available.' },
+      { q: 'What is the typical on-target rate?', a: 'On-target rates typically range from 60–80% depending on the panel design, with uniformity >90% across targeted regions.' },
+      { q: 'How much input DNA is required?', a: 'Most capture protocols require 50–200 ng of input DNA, though some newer protocols can work with as little as 10 ng.' },
+      { q: 'How is this different from amplicon sequencing?', a: 'Targeted capture uses hybridization probes to pull down regions of interest, providing more uniform coverage across targets. Amplicon sequencing uses PCR primers and is better suited for smaller, well-defined panels.' },
+    ],
+  },
+  'Amplicon Library Preparation': {
+    description:
+      'Amplicon libraries are generated by PCR amplification of specific target regions using locus-specific primers with sequencing adapter overhangs. This approach is highly cost-effective for genotyping, pathogen detection, metagenomics (e.g., 16S/ITS), and screening known variants across many samples.',
+    faqs: [
+      { q: 'What are common applications?', a: '16S/18S/ITS metabarcoding for microbiome studies, targeted variant screening panels, pathogen identification and surveillance, and environmental DNA (eDNA) surveys.' },
+      { q: 'How many samples can be multiplexed?', a: 'Hundreds of samples can be pooled per sequencing run using dual-indexed barcoding, making amplicon sequencing very cost-effective for large sample numbers.' },
+      { q: 'Can I use my own primers?', a: 'Yes. We can work with your existing primer sets or help design new ones. Primers should include adapter overhang sequences compatible with the sequencing platform.' },
+      { q: 'What input is required?', a: 'Input requirements are flexible — typically 1–50 ng of DNA or cDNA, depending on the target and primer efficiency. Amplicon approaches are well suited for low-input or degraded samples.' },
+    ],
+  },
+  'RNA-seq Library Preparation': {
+    description:
+      'RNA-seq library preparation converts RNA into sequencing-ready cDNA libraries. We offer mRNA enrichment (poly-A selection) for coding transcriptome analysis and total RNA protocols with ribosomal RNA depletion for capturing non-coding RNAs, pre-mRNAs, and degraded samples.',
+    faqs: [
+      { q: 'What is the minimum RNA input?', a: 'Standard mRNA-seq protocols require 100 ng–1 µg of total RNA with RIN ≥7. Low-input protocols are available for samples down to 1–10 ng.' },
+      { q: 'Should I choose mRNA-seq or total RNA-seq?', a: 'mRNA-seq (poly-A selection) is ideal for studying protein-coding gene expression. Total RNA-seq (rRNA depletion) captures non-coding RNAs, nascent transcripts, and works better with partially degraded samples (e.g., FFPE).' },
+      { q: 'Do you offer strand-specific libraries?', a: 'Yes. Our standard RNA-seq protocol is strand-specific (dUTP method), which preserves information about which DNA strand was the original template for transcription.' },
+      { q: 'What sequencing depth do I need?', a: 'For differential gene expression, 20–30 million reads per sample is typically sufficient. For transcript discovery or alternative splicing analysis, 50–100 million reads is recommended.' },
+    ],
+  },
+  'Oxford Nanopore Library Preparation': {
+    description:
+      'Oxford Nanopore library preparation prepares DNA or RNA for real-time, long-read sequencing on MinION, GridION, or PromethION platforms. Nanopore sequencing detects nucleotide bases as they pass through protein nanopores, enabling ultra-long reads (>100 kb possible), direct RNA sequencing, and real-time base modification detection without bisulfite conversion.',
+    faqs: [
+      { q: 'What read lengths can I expect?', a: 'Read length is primarily determined by input DNA fragment size. With careful HMW DNA extraction, N50 read lengths of 20–50 kb are common, with individual reads potentially exceeding 100 kb.' },
+      { q: 'Can I sequence RNA directly?', a: 'Yes. Oxford Nanopore offers direct RNA sequencing, which reads native RNA molecules without reverse transcription, preserving base modifications like m6A.' },
+      { q: 'What are the accuracy levels?', a: 'With the latest chemistry (Kit 14 / R10.4.1 flow cells) and super-accuracy basecalling, simplex read accuracy exceeds Q20 (99%). Duplex reads can reach Q30+ accuracy.' },
+      { q: 'How much DNA do I need?', a: 'Standard ligation protocols recommend 1–2 µg of DNA. Rapid prep kits can work with as little as 100 ng but with reduced throughput.' },
+    ],
+  },
+  'Iso-Seq Library Preparation': {
+    description:
+      'Iso-Seq (Isoform Sequencing) on the PacBio platform generates full-length transcript sequences without the need for assembly. cDNA is synthesized from poly-A selected mRNA, size-selected, and converted into SMRTbell libraries. Each read captures a complete transcript from 5\' cap to 3\' poly-A tail, enabling precise characterization of splice isoforms, gene fusions, and novel transcripts.',
+    faqs: [
+      { q: 'How is this different from short-read RNA-seq?', a: 'Short-read RNA-seq fragments transcripts and computationally reconstructs isoforms, which can miss rare or complex splice variants. Iso-Seq reads span full-length transcripts, directly resolving isoform structure without assembly.' },
+      { q: 'What input RNA is required?', a: 'Iso-Seq typically requires 300 ng–1 µg of high-quality total RNA (RIN ≥7) for cDNA synthesis. Higher input may be needed for low-expression tissues.' },
+      { q: 'What organisms is this suited for?', a: 'Iso-Seq is valuable for any eukaryotic organism, particularly those with incomplete or complex genome annotations. It is widely used in plants, animals, fungi, and human disease research.' },
+      { q: 'Can Iso-Seq detect novel genes and isoforms?', a: 'Yes. Iso-Seq excels at discovering novel isoforms, alternative splicing events, novel genes, and gene fusions that are difficult to detect with short-read approaches.' },
+    ],
+  },
+}
+
 export default function Services() {
+  const [aviti24Open, setAviti24Open] = useState(false)
+  const [openLibPreps, setOpenLibPreps] = useState<Record<string, boolean>>({})
+
   return (
     <>
       {/* Header */}
@@ -95,13 +168,214 @@ export default function Services() {
                 </div>
               </div>
               <div className="divide-y divide-neutral-100">
-                {category.services.map((service) => (
-                  <div key={service.name} className="p-6 hover:bg-neutral-50 transition-colors">
-                    <h3 className="font-semibold text-neutral-900">{service.name}</h3>
-                    <p className="text-neutral-600 text-sm mt-1">{service.detail}</p>
-                  </div>
-                ))}
+                {category.services.map((service) => {
+                  const libDetail = category.name === 'Library Preparation' ? libraryPrepDetails[service.name] : null
+                  const isOpen = openLibPreps[service.name] ?? false
+
+                  return (
+                    <div key={service.name}>
+                      {libDetail ? (
+                        <>
+                          <button
+                            onClick={() =>
+                              setOpenLibPreps((prev) => ({ ...prev, [service.name]: !prev[service.name] }))
+                            }
+                            className="w-full flex items-center justify-between p-6 hover:bg-neutral-50 transition-colors text-left"
+                          >
+                            <div>
+                              <h3 className="font-semibold text-neutral-900">{service.name}</h3>
+                              <p className="text-neutral-600 text-sm mt-1">{service.detail}</p>
+                              <a
+                                href={ILAB_SERVICES_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-sm font-medium text-uidaho-gold hover:text-yellow-600 mt-3 no-underline"
+                                onClick={(event) => event.stopPropagation()}
+                              >
+                                View Pricing
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </div>
+                            <ChevronDown
+                              className={`h-4 w-4 text-neutral-400 shrink-0 ml-4 transition-transform ${
+                                isOpen ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+                          {isOpen && (
+                            <div className="px-6 pb-6 space-y-4 text-sm text-neutral-700">
+                              <p>{libDetail.description}</p>
+                              <div>
+                                <h4 className="font-semibold text-neutral-900 mb-2">Frequently Asked Questions</h4>
+                                <dl className="space-y-3">
+                                  {libDetail.faqs.map((faq) => (
+                                    <div key={faq.q}>
+                                      <dt className="font-medium text-neutral-900">{faq.q}</dt>
+                                      <dd className="text-neutral-600 mt-0.5">{faq.a}</dd>
+                                    </div>
+                                  ))}
+                                </dl>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="p-6 hover:bg-neutral-50 transition-colors">
+                          <h3 className="font-semibold text-neutral-900">{service.name}</h3>
+                          <p className="text-neutral-600 text-sm mt-1 whitespace-pre-line">{service.detail}</p>
+                          <a
+                            href={ILAB_SERVICES_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-uidaho-gold hover:text-yellow-600 mt-3 no-underline"
+                          >
+                            View Pricing
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
+
+              {/* AVITI24 Dropdown */}
+              {category.name === 'Aviti Sequencing' && (
+                <div className="border-t border-neutral-200">
+                  <button
+                    onClick={() => setAviti24Open(!aviti24Open)}
+                    className="w-full flex items-center justify-between p-6 bg-neutral-50 hover:bg-neutral-100 transition-colors text-left"
+                  >
+                    <div>
+                      <h3 className="font-semibold text-neutral-900">
+                        About the Element AVITI24
+                      </h3>
+                      <p className="text-neutral-600 text-sm mt-1">
+                        Platform specifications, throughput, and capabilities
+                      </p>
+                    </div>
+                    <ChevronDown
+                      className={`h-5 w-5 text-neutral-500 transition-transform ${
+                        aviti24Open ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {aviti24Open && (
+                    <div className="p-6 bg-white space-y-6 text-sm text-neutral-700">
+                      <p>
+                        The GBRC operates the <strong>Element AVITI24</strong>, a next-generation
+                        benchtop sequencer that delivers high-throughput, high-accuracy short-read
+                        sequencing fully compatible with standard Illumina libraries.
+                      </p>
+
+                      <p>
+                        The AVITI24 is the first and only <strong>5D multiomics platform</strong>,
+                        uniquely capable of performing both next-generation sequencing and in situ
+                        spatial biology on a single instrument. Using Element's
+                        {' '}<strong>Teton CytoProfiling</strong> workflow, researchers can simultaneously
+                        detect RNA transcripts, protein markers, and tissue morphology directly in
+                        intact tissue sections — all on the same flow cell. This enables spatially
+                        resolved, multi-analyte profiling that connects gene expression and protein
+                        abundance to their precise locations within complex tissues, providing
+                        biological context that bulk or single-cell approaches alone cannot capture.
+                        The dual flow cell design allows a spatial multiomics run and a standard
+                        sequencing run to proceed concurrently, maximizing instrument utilization.
+                      </p>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Sequencing Kits &amp; Output</h4>
+                        <p className="mb-2">
+                          Cloudbreak sequencing kits are available in three output levels per flow cell,
+                          with flexible read lengths to match any experimental scale:
+                        </p>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border border-neutral-200 rounded-lg overflow-hidden">
+                            <thead className="bg-neutral-100">
+                              <tr>
+                                <th className="px-4 py-2 font-semibold text-neutral-900">Output Level</th>
+                                <th className="px-4 py-2 font-semibold text-neutral-900">Reads / Flow Cell</th>
+                                <th className="px-4 py-2 font-semibold text-neutral-900">Read Lengths</th>
+                                <th className="px-4 py-2 font-semibold text-neutral-900">Est. Run Time</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100">
+                              <tr>
+                                <td className="px-4 py-2">High Output</td>
+                                <td className="px-4 py-2"><strong>1.5 B</strong></td>
+                                <td className="px-4 py-2">2×75, 2×150, 2×300</td>
+                                <td className="px-4 py-2">24–60 hrs</td>
+                              </tr>
+                              <tr>
+                                <td className="px-4 py-2">Medium Output</td>
+                                <td className="px-4 py-2"><strong>750 M</strong></td>
+                                <td className="px-4 py-2">2×75, 2×150, 2×300</td>
+                                <td className="px-4 py-2">24–60 hrs</td>
+                              </tr>
+                              <tr>
+                                <td className="px-4 py-2">Low Output</td>
+                                <td className="px-4 py-2"><strong>375 M</strong></td>
+                                <td className="px-4 py-2">2×75, 2×150, 2×300</td>
+                                <td className="px-4 py-2">24–60 hrs</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <p className="mt-2 text-xs text-neutral-500">
+                          Dual flow cells run independently — combine any two output levels in a single run
+                          for up to 3 B total reads. AVITI OS v3.4+ boosts output ~50%.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Throughput &amp; Capacity</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Up to <strong>3 billion reads</strong> per run across dual flow cells</li>
+                          <li>Up to <strong>1.5 billion reads per flow cell</strong></li>
+                          <li>Dual independent flow cells with flexible, asynchronous start times for maximum lab efficiency</li>
+                          <li>AVITI OS v3.4+ delivers ~50% increased sequencing output</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Read Length &amp; Flexibility</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Flexible read lengths from <strong>2×75 bp</strong> up to <strong>2×300 bp</strong></li>
+                          <li>Dual index and UMI support on all configurations</li>
+                          <li>Two 2×150 runs with indexing generate up to 600 GB and 2 billion reads in ~38 hours</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Data Quality</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Industry-leading accuracy: <strong>≥90% of bases at Q40</strong> and <strong>≥70% at Q50</strong> with Cloudbreak UltraQ chemistry</li>
+                          <li>Onboard image processing system delivers real-time, publication-ready data quality</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Illumina Compatibility</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Fully compatible with standard Illumina library preparations — no protocol changes required</li>
+                          <li>Run existing Illumina libraries directly on the AVITI24 with equivalent or better results</li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-neutral-900 mb-2">Applications</h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Whole genome sequencing</li>
+                          <li>Targeted and amplicon sequencing</li>
+                          <li>RNA-seq and gene expression profiling</li>
+                          <li>Single-cell sequencing (10x Genomics compatible)</li>
+                          <li>Metagenomics and microbiome studies</li>
+                          <li>Spatial multiomics (RNA, protein, and morphology co-detection)</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -118,7 +392,7 @@ export default function Services() {
             our iLab portal.
           </p>
           <a
-            href="https://my.ilabsolutions.com/service_center/show_external/3232/"
+            href={ILAB_SERVICES_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-lg font-semibold hover:bg-neutral-800 transition-colors no-underline"
