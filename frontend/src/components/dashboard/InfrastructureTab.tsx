@@ -19,7 +19,7 @@ interface Props {
   loading: boolean
 }
 
-export default function InfrastructureTab({ equipment, crcUsers, equipmentEnriched, crcGrowth, loading }: Props) {
+export default function InfrastructureTab({ equipment, crcUsers, equipmentEnriched, crcGrowth }: Props) {
   return (
     <div className="space-y-6">
       {/* Equipment Monthly Trend */}

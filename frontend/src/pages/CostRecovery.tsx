@@ -138,8 +138,6 @@ function DashboardContent({ token }: { token: string }) {
         const fySummary = overviewFY === 'total' ? summary : (summary.by_fy?.[overviewFY] ?? summary)
         const fyPIs = piBreakdownByFY[overviewFY] ?? piBreakdown
         const fyColleges = collegeBreakdownByFY[overviewFY] ?? collegeBreakdown
-        const fySvcs = servicesByFY[overviewFY] ?? services
-
         return (
         <div className="space-y-8">
           {/* Fiscal Year Selector */}

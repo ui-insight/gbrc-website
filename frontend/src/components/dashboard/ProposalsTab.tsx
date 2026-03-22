@@ -221,9 +221,7 @@ export default function ProposalsTab({ portfolio, checkboxes, sponsors, loading 
                     <Cell key={i} fill={SPONSOR_CAT_COLORS[i % SPONSOR_CAT_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: number, name: string, props: { payload: { category: string } }) =>
-                  [`${value} proposals`, props.payload.category]
-                } />
+                <Tooltip formatter={(value: number) => `${value} proposals`} />
               </PieChart>
             </ResponsiveContainer>
           </ChartCard>
