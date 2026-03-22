@@ -7,6 +7,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import CostRecovery from './pages/CostRecovery'
 import ProjectIntake from './pages/ProjectIntake'
+import Training from './pages/Training'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/cost-recovery" element={<CostRecovery />} />
           <Route path="/project-intake" element={<ProjectIntake />} />
+          <Route path="/training" element={<Training />} />
         </Route>
       </Routes>
     </BrowserRouter>
