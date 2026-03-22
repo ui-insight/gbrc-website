@@ -6,7 +6,10 @@ import {
   Microscope,
   ArrowRight,
   ChevronDown,
+  ExternalLink,
 } from 'lucide-react'
+
+const ILAB_SERVICES_URL = 'https://my.ilabsolutions.com/service_center/3232/?tab=services'
 
 const serviceCategories = [
   {
@@ -182,6 +185,16 @@ export default function Services() {
                             <div>
                               <h3 className="font-semibold text-neutral-900">{service.name}</h3>
                               <p className="text-neutral-600 text-sm mt-1">{service.detail}</p>
+                              <a
+                                href={ILAB_SERVICES_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-sm font-medium text-uidaho-gold hover:text-yellow-600 mt-3 no-underline"
+                                onClick={(event) => event.stopPropagation()}
+                              >
+                                View Pricing
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
                             </div>
                             <ChevronDown
                               className={`h-4 w-4 text-neutral-400 shrink-0 ml-4 transition-transform ${
@@ -210,6 +223,15 @@ export default function Services() {
                         <div className="p-6 hover:bg-neutral-50 transition-colors">
                           <h3 className="font-semibold text-neutral-900">{service.name}</h3>
                           <p className="text-neutral-600 text-sm mt-1 whitespace-pre-line">{service.detail}</p>
+                          <a
+                            href={ILAB_SERVICES_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-uidaho-gold hover:text-yellow-600 mt-3 no-underline"
+                          >
+                            View Pricing
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
                         </div>
                       )}
                     </div>
@@ -370,7 +392,7 @@ export default function Services() {
             our iLab portal.
           </p>
           <a
-            href="https://my.ilabsolutions.com/service_center/show_external/3232/"
+            href={ILAB_SERVICES_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-lg font-semibold hover:bg-neutral-800 transition-colors no-underline"
