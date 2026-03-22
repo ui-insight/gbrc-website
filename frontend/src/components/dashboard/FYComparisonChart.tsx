@@ -22,7 +22,7 @@ export default function FYComparisonChart({ data }: FYComparisonChartProps) {
   return (
     <ChartCard
       title="Fiscal Year Comparison"
-      subtitle="IIDS-affiliated vs non-affiliated revenue by fiscal year"
+      subtitle="IIDS affiliated grants vs non IIDS affiliated grants revenue by fiscal year"
     >
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ left: 10, right: 30, top: 20, bottom: 5 }}>
@@ -33,7 +33,7 @@ export default function FYComparisonChart({ data }: FYComparisonChartProps) {
             formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
           />
           <Legend />
-          <Bar dataKey="iids_revenue" name="IIDS Revenue" fill="#f1b300">
+          <Bar dataKey="iids_revenue" name="IIDS Checkbox Revenue" fill="#f1b300">
             <LabelList
               dataKey="iids_percentage"
               position="top"
@@ -41,7 +41,7 @@ export default function FYComparisonChart({ data }: FYComparisonChartProps) {
               style={{ fontSize: 12, fontWeight: 'bold', fill: '#16a34a' }}
             />
           </Bar>
-          <Bar dataKey="non_iids_revenue" name="Non-IIDS Revenue" fill="#a3a3a3" />
+          <Bar dataKey="non_iids_revenue" name="Non-Checkbox Revenue" fill="#a3a3a3" />
         </BarChart>
       </ResponsiveContainer>
     </ChartCard>

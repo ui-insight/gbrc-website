@@ -1,15 +1,39 @@
 import { useState, useRef } from 'react'
-import { useDashboardAuth, useDashboardData } from '../hooks/useDashboardData'
+import {
+  useDashboardAuth,
+  useDashboardData,
+  useRevenueSourcesData,
+  useProposalPortfolioData,
+  useCheckboxAnalysisData,
+  useSponsorAnalysisData,
+  useDepartmentInsightsData,
+  useCrossLinkageData,
+  useEquipmentEnrichedData,
+  useCRCGrowthData,
+} from '../hooks/useDashboardData'
+import type { DashboardTab } from '../types/dashboard'
 import DashboardAuth from '../components/dashboard/DashboardAuth'
 import StatCard from '../components/dashboard/StatCard'
-import PIBarChart from '../components/dashboard/PIBarChart'
+import CollegeBarChart from '../components/dashboard/CollegeBarChart'
 import TrendChart from '../components/dashboard/TrendChart'
 import FYComparisonChart from '../components/dashboard/FYComparisonChart'
-import ServicePieChart from '../components/dashboard/ServicePieChart'
-import CRCGrowthChart from '../components/dashboard/CRCGrowthChart'
 import PIDetailTable from '../components/dashboard/PIDetailTable'
+import ServicesTab from '../components/dashboard/ServicesTab'
 import PIdrilldownPanel from '../components/dashboard/PIdrilldownPanel'
 import DataInspector from '../components/dashboard/DataInspector'
+import RevenueSourcesTab from '../components/dashboard/RevenueSourcesTab'
+import ProposalsTab from '../components/dashboard/ProposalsTab'
+import DepartmentsTab from '../components/dashboard/DepartmentsTab'
+import InfrastructureTab from '../components/dashboard/InfrastructureTab'
+
+const TABS: { id: DashboardTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'revenue', label: 'Revenue Sources' },
+  { id: 'services', label: 'Services' },
+  { id: 'proposals', label: 'Proposals' },
+  { id: 'departments', label: 'Departments' },
+  { id: 'infrastructure', label: 'Infrastructure' },
+]
 
 function formatCurrency(value: number): string {
   if (value >= 1000) {
@@ -18,10 +42,43 @@ function formatCurrency(value: number): string {
   return `$${value.toLocaleString()}`
 }
 
+function FYSelector({ available, selected, onChange }: { available: string[]; selected: string; onChange: (fy: string) => void }) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-sm font-medium text-neutral-500">Fiscal Year:</span>
+      {available.map((fy) => (
+        <button
+          key={fy}
+          onClick={() => onChange(fy)}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            selected === fy
+              ? 'bg-amber-500 text-white'
+              : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+          }`}
+        >
+          {fy === 'total' ? 'All Years' : fy}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function DashboardContent({ token }: { token: string }) {
-  const { summary, piBreakdown, trends, services, crcUsers, equipment, loading, error } = useDashboardData(token, true)
+  const { summary, piBreakdown, piBreakdownByFY, collegeBreakdown, collegeBreakdownByFY, trends, services, servicesByFY, crcUsers, equipment, availableFYs, loading, error } = useDashboardData(token, true)
   const [selectedPI, setSelectedPI] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
+  const [overviewFY, setOverviewFY] = useState<string>('total')
   const drilldownRef = useRef<HTMLDivElement>(null)
+
+  // Lazy-loaded tab data
+  const revenueSources = useRevenueSourcesData(token, true, activeTab === 'revenue')
+  const proposalPortfolio = useProposalPortfolioData(token, true, activeTab === 'proposals')
+  const checkboxAnalysis = useCheckboxAnalysisData(token, true, activeTab === 'proposals')
+  const sponsorAnalysis = useSponsorAnalysisData(token, true, activeTab === 'proposals')
+  const departmentInsights = useDepartmentInsightsData(token, true, activeTab === 'departments')
+  const crossLinkage = useCrossLinkageData(token, true, activeTab === 'departments')
+  const equipmentEnriched = useEquipmentEnrichedData(token, true, activeTab === 'infrastructure')
+  const crcGrowth = useCRCGrowthData(token, true, activeTab === 'infrastructure')
 
   const handlePIClick = (piEmail: string) => {
     setSelectedPI((prev) => (prev === piEmail ? null : piEmail))
@@ -47,104 +104,155 @@ function DashboardContent({ token }: { token: string }) {
   if (!summary) return null
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-neutral-900">IIDS Cost Recovery Dashboard</h1>
         <p className="mt-2 text-neutral-600">
-          Analysis of GBRC infrastructure usage and IIDS affiliation ("checkbox") compliance.
+          Analysis of GBRC infrastructure usage, IIDS checkbox compliance, revenue sources, and proposal analytics.
           Data covers FY2023 through partial FY2025.
         </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Total Revenue"
-          value={formatCurrency(summary.total_revenue)}
-          subtitle={`${summary.total_charges} total charges`}
-          highlight="default"
-        />
-        <StatCard
-          label="IIDS-Affiliated Revenue"
-          value={formatCurrency(summary.iids_revenue)}
-          subtitle={`${summary.iids_charges} affiliated charges`}
-          highlight="gold"
-        />
-        <StatCard
-          label="Recovery Gap"
-          value={formatCurrency(summary.non_iids_revenue)}
-          subtitle="Revenue from non-affiliated grants"
-          highlight="red"
-        />
-        <StatCard
-          label="IIDS Affiliation Rate"
-          value={`${summary.iids_percentage}%`}
-          subtitle={`${summary.pis_with_zero_affiliation} of ${summary.unique_pis} PIs at 0%`}
-          highlight={summary.iids_percentage < 20 ? 'red' : summary.iids_percentage < 50 ? 'gold' : 'green'}
-        />
+      {/* Tab Bar */}
+      <div className="border-b border-neutral-200">
+        <nav className="-mb-px flex space-x-1 overflow-x-auto" aria-label="Dashboard tabs">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-amber-500 text-amber-600'
+                  : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
-      {/* PI Revenue Gap */}
-      <PIBarChart data={piBreakdown} onPIClick={handlePIClick} selectedPI={selectedPI} />
+      {/* Tab Content */}
+      {activeTab === 'overview' && (() => {
+        const fySummary = overviewFY === 'total' ? summary : (summary.by_fy?.[overviewFY] ?? summary)
+        const fyPIs = piBreakdownByFY[overviewFY] ?? piBreakdown
+        const fyColleges = collegeBreakdownByFY[overviewFY] ?? collegeBreakdown
+        return (
+        <div className="space-y-8">
+          {/* Fiscal Year Selector */}
+          <FYSelector available={availableFYs} selected={overviewFY} onChange={setOverviewFY} />
 
-      {/* PI Drill-down Panel */}
-      {selectedPI && (
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              label="Total Revenue"
+              value={formatCurrency(fySummary.total_revenue)}
+              subtitle={`${fySummary.total_charges} total charges`}
+              highlight="default"
+            />
+            <StatCard
+              label="IIDS Checkbox Rate"
+              value={`${fySummary.iids_percentage}%`}
+              subtitle={`${fySummary.pis_with_zero_affiliation} of ${fySummary.unique_pis} PIs at 0%`}
+              highlight={fySummary.iids_percentage < 20 ? 'red' : fySummary.iids_percentage < 50 ? 'gold' : 'green'}
+            />
+            <StatCard
+              label="IIDS Checkbox Revenue"
+              value={formatCurrency(fySummary.iids_revenue)}
+              subtitle={`${fySummary.iids_charges} affiliated charges`}
+              highlight="gold"
+            />
+            <StatCard
+              label="Recovery Gap"
+              value={formatCurrency(fySummary.non_iids_revenue)}
+              subtitle="Revenue from non IIDS affiliated grants"
+              highlight="red"
+            />
+          </div>
+
+          {/* College Revenue Breakdown */}
+          <CollegeBarChart data={fyColleges} />
+
+          {/* PI Drill-down Panel */}
+          {selectedPI && (
+            <div ref={drilldownRef}>
+              <PIdrilldownPanel
+                piEmail={selectedPI}
+                token={token}
+                onClose={() => setSelectedPI(null)}
+              />
+            </div>
+          )}
+
+          {/* Trends (always show all years — these are time-based charts) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {trends && <TrendChart data={trends.monthly} />}
+            {trends && <FYComparisonChart data={trends.fiscal_years} />}
+          </div>
+
+          {/* PI Detail Table */}
+          <PIDetailTable data={fyPIs} onPIClick={handlePIClick} selectedPI={selectedPI} />
+
+          {/* Data Inspector */}
+          <DataInspector token={token} />
+        </div>
+        )
+      })()}
+
+      {activeTab === 'revenue' && (
+        revenueSources.loading
+          ? <div className="text-center py-12 text-neutral-500">Loading revenue sources...</div>
+          : revenueSources.data
+            ? <RevenueSourcesTab data={revenueSources.data} onPIClick={handlePIClick} />
+            : revenueSources.error
+              ? <div className="text-center py-12 text-red-600">Error: {revenueSources.error}</div>
+              : null
+      )}
+
+      {activeTab === 'services' && (
+        <ServicesTab
+          services={services}
+          servicesByFY={servicesByFY}
+          availableFYs={availableFYs}
+        />
+      )}
+
+      {activeTab === 'proposals' && (
+        <ProposalsTab
+          portfolio={proposalPortfolio.data}
+          checkboxes={checkboxAnalysis.data}
+          sponsors={sponsorAnalysis.data}
+          loading={proposalPortfolio.loading || checkboxAnalysis.loading || sponsorAnalysis.loading}
+        />
+      )}
+
+      {activeTab === 'departments' && (
+        <DepartmentsTab
+          insights={departmentInsights.data}
+          crossLinkage={crossLinkage.data}
+          loading={departmentInsights.loading || crossLinkage.loading}
+        />
+      )}
+
+      {activeTab === 'infrastructure' && (
+        <InfrastructureTab
+          equipment={equipment}
+          crcUsers={crcUsers}
+          equipmentEnriched={equipmentEnriched.data}
+          crcGrowth={crcGrowth.data}
+          loading={equipmentEnriched.loading || crcGrowth.loading}
+        />
+      )}
+
+      {/* PI Drill-down Panel (available from any tab) */}
+      {selectedPI && activeTab !== 'overview' && (
         <div ref={drilldownRef}>
           <PIdrilldownPanel
             piEmail={selectedPI}
             token={token}
             onClose={() => setSelectedPI(null)}
           />
-        </div>
-      )}
-
-      {/* Trends */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {trends && <TrendChart data={trends.monthly} />}
-        {trends && <FYComparisonChart data={trends.fiscal_years} />}
-      </div>
-
-      {/* Services and CRC */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ServicePieChart data={services} />
-        </div>
-        <CRCGrowthChart data={crcUsers} />
-      </div>
-
-      {/* PI Detail Table */}
-      <PIDetailTable data={piBreakdown} onPIClick={handlePIClick} selectedPI={selectedPI} />
-
-      {/* Data Inspector */}
-      <DataInspector token={token} />
-
-      {/* Equipment Usage */}
-      {equipment.length > 0 && (
-        <div className="bg-white rounded-lg border border-neutral-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-neutral-900 mb-4">Equipment Usage</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 text-left">
-                  <th className="py-2 text-neutral-500 font-medium">Equipment</th>
-                  <th className="py-2 text-neutral-500 font-medium text-right">Total Hours</th>
-                  <th className="py-2 text-neutral-500 font-medium text-right">Reservations</th>
-                  <th className="py-2 text-neutral-500 font-medium text-right">Unique Users</th>
-                </tr>
-              </thead>
-              <tbody>
-                {equipment.map((eq) => (
-                  <tr key={eq.equipment} className="border-b border-neutral-100">
-                    <td className="py-2 text-neutral-900">{eq.equipment}</td>
-                    <td className="py-2 text-right text-neutral-900">{eq.total_hours.toLocaleString()}</td>
-                    <td className="py-2 text-right text-neutral-600">{eq.reservation_count}</td>
-                    <td className="py-2 text-right text-neutral-600">{eq.unique_users}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       )}
     </div>

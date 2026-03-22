@@ -60,7 +60,7 @@ export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailT
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search by PI name, department, or email..."
+          placeholder="Search by PI name, college, or email..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="w-full max-w-md px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f1b300] focus:border-transparent text-sm"
@@ -71,9 +71,9 @@ export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailT
           <thead>
             <tr className="border-b border-neutral-200 text-left">
               <SortHeader label="PI Name" field="pi_name" />
-              <SortHeader label="Department" field="department" />
+              <SortHeader label="College" field="department" />
               <SortHeader label="Total Revenue" field="total_revenue" />
-              <SortHeader label="IIDS Revenue" field="iids_revenue" />
+              <SortHeader label="IIDS Checkbox Revenue" field="iids_revenue" />
               <SortHeader label="Gap" field="non_iids_revenue" />
               <SortHeader label="IIDS %" field="iids_percentage" />
               <SortHeader label="Charges" field="charge_count" />

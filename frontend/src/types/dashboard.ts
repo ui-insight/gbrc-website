@@ -7,6 +7,33 @@ export interface DashboardSummary {
   iids_charges: number
   unique_pis: number
   pis_with_zero_affiliation: number
+  available_fiscal_years?: string[]
+  by_fy?: Record<string, DashboardSummary>
+}
+
+export interface CollegeSummary {
+  college: string
+  college_display: string
+  total_revenue: number
+  iids_revenue: number
+  non_iids_revenue: number
+  iids_percentage: number
+  charge_count: number
+  unique_pis: number
+}
+
+export interface PIBreakdownResponse {
+  pis: PIBreakdown[]
+  colleges: CollegeSummary[]
+  available_fiscal_years: string[]
+  by_fy: Record<string, PIBreakdown[]>
+  colleges_by_fy: Record<string, CollegeSummary[]>
+}
+
+export interface ServicesResponse {
+  services: ServiceCategory[]
+  available_fiscal_years: string[]
+  by_fy: Record<string, ServiceCategory[]>
 }
 
 export interface PIBreakdown {
@@ -119,3 +146,205 @@ export interface DashboardData {
   loading: boolean
   error: string | null
 }
+
+// --- Revenue Sources ---
+
+export interface PIInCollege {
+  pi_name: string
+  pi_email: string
+  revenue: number
+  iids_revenue: number
+  iids_percentage: number
+  charge_count: number
+}
+
+export interface CollegeBreakdown {
+  college: string
+  college_display?: string
+  revenue: number
+  iids_revenue: number
+  iids_percentage: number
+  charge_count: number
+  pis: PIInCollege[]
+}
+
+export interface RevenueBySourceFY {
+  fiscal_year: string
+  internal: number
+  external: number
+  corporate: number
+  total: number
+}
+
+export interface SourceSummary {
+  internal: number
+  external: number
+  corporate: number
+}
+
+export interface RevenueSourcesData {
+  fiscal_years: RevenueBySourceFY[]
+  source_summary: SourceSummary
+  internal_by_college: CollegeBreakdown[]
+  internal_by_college_by_fy: Record<string, CollegeBreakdown[]>
+  external_by_college: CollegeBreakdown[]
+  external_by_college_by_fy: Record<string, CollegeBreakdown[]>
+  available_fiscal_years: string[]
+}
+
+// --- Proposal Portfolio ---
+
+export interface ProposalFYItem {
+  fiscal_year: string
+  submitted: number
+  awarded: number
+  declined: number
+  pending: number
+  other: number
+  total_awarded_cost: number
+}
+
+export interface AgreementTypeItem {
+  agreement_type: string
+  count: number
+  awarded_count: number
+  awarded_cost: number
+}
+
+export interface ProposalPortfolioData {
+  by_fiscal_year: ProposalFYItem[]
+  by_agreement_type: AgreementTypeItem[]
+  success_rate: number
+  total_proposals: number
+  total_awarded_cost: number
+}
+
+// --- Checkbox Analysis ---
+
+export interface CheckboxItem {
+  name: string
+  count: number
+  percentage: number
+}
+
+export interface CoOccurrenceItem {
+  pair: string
+  count: number
+}
+
+export interface CheckboxAnalysisData {
+  by_checkbox: CheckboxItem[]
+  by_fiscal_year: Record<string, number | string>[]
+  co_occurrence: CoOccurrenceItem[]
+  no_checkbox_count: number
+}
+
+// --- Sponsor Analysis ---
+
+export interface SponsorItem {
+  sponsor: string
+  count: number
+  awarded_count: number
+  total_cost: number
+  iids_count: number
+  iids_percentage: number
+}
+
+export interface SponsorCategoryItem {
+  category: string
+  count: number
+  awarded_count: number
+  total_cost: number
+}
+
+export interface SponsorAnalysisData {
+  top_sponsors: SponsorItem[]
+  by_category: SponsorCategoryItem[]
+}
+
+// --- Department Insights ---
+
+export interface CollegeInsight {
+  college: string
+  college_display?: string
+  proposal_count: number
+  awarded_count: number
+  awarded_cost: number
+  charge_revenue: number
+  charge_pi_count: number
+  iids_checkbox_rate: number
+  iids_charge_rate: number
+}
+
+export interface DepartmentInsightsData {
+  by_college: CollegeInsight[]
+}
+
+// --- Cross-Linkage ---
+
+export interface MatchedPI {
+  pi_name: string
+  pi_email: string
+  charge_revenue: number
+  proposal_count: number
+  awarded_cost: number
+}
+
+export interface ChargesOnlyPI {
+  pi_name: string
+  pi_email: string
+  charge_revenue: number
+}
+
+export interface ProposalsOnlyPI {
+  pi_name: string
+  department: string
+  proposal_count: number
+  awarded_cost: number
+}
+
+export interface CrossLinkageData {
+  matched_pis: MatchedPI[]
+  charges_only_pis: ChargesOnlyPI[]
+  proposals_only_pis: ProposalsOnlyPI[]
+  match_rate: number
+}
+
+// --- Equipment Enriched ---
+
+export interface EquipmentEnrichedItem {
+  equipment: string
+  total_hours: number
+  reservation_count: number
+  unique_users: number
+  departments: Record<string, number>
+}
+
+export interface EquipmentMonthlyPoint {
+  month: string
+  total_hours: number
+}
+
+export interface EquipmentEnrichedData {
+  by_equipment: EquipmentEnrichedItem[]
+  monthly_trend: EquipmentMonthlyPoint[]
+}
+
+// --- CRC Growth ---
+
+export interface CRCRetentionItem {
+  fiscal_year: string
+  total_users: number
+  new_users: number
+  returning_users: number
+  departed_users: number
+}
+
+export interface CRCGrowthData {
+  retention: CRCRetentionItem[]
+  by_type: Record<string, number | string>[]
+}
+
+// --- Tab Data Union ---
+
+export type DashboardTab = 'overview' | 'revenue' | 'services' | 'proposals' | 'departments' | 'infrastructure'

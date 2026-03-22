@@ -67,7 +67,7 @@ export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldow
           {/* Summary stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <MiniStat label="Total Revenue" value={`$${data.total_revenue.toLocaleString()}`} />
-            <MiniStat label="IIDS Revenue" value={`$${data.iids_revenue.toLocaleString()}`} color="text-emerald-700" />
+            <MiniStat label="IIDS Checkbox Revenue" value={`$${data.iids_revenue.toLocaleString()}`} color="text-emerald-700" />
             <MiniStat label="Recovery Gap" value={`$${data.non_iids_revenue.toLocaleString()}`} color="text-red-700" />
             <MiniStat
               label="IIDS Rate"

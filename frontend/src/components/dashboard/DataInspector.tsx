@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 
-type Tab = 'charges' | 'events' | 'crc_users'
+type Tab = 'charges' | 'events' | 'crc_users' | 'proposals'
 
 interface ColumnDef {
   key: string
@@ -22,6 +22,8 @@ const TABS: { id: Tab; label: string; columns: ColumnDef[] }[] = [
       { key: 'category', label: 'Category' },
       { key: 'total_price', label: 'Total', format: (v) => `$${Number(v).toLocaleString()}` },
       { key: 'is_iids', label: 'IIDS', format: (v) => (v ? 'Yes' : 'No') },
+      { key: 'price_type', label: 'Source' },
+      { key: 'customer_institute', label: 'Institute' },
       { key: 'payment_index', label: 'Index' },
       { key: 'billing_status', label: 'Status' },
       { key: 'core_name', label: 'Core' },
@@ -57,6 +59,22 @@ const TABS: { id: Tab; label: string; columns: ColumnDef[] }[] = [
       { key: 'institution', label: 'Institution' },
     ],
   },
+  {
+    id: 'proposals',
+    label: 'Proposals',
+    columns: [
+      { key: 'submission_date', label: 'Submitted' },
+      { key: 'pi', label: 'PI' },
+      { key: 'department', label: 'Department' },
+      { key: 'title', label: 'Title' },
+      { key: 'status', label: 'Status' },
+      { key: 'sponsor', label: 'Sponsor' },
+      { key: 'agreement_type', label: 'Type' },
+      { key: 'total_cost', label: 'Total Cost', format: (v) => `$${Number(v).toLocaleString()}` },
+      { key: 'iids', label: 'IIDS', format: (v) => (v ? 'Yes' : 'No') },
+      { key: 'imci', label: 'IMCI', format: (v) => (v ? 'Yes' : 'No') },
+    ],
+  },
 ]
 
 const PAGE_SIZE = 50
@@ -76,6 +94,7 @@ export default function DataInspector({ token }: { token: string }) {
     charges: [],
     events: [],
     crc_users: [],
+    proposals: [],
   })
   const [loading, setLoading] = useState(false)
   const [loaded, setLoaded] = useState<Set<Tab>>(new Set())
