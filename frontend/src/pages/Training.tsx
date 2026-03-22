@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useDeferredValue, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -9,6 +9,8 @@ import {
   GraduationCap,
   CheckCircle2,
   PlayCircle,
+  Search,
+  X,
 } from 'lucide-react'
 import {
   learningPaths,
@@ -60,13 +62,13 @@ const audienceCards = [
 
 export default function Training() {
   const [selectedPathSlug, setSelectedPathSlug] = useState(learningPaths[0]?.slug ?? '')
+  const [resourceSearch, setResourceSearch] = useState('')
   const [resourceFilter, setResourceFilter] = useState<'All' | ResourceType>('All')
+  const [audienceFilter, setAudienceFilter] = useState('All')
+  const [topicFilter, setTopicFilter] = useState('All')
+  const deferredResourceSearch = useDeferredValue(resourceSearch)
   const selectedPath =
     learningPaths.find((path) => path.slug === selectedPathSlug) ?? learningPaths[0]
-  const filteredResources =
-    resourceFilter === 'All'
-      ? resources
-      : resources.filter((resource) => resource.type === resourceFilter)
   const featuredWorkshop = workshops[0]
   const upcomingWorkshops = workshops.slice(1)
   const resourceFilters: Array<'All' | ResourceType> = [
@@ -77,9 +79,32 @@ export default function Training() {
     'Template',
     'Guide',
   ]
+  const audienceFilters = ['All', ...new Set(resources.map((resource) => resource.audience))]
+  const topicFilters = ['All', ...new Set(resources.map((resource) => resource.topic))]
   const resourcesBySlug = Object.fromEntries(
     resources.map((resource) => [resource.slug, resource] as const)
   )
+  const normalizedSearch = deferredResourceSearch.trim().toLowerCase()
+  const filteredResources = resources.filter((resource) => {
+    const matchesType = resourceFilter === 'All' || resource.type === resourceFilter
+    const matchesAudience =
+      audienceFilter === 'All' || resource.audience === audienceFilter
+    const matchesTopic = topicFilter === 'All' || resource.topic === topicFilter
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      [
+        resource.title,
+        resource.description,
+        resource.topic,
+        resource.audience,
+        resource.type,
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(normalizedSearch)
+
+    return matchesType && matchesAudience && matchesTopic && matchesSearch
+  })
 
   return (
     <>
@@ -392,21 +417,69 @@ export default function Training() {
                 common GBRC learning needs.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {resourceFilters.map((filter) => (
+            <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5 lg:p-6 space-y-4">
+              <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+                <label className="relative block lg:w-[26rem]">
+                  <Search className="h-4 w-4 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={resourceSearch}
+                    onChange={(event) => setResourceSearch(event.target.value)}
+                    placeholder="Search resources by title, topic, audience, or description"
+                    className="w-full rounded-xl border border-neutral-200 bg-white pl-11 pr-11 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-uidaho-gold/40 focus:border-uidaho-gold/40"
+                  />
+                  {resourceSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setResourceSearch('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-700"
+                      aria-label="Clear resource search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </label>
+
                 <button
-                  key={filter}
                   type="button"
-                  onClick={() => setResourceFilter(filter)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    resourceFilter === filter
-                      ? 'bg-neutral-900 text-white'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                  }`}
+                  onClick={() => {
+                    setResourceSearch('')
+                    setResourceFilter('All')
+                    setAudienceFilter('All')
+                    setTopicFilter('All')
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition-colors"
                 >
-                  {filter}
+                  Reset filters
                 </button>
-              ))}
+              </div>
+
+              <div className="space-y-3">
+                <FilterRow
+                  label="Type"
+                  options={resourceFilters}
+                  selected={resourceFilter}
+                  onSelect={(value) => setResourceFilter(value as 'All' | ResourceType)}
+                />
+                <FilterRow
+                  label="Audience"
+                  options={audienceFilters}
+                  selected={audienceFilter}
+                  onSelect={setAudienceFilter}
+                />
+                <FilterRow
+                  label="Topic"
+                  options={topicFilters}
+                  selected={topicFilter}
+                  onSelect={setTopicFilter}
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {resourceFilter !== 'All' && <ActiveFilterChip label={`Type: ${resourceFilter}`} />}
+              {audienceFilter !== 'All' && <ActiveFilterChip label={`Audience: ${audienceFilter}`} />}
+              {topicFilter !== 'All' && <ActiveFilterChip label={`Topic: ${topicFilter}`} />}
+              {normalizedSearch && <ActiveFilterChip label={`Search: ${resourceSearch}`} />}
             </div>
             <div className="text-sm text-neutral-500">
               Showing {filteredResources.length} resource
@@ -545,6 +618,48 @@ function LearningModuleLink({
         <ArrowRight className="h-4 w-4" />
       </Link>
     </div>
+  )
+}
+
+function FilterRow({
+  label,
+  options,
+  selected,
+  onSelect,
+}: {
+  label: string
+  options: string[]
+  selected: string
+  onSelect: (value: string) => void
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="text-sm font-medium text-neutral-600 sm:w-20 shrink-0">{label}</div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onSelect(option)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selected === option
+                ? 'bg-neutral-900 text-white'
+                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ActiveFilterChip({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 text-sm font-medium">
+      {label}
+    </span>
   )
 }
 
