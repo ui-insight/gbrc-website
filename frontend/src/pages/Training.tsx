@@ -69,8 +69,10 @@ export default function Training() {
   const deferredResourceSearch = useDeferredValue(resourceSearch)
   const selectedPath =
     learningPaths.find((path) => path.slug === selectedPathSlug) ?? learningPaths[0]
-  const featuredWorkshop = workshops[0]
-  const upcomingWorkshops = workshops.slice(1)
+  const upcomingWorkshops = workshops.filter((workshop) => workshop.status === 'upcoming')
+  const archivedWorkshops = workshops.filter((workshop) => workshop.status === 'archived')
+  const featuredWorkshop = upcomingWorkshops[0]
+  const secondaryUpcomingWorkshops = upcomingWorkshops.slice(1)
   const resourceFilters: Array<'All' | ResourceType> = [
     'All',
     'Tutorial',
@@ -309,15 +311,15 @@ export default function Training() {
                 interpretation moments where GBRC users most often need training.
               </p>
             </div>
-            {workshops.length === 0 ? (
+            {upcomingWorkshops.length === 0 ? (
               <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded-2xl p-8">
                 <div className="text-lg font-semibold text-neutral-900 mb-2">
-                  No workshops are listed yet.
+                  No upcoming workshops are listed right now.
                 </div>
                 <p className="text-neutral-600 mb-5 max-w-2xl">
-                  The Training Center is ready for workshop publishing. Until sessions are
-                  scheduled, users should contact GBRC directly to ask about training
-                  availability and recommended next steps.
+                  The Training Center can still guide users through archived sessions and
+                  current resources. For live training needs, contact GBRC directly about
+                  upcoming offerings and consultation options.
                 </p>
                 <Link
                   to="/contact"
@@ -341,6 +343,9 @@ export default function Training() {
                     <h4 className="text-3xl font-semibold mb-4">
                       {featuredWorkshop.title}
                     </h4>
+                    <p className="text-neutral-300 leading-relaxed mb-6 max-w-2xl">
+                      {featuredWorkshop.summary}
+                    </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                       <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
                         <div className="text-xs uppercase tracking-wide text-neutral-400 mb-1">
@@ -356,18 +361,18 @@ export default function Training() {
                       </div>
                     </div>
                     <Link
-                      to={featuredWorkshop.registrationUrl}
+                      to={featuredWorkshop.actionUrl}
                       className="inline-flex items-center gap-2 px-5 py-3 bg-uidaho-gold text-neutral-900 rounded-xl font-semibold no-underline hover:bg-uidaho-gold-dark transition-colors"
                     >
-                      {featuredWorkshop.registrationLabel}
+                      {featuredWorkshop.actionLabel}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 )}
 
                 <div className="space-y-4">
-                  {upcomingWorkshops.length > 0 ? (
-                    upcomingWorkshops.map((workshop) => (
+                  {secondaryUpcomingWorkshops.length > 0 ? (
+                    secondaryUpcomingWorkshops.map((workshop) => (
                       <div
                         key={workshop.slug}
                         className="bg-white border border-neutral-200 rounded-2xl p-5"
@@ -378,15 +383,16 @@ export default function Training() {
                         <h4 className="text-xl font-semibold text-neutral-900 mb-2">
                           {workshop.title}
                         </h4>
+                        <p className="text-sm text-neutral-600 mb-4">{workshop.summary}</p>
                         <div className="space-y-1 text-sm text-neutral-600 mb-4">
                           <div>Format: {workshop.format}</div>
                           <div>Audience: {workshop.audience}</div>
                         </div>
                         <Link
-                          to={workshop.registrationUrl}
+                          to={workshop.actionUrl}
                           className="inline-flex items-center gap-2 text-uidaho-gold-dark font-semibold no-underline hover:underline"
                         >
-                          {workshop.registrationLabel}
+                          {workshop.actionLabel}
                           <ChevronRight className="h-4 w-4" />
                         </Link>
                       </div>
@@ -405,6 +411,67 @@ export default function Training() {
                 </div>
               </div>
             )}
+
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <h4 className="text-xl font-semibold text-neutral-900 mb-1">
+                    Workshop Archive
+                  </h4>
+                  <p className="text-neutral-600">
+                    Past sessions and evergreen workshop topics users can still learn from
+                    while waiting for the next live offering.
+                  </p>
+                </div>
+                <div className="text-sm text-neutral-500">
+                  {archivedWorkshops.length} archived session
+                  {archivedWorkshops.length === 1 ? '' : 's'}
+                </div>
+              </div>
+
+              {archivedWorkshops.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {archivedWorkshops.map((workshop) => (
+                    <div
+                      key={workshop.slug}
+                      className="bg-neutral-50 border border-neutral-200 rounded-2xl p-5"
+                    >
+                      <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-neutral-200 text-neutral-700 text-xs font-semibold uppercase tracking-wide mb-3">
+                        Archived
+                      </div>
+                      <div className="text-sm font-medium text-uidaho-gold mb-2">
+                        {workshop.dateLabel}
+                      </div>
+                      <h5 className="text-xl font-semibold text-neutral-900 mb-2">
+                        {workshop.title}
+                      </h5>
+                      <p className="text-sm text-neutral-600 mb-4">{workshop.summary}</p>
+                      <div className="space-y-1 text-sm text-neutral-600 mb-4">
+                        <div>Format: {workshop.format}</div>
+                        <div>Audience: {workshop.audience}</div>
+                      </div>
+                      <Link
+                        to={workshop.actionUrl}
+                        className="inline-flex items-center gap-2 text-uidaho-gold-dark font-semibold no-underline hover:underline"
+                      >
+                        {workshop.actionLabel}
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded-2xl p-6">
+                  <div className="font-semibold text-neutral-900 mb-2">
+                    No archived sessions yet
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    Once GBRC starts publishing workshop history, recordings and evergreen
+                    session summaries can live here for ongoing reuse.
+                  </p>
+                </div>
+              )}
+            </div>
           </section>
 
           <section className="space-y-5">

@@ -15,11 +15,13 @@ export type LearningPath = {
 export type Workshop = {
   slug: string
   title: string
+  summary: string
   dateLabel: string
   format: string
   audience: string
-  registrationLabel: string
-  registrationUrl: string
+  status: 'upcoming' | 'archived'
+  actionLabel: string
+  actionUrl: string
 }
 
 export type ResourceType = 'Tutorial' | 'Video' | 'SOP' | 'Template' | 'Guide'
@@ -135,29 +137,62 @@ export const workshops: Workshop[] = [
   {
     slug: 'project-planning-clinic',
     title: 'Project Planning Clinic: From Research Question to Sequencing Plan',
+    summary:
+      'A planning-focused session on choosing services, scoping support needs, and arriving at a workable sequencing strategy before submission.',
     dateLabel: 'April 10, 2026 · Noon PT',
     format: 'In person',
     audience: 'New users, PIs, and lab managers',
-    registrationLabel: 'Reserve a consultation-style seat',
-    registrationUrl: '/contact',
+    status: 'upcoming',
+    actionLabel: 'Reserve a consultation-style seat',
+    actionUrl: '/contact',
   },
   {
     slug: 'sample-readiness-workshop',
     title: 'Sample Readiness Workshop: QC, Quantification, and Submission Handoff',
+    summary:
+      'A practical workshop on concentration thresholds, RNA quality expectations, sample packaging, and avoiding common submission mistakes.',
     dateLabel: 'April 24, 2026 · 10:00 AM PT',
     format: 'Hybrid',
     audience: 'Researchers preparing DNA or RNA submissions',
-    registrationLabel: 'Ask about workshop registration',
-    registrationUrl: '/contact',
+    status: 'upcoming',
+    actionLabel: 'Ask about workshop registration',
+    actionUrl: '/contact',
   },
   {
     slug: 'data-delivery-session',
     title: 'After the Run: Understanding QC, Deliverables, and Analysis Handoffs',
+    summary:
+      'A session for labs receiving data who want help interpreting deliverables, understanding QC context, and deciding when custom support is needed.',
     dateLabel: 'May 8, 2026 · 1:00 PM PT',
     format: 'Virtual',
     audience: 'Researchers receiving data and bioinformatics collaborators',
-    registrationLabel: 'Join the interest list',
-    registrationUrl: '/contact',
+    status: 'upcoming',
+    actionLabel: 'Join the interest list',
+    actionUrl: '/contact',
+  },
+  {
+    slug: 'orientation-archive',
+    title: 'Archived Session: GBRC Orientation for New Labs',
+    summary:
+      'A previous orientation covering consultation, submission flow, iLab expectations, and how projects move from intake to data delivery.',
+    dateLabel: 'Recorded February 2026',
+    format: 'Recorded session',
+    audience: 'New labs and incoming trainees',
+    status: 'archived',
+    actionLabel: 'Use the onboarding guide',
+    actionUrl: '/getting-started',
+  },
+  {
+    slug: 'service-selection-archive',
+    title: 'Archived Session: Choosing Between GBRC Service Pathways',
+    summary:
+      'A prior training session on how sample type, goals, and turnaround constraints influence service and sequencing decisions.',
+    dateLabel: 'Recorded January 2026',
+    format: 'Recorded session',
+    audience: 'Researchers comparing workflows',
+    status: 'archived',
+    actionLabel: 'Review current services',
+    actionUrl: '/services',
   },
 ]
 
