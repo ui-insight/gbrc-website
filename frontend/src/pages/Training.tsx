@@ -137,8 +137,8 @@ export default function Training() {
               What This Center Will Include
             </h2>
             <p className="text-neutral-600 text-lg">
-              The first release focuses on a clear, curated content hub that can grow
-              into richer discovery, events, and learning experiences over time.
+              The first release focuses on clear, curated GBRC training content that can
+              grow into richer discovery, events, and learning experiences over time.
             </p>
           </div>
 
@@ -193,12 +193,11 @@ export default function Training() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-bold text-neutral-900 mb-3">
-              Starter Content
+              Current Training Content
             </h2>
             <p className="text-neutral-600 text-lg">
-              The Training Center now reads from a local content model so we can ship a
-              useful MVP first, then evolve it later into richer discovery and
-              integrations.
+              This release curates practical GBRC-specific learning content now, while
+              leaving room for richer discovery and integrations later.
             </p>
           </div>
 
@@ -274,8 +273,8 @@ export default function Training() {
                 Upcoming Workshops
               </h3>
               <p className="text-neutral-600 max-w-3xl">
-                Starter workshop entries establish the content pattern for future live
-                offerings and integrations.
+                Workshop topics are framed around the real planning, submission, and data
+                interpretation moments where GBRC users most often need training.
               </p>
             </div>
             {workshops.length === 0 ? (
@@ -382,7 +381,7 @@ export default function Training() {
                 Resource Library
               </h3>
               <p className="text-neutral-600 max-w-3xl">
-                A starter library of tutorials, guides, videos, SOPs, and templates for
+                A curated library of tutorials, guides, videos, SOPs, and templates for
                 common GBRC learning needs.
               </p>
             </div>
