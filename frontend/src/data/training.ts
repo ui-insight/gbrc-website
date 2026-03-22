@@ -1,10 +1,15 @@
+export type LearningModule = {
+  title: string
+  resourceSlug: string
+}
+
 export type LearningPath = {
   slug: string
   title: string
   audience: string
   summary: string
   nextStep: string
-  modules: string[]
+  modules: LearningModule[]
 }
 
 export type Workshop = {
@@ -41,9 +46,18 @@ export const learningPaths: LearningPath[] = [
     nextStep:
       'Begin with the Getting Started guide, then schedule a consultation if you need design help or open project intake if your scope is ready to describe.',
     modules: [
-      'How GBRC supports projects from planning through data delivery',
-      'When to use Getting Started, Contact, or Project Intake',
-      'What to gather before your first consultation',
+      {
+        title: 'How GBRC supports projects from planning through data delivery',
+        resourceSlug: 'new-user-onboarding-guide',
+      },
+      {
+        title: 'When to use Getting Started, Contact, or Project Intake',
+        resourceSlug: 'contact-and-support-routes',
+      },
+      {
+        title: 'What to gather before your first consultation',
+        resourceSlug: 'new-user-onboarding-guide',
+      },
     ],
   },
   {
@@ -55,9 +69,18 @@ export const learningPaths: LearningPath[] = [
     nextStep:
       'Review the sample submission guidelines, then confirm any quality or packaging questions with GBRC before delivery.',
     modules: [
-      'Quality thresholds, Qubit/Nanodrop, and RIN expectations',
-      'Packaging, tube labeling, and submission handoff',
-      'Common readiness issues that slow sequencing workflows',
+      {
+        title: 'Quality thresholds, Qubit/Nanodrop, and RIN expectations',
+        resourceSlug: 'sample-submission-guidelines',
+      },
+      {
+        title: 'Packaging, tube labeling, and submission handoff',
+        resourceSlug: 'sample-submission-guidelines',
+      },
+      {
+        title: 'Common readiness issues that slow sequencing workflows',
+        resourceSlug: 'sample-submission-guidelines',
+      },
     ],
   },
   {
@@ -69,9 +92,18 @@ export const learningPaths: LearningPath[] = [
     nextStep:
       'Bring your research question, sample constraints, desired outputs, and timeline into a planning consultation.',
     modules: [
-      'Choosing between Aviti, PacBio, amplicon, and RNA-focused workflows',
-      'Balancing throughput, budget, turnaround time, and library prep complexity',
-      'Planning for downstream data delivery and interpretation',
+      {
+        title: 'Choosing between Aviti, PacBio, amplicon, and RNA-focused workflows',
+        resourceSlug: 'sequencing-services-overview',
+      },
+      {
+        title: 'Balancing throughput, budget, turnaround time, and library prep complexity',
+        resourceSlug: 'project-intake-guide',
+      },
+      {
+        title: 'Planning for downstream data delivery and interpretation',
+        resourceSlug: 'consultation-support-playbook',
+      },
     ],
   },
   {
@@ -83,9 +115,18 @@ export const learningPaths: LearningPath[] = [
     nextStep:
       'Map your analysis questions before data delivery so GBRC can help you plan the right support level early.',
     modules: [
-      'Understanding file delivery, retention, and access expectations',
-      'QC interpretation, alignment context, and common downstream analysis stages',
-      'When to request custom bioinformatics consultation',
+      {
+        title: 'Understanding file delivery, retention, and access expectations',
+        resourceSlug: 'new-user-onboarding-guide',
+      },
+      {
+        title: 'QC interpretation, alignment context, and common downstream analysis stages',
+        resourceSlug: 'consultation-support-playbook',
+      },
+      {
+        title: 'When to request custom bioinformatics consultation',
+        resourceSlug: 'consultation-support-playbook',
+      },
     ],
   },
 ]

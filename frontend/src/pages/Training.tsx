@@ -15,6 +15,7 @@ import {
   type LearningPath,
   resources,
   type ResourceType,
+  type TrainingResource,
   workshops,
 } from '../data/training'
 
@@ -76,6 +77,9 @@ export default function Training() {
     'Template',
     'Guide',
   ]
+  const resourcesBySlug = Object.fromEntries(
+    resources.map((resource) => [resource.slug, resource] as const)
+  )
 
   return (
     <>
@@ -243,13 +247,16 @@ export default function Training() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
                     {selectedPath.modules.map((module, index) => (
                       <div
-                        key={module}
+                        key={module.title}
                         className="rounded-2xl bg-white/5 border border-white/10 p-5"
                       >
                         <div className="text-xs uppercase tracking-wide text-neutral-400 mb-2">
                           Module {index + 1}
                         </div>
-                        <div className="font-medium text-white">{module}</div>
+                        <div className="font-medium text-white mb-4">{module.title}</div>
+                        <LearningModuleLink
+                          resource={resourcesBySlug[module.resourceSlug]}
+                        />
                       </div>
                     ))}
                   </div>
@@ -506,6 +513,38 @@ export default function Training() {
         </div>
       </section>
     </>
+  )
+}
+
+function LearningModuleLink({
+  resource,
+}: {
+  resource?: TrainingResource
+}) {
+  if (!resource) {
+    return <div className="text-sm text-neutral-400">Linked resource coming soon.</div>
+  }
+
+  return (
+    <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <span className="text-xs uppercase tracking-wide text-uidaho-gold">
+          {resource.type}
+        </span>
+        {resource.duration && (
+          <span className="text-xs text-neutral-400">{resource.duration}</span>
+        )}
+      </div>
+      <div className="font-medium text-white mb-1">{resource.title}</div>
+      <div className="text-sm text-neutral-300 mb-3">{resource.description}</div>
+      <Link
+        to={resource.linkUrl}
+        className="inline-flex items-center gap-2 text-uidaho-gold font-semibold no-underline hover:underline"
+      >
+        {resource.linkLabel}
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
   )
 }
 
