@@ -4,11 +4,10 @@ import type { PIDetail } from '../../types/dashboard'
 
 interface PIdrilldownPanelProps {
   piEmail: string
-  token: string
   onClose: () => void
 }
 
-export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldownPanelProps) {
+export default function PIdrilldownPanel({ piEmail, onClose }: PIdrilldownPanelProps) {
   const [data, setData] = useState<PIDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -16,12 +15,9 @@ export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldow
   useEffect(() => {
     let cancelled = false
 
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-
-    fetch(`/api/v1/dashboard/pi/${encodeURIComponent(piEmail)}`, { headers })
+    fetch(`/api/v1/dashboard/pi/${encodeURIComponent(piEmail)}`, {
+      headers: { 'Content-Type': 'application/json' },
+    })
       .then((res) => {
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         return res.json()
@@ -43,7 +39,7 @@ export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldow
     return () => {
       cancelled = true
     }
-  }, [piEmail, token])
+  }, [piEmail])
 
   return (
     <div className="bg-white rounded-lg border-2 border-[#f1b300] p-6 shadow-lg animate-in fade-in">

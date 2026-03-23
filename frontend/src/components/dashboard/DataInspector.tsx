@@ -79,16 +79,16 @@ const TABS: { id: Tab; label: string; columns: ColumnDef[] }[] = [
 
 const PAGE_SIZE = 50
 
-function fetchRawData(table: Tab, token: string): Promise<Record<string, unknown>[]> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  return fetch(`/api/v1/dashboard/raw/${table}`, { headers }).then((r) => {
+function fetchRawData(table: Tab): Promise<Record<string, unknown>[]> {
+  return fetch(`/api/v1/dashboard/raw/${table}`, {
+    headers: { 'Content-Type': 'application/json' },
+  }).then((r) => {
     if (!r.ok) throw new Error(`API error: ${r.status}`)
     return r.json()
   })
 }
 
-export default function DataInspector({ token }: { token: string }) {
+export default function DataInspector() {
   const [activeTab, setActiveTab] = useState<Tab>('charges')
   const [data, setData] = useState<Record<Tab, Record<string, unknown>[]>>({
     charges: [],
@@ -108,7 +108,7 @@ export default function DataInspector({ token }: { token: string }) {
     if (loaded.has(activeTab) || errors[activeTab]) return
     let cancelled = false
 
-    fetchRawData(activeTab, token)
+    fetchRawData(activeTab)
       .then((rows) => {
         if (cancelled) return
         setData((prev) => ({ ...prev, [activeTab]: rows }))
@@ -126,7 +126,7 @@ export default function DataInspector({ token }: { token: string }) {
     return () => {
       cancelled = true
     }
-  }, [activeTab, token, loaded, errors])
+  }, [activeTab, loaded, errors])
 
   const tabDef = TABS.find((t) => t.id === activeTab)!
   const rows = data[activeTab]

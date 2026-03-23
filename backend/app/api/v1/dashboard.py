@@ -1,8 +1,7 @@
 """Dashboard API endpoints for checkbox cost recovery data."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.api.deps import verify_dashboard_token
 from app.schemas.dashboard import (
     CheckboxAnalysisResponse,
     CRCGrowthResponse,
@@ -29,7 +28,7 @@ from app.services.checkbox_data import (
     get_raw_data,
 )
 
-router = APIRouter(dependencies=[Depends(verify_dashboard_token)])
+router = APIRouter()
 
 
 @router.get("/summary")
