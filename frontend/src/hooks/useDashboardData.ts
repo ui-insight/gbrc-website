@@ -15,6 +15,8 @@ import type {
   SponsorAnalysisData,
   DepartmentInsightsData,
   CrossLinkageData,
+  PIAffiliationData,
+  PIUsageMappingData,
   EquipmentEnrichedData,
   CRCGrowthData,
 } from '../types/dashboard'
@@ -97,14 +99,11 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
   const [crcUsers, setCrcUsers] = useState<CRCYearData[]>([])
   const [equipment, setEquipment] = useState<EquipmentData[]>([])
   const [availableFYs, setAvailableFYs] = useState<string[]>(['total'])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) return
-
-    setLoading(true)
-    setError(null)
+    let cancelled = false
 
     Promise.all([
       fetchWithAuth<DashboardSummary>('/summary', token),
@@ -115,6 +114,7 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
       fetchWithAuth<EquipmentData[]>('/equipment', token),
     ])
       .then(([s, piResp, t, svcResp, crc, eq]) => {
+        if (cancelled) return
         setSummary(s)
         setPiBreakdown(piResp.pis)
         setPiBreakdownByFY(piResp.by_fy)
@@ -126,14 +126,19 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
         setCrcUsers(crc)
         setEquipment(eq)
         setAvailableFYs(s.available_fiscal_years ?? ['total'])
+        setError(null)
       })
       .catch((err) => {
+        if (cancelled) return
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data')
       })
-      .finally(() => {
-        setLoading(false)
-      })
+
+    return () => {
+      cancelled = true
+    }
   }, [token, isAuthenticated])
+
+  const loading = isAuthenticated && summary === null && error === null
 
   return { summary, piBreakdown, piBreakdownByFY, collegeBreakdown, collegeBreakdownByFY, trends, services, servicesByFY, crcUsers, equipment, availableFYs, loading, error }
 }
@@ -141,25 +146,33 @@ export function useDashboardData(token: string, isAuthenticated: boolean) {
 /** Lazy-loading hook for tab-specific analytics data. */
 export function useTabData<T>(token: string, isAuthenticated: boolean, endpoint: string, active: boolean) {
   const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fetched = useRef(false)
 
   useEffect(() => {
     if (!active || !isAuthenticated || fetched.current) return
+    let cancelled = false
 
     fetched.current = true
-    setLoading(true)
-    setError(null)
 
     fetchWithAuth<T>(endpoint, token)
-      .then(setData)
+      .then((result) => {
+        if (cancelled) return
+        setData(result)
+        setError(null)
+      })
       .catch((err) => {
+        if (cancelled) return
         setError(err instanceof Error ? err.message : 'Failed to load data')
         fetched.current = false
       })
-      .finally(() => setLoading(false))
+
+    return () => {
+      cancelled = true
+    }
   }, [active, token, isAuthenticated, endpoint])
+
+  const loading = active && isAuthenticated && data === null && error === null
 
   return { data, loading, error }
 }
@@ -195,4 +208,12 @@ export function useEquipmentEnrichedData(token: string, isAuthenticated: boolean
 
 export function useCRCGrowthData(token: string, isAuthenticated: boolean, active: boolean) {
   return useTabData<CRCGrowthData>(token, isAuthenticated, '/crc-growth', active)
+}
+
+export function usePIAffiliationData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<PIAffiliationData>(token, isAuthenticated, '/pi-affiliation', active)
+}
+
+export function usePIUsageMappingData(token: string, isAuthenticated: boolean, active: boolean) {
+  return useTabData<PIUsageMappingData>(token, isAuthenticated, '/pi-usage-mapping', active)
 }

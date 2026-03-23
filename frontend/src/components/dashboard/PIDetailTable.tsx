@@ -10,6 +10,25 @@ interface PIDetailTableProps {
 
 type SortKey = 'pi_name' | 'department' | 'total_revenue' | 'iids_revenue' | 'non_iids_revenue' | 'iids_percentage' | 'charge_count'
 
+interface SortHeaderProps {
+  field: SortKey
+  label: string
+  sortKey: SortKey
+  sortAsc: boolean
+  onSort: (field: SortKey) => void
+}
+
+function SortHeader({ field, label, sortKey, sortAsc, onSort }: SortHeaderProps) {
+  return (
+    <th
+      className="py-2 px-3 text-neutral-500 font-medium cursor-pointer hover:text-neutral-900 select-none text-right first:text-left"
+      onClick={() => onSort(field)}
+    >
+      {label} {sortKey === field ? (sortAsc ? '\u25B2' : '\u25BC') : ''}
+    </th>
+  )
+}
+
 export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('non_iids_revenue')
   const [sortAsc, setSortAsc] = useState(false)
@@ -39,15 +58,6 @@ export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailT
     return sortAsc ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number)
   })
 
-  const SortHeader = ({ label, field }: { label: string; field: SortKey }) => (
-    <th
-      className="py-2 px-3 text-neutral-500 font-medium cursor-pointer hover:text-neutral-900 select-none text-right first:text-left"
-      onClick={() => handleSort(field)}
-    >
-      {label} {sortKey === field ? (sortAsc ? '\u25B2' : '\u25BC') : ''}
-    </th>
-  )
-
   const getRowBg = (pct: number) => {
     if (pct === 0) return 'bg-red-50'
     if (pct >= 100) return 'bg-emerald-50'
@@ -70,13 +80,13 @@ export default function PIDetailTable({ data, onPIClick, selectedPI }: PIDetailT
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-200 text-left">
-              <SortHeader label="PI Name" field="pi_name" />
-              <SortHeader label="College" field="department" />
-              <SortHeader label="Total Revenue" field="total_revenue" />
-              <SortHeader label="IIDS Checkbox Revenue" field="iids_revenue" />
-              <SortHeader label="Gap" field="non_iids_revenue" />
-              <SortHeader label="IIDS %" field="iids_percentage" />
-              <SortHeader label="Charges" field="charge_count" />
+              <SortHeader label="PI Name" field="pi_name" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="College" field="department" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="Total Revenue" field="total_revenue" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="IIDS Checkbox Revenue" field="iids_revenue" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="Gap" field="non_iids_revenue" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="IIDS %" field="iids_percentage" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
+              <SortHeader label="Charges" field="charge_count" sortKey={sortKey} sortAsc={sortAsc} onSort={handleSort} />
             </tr>
           </thead>
           <tbody>

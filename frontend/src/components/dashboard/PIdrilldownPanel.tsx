@@ -14,8 +14,7 @@ export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldow
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
+    let cancelled = false
 
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     if (token) {
@@ -27,9 +26,23 @@ export default function PIdrilldownPanel({ piEmail, token, onClose }: PIdrilldow
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         return res.json()
       })
-      .then((d: PIDetail) => setData(d))
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load'))
-      .finally(() => setLoading(false))
+      .then((d: PIDetail) => {
+        if (cancelled) return
+        setData(d)
+        setError(null)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(err instanceof Error ? err.message : 'Failed to load')
+      })
+      .finally(() => {
+        if (cancelled) return
+        setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [piEmail, token])
 
   return (

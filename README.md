@@ -30,6 +30,26 @@ docker compose up --build
 
 Site available at `http://localhost:9200`.
 
+## Cost Recovery Dashboard
+
+The site includes an internal-facing cost recovery dashboard at `/cost-recovery`.
+
+- The dashboard route is part of the main frontend app and is linked in the site navigation.
+- Dashboard APIs live under `/api/v1/dashboard/*`.
+- Charge-based analytics are computed from the files in `backend/app/data/`.
+- Proposal analytics may cover a broader fiscal-year range than the charge data, depending on the contents of `proposals.csv`.
+
+### Access Control
+
+Dashboard access is token-gated only when the backend is configured with `GBRC_DASHBOARD_TOKEN`.
+
+```bash
+# backend/.env
+GBRC_DASHBOARD_TOKEN=your-shared-dashboard-token
+```
+
+If `GBRC_DASHBOARD_TOKEN` is left blank, the dashboard is accessible without auth for local development.
+
 ## Project Structure
 
 ```

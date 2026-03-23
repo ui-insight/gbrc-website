@@ -13,6 +13,8 @@ from app.schemas.dashboard import (
     EquipmentItem,
     PIBreakdownItem,
     PIDetailResponse,
+    PIAffiliationResponse,
+    PIUsageMappingResponse,
     ProposalPortfolioResponse,
     RevenueSourcesResponse,
     ServiceCategoryItem,
@@ -137,6 +139,18 @@ async def get_equipment_enriched():
 async def get_crc_growth():
     """CRC user retention/churn and type breakdown."""
     return get_analytics_data()["crc_growth"]
+
+
+@router.get("/pi-affiliation", response_model=PIAffiliationResponse)
+async def get_pi_affiliation():
+    """PI-level proposal affiliation with college rollups."""
+    return get_analytics_data()["pi_affiliation"]
+
+
+@router.get("/pi-usage-mapping", response_model=PIUsageMappingResponse)
+async def get_pi_usage_mapping():
+    """Map proposal PIs to the GBRC users working in their labs."""
+    return get_analytics_data()["pi_usage_mapping"]
 
 
 # --- Parameterized routes (must be last to avoid catching literal paths) ---

@@ -126,6 +126,11 @@ def _extract_pi_name(lab_field: str) -> str:
 
 # University of Idaho email domains
 _UI_EMAIL_DOMAINS = {"uidaho.edu"}
+_PI_NAME_ALIASES = {
+    "chris caudill": "Christopher Caudill",
+    "chris marx": "Christopher Marx",
+    "jake bledsoe": "Jacob Bledsoe",
+}
 
 
 def _is_ui_email(email: str) -> bool:
@@ -134,6 +139,22 @@ def _is_ui_email(email: str) -> bool:
         return False
     domain = email.strip().lower().split("@")[1]
     return domain in _UI_EMAIL_DOMAINS
+
+
+def _user_key(email: str, name: str) -> str:
+    """Create a stable per-user key from email or fallback name."""
+    cleaned_email = email.strip().lower()
+    if cleaned_email:
+        return cleaned_email
+    return name.strip().lower()
+
+
+def _canonical_pi_name(name: str) -> str:
+    """Normalize a PI name for matching while preserving display names elsewhere."""
+    cleaned = " ".join(name.strip().split())
+    if not cleaned:
+        return cleaned
+    return _PI_NAME_ALIASES.get(cleaned.lower(), cleaned)
 
 
 @lru_cache(maxsize=1)
@@ -457,10 +478,10 @@ def _load_proposals() -> list[dict]:
 def _match_proposals_for_pi(pi_name: str) -> list[dict]:
     """Find all proposals for a given PI name."""
     proposals = _load_proposals()
-    pi_name_lower = pi_name.strip().lower()
+    pi_name_lower = _canonical_pi_name(pi_name).lower()
     matched = []
     for p in proposals:
-        proposal_pi = p.get("PI", "").strip().lower()
+        proposal_pi = _canonical_pi_name(p.get("PI", "")).lower()
         if proposal_pi == pi_name_lower:
             iids_checked = bool(p.get("IIDS", "").strip())
             total_cost = _parse_float(p.get("TOTAL_COST", "0"))
@@ -1283,20 +1304,21 @@ def get_analytics_data() -> dict:
     charge_pi_names = {}
     for c in internal_charges:
         name = c["_pi_name"]
+        canonical_name = _canonical_pi_name(name)
         email = c["_pi_email"]
         if name == "Unknown" or not email:
             continue
-        if name not in charge_pi_names:
-            charge_pi_names[name] = {
-                "pi_name": name,
+        if canonical_name not in charge_pi_names:
+            charge_pi_names[canonical_name] = {
+                "pi_name": canonical_name,
                 "pi_email": email,
                 "charge_revenue": 0.0,
             }
-        charge_pi_names[name]["charge_revenue"] += c["_total_price"]
+        charge_pi_names[canonical_name]["charge_revenue"] += c["_total_price"]
 
     proposal_pi_names: dict[str, dict] = {}
     for p in proposals:
-        pi = p.get("PI", "").strip()
+        pi = _canonical_pi_name(p.get("PI", ""))
         if not pi:
             continue
         status = p.get("PROJECT_STATUS", "").strip()
@@ -1428,7 +1450,335 @@ def get_analytics_data() -> dict:
     }
 
     # ----------------------------------------------------------------
-    # (h) CRC user growth: retention/churn + type breakdown
+    # (h) PI-centric affiliation and PI-to-usage mapping
+    # ----------------------------------------------------------------
+    charge_usage_by_pi: dict[str, dict] = {}
+    pi_email_by_name: dict[str, str] = {}
+    pi_college_by_name: dict[str, str] = {}
+
+    for c in internal_charges:
+        pi_name = c["_pi_name"]
+        pi_key = _canonical_pi_name(pi_name).lower()
+        if pi_name == "Unknown" or not pi_key:
+            continue
+
+        if pi_key not in charge_usage_by_pi:
+            charge_usage_by_pi[pi_key] = {
+                "pi_name": pi_name,
+                "pi_email": c["_pi_email"],
+                "charge_revenue": 0.0,
+                "charge_count": 0,
+                "charge_users": set(),
+            }
+
+        charge_usage_by_pi[pi_key]["charge_revenue"] += c["_total_price"]
+        charge_usage_by_pi[pi_key]["charge_count"] += 1
+
+        user_key = _user_key(c.get("User Login Email", ""), c.get("Customer Name", ""))
+        if user_key:
+            charge_usage_by_pi[pi_key]["charge_users"].add(user_key)
+
+        if c["_pi_email"]:
+            pi_email_by_name.setdefault(pi_key, c["_pi_email"])
+        pi_college_by_name.setdefault(pi_key, pi_college_cache.get(pi_name, "Unknown"))
+
+    event_usage_by_pi: dict[str, dict] = {}
+    for e in events:
+        pi_name = _extract_pi_name(e.get("Customer Lab", ""))
+        pi_email = e.get("PI Email", "").strip().lower()
+        pi_key = _canonical_pi_name(pi_name).lower()
+
+        if pi_name == "Unknown" or not pi_key:
+            continue
+        if not _is_ui_email(pi_email) and pi_key not in proposal_names_lower and pi_key not in charge_usage_by_pi:
+            continue
+
+        if pi_key not in event_usage_by_pi:
+            event_usage_by_pi[pi_key] = {
+                "pi_name": pi_name,
+                "pi_email": pi_email,
+                "equipment_hours": 0.0,
+                "reservation_count": 0,
+                "equipment_users": set(),
+            }
+
+        event_usage_by_pi[pi_key]["equipment_hours"] += _parse_hours(e.get("Actual Hours", "0"))
+        event_usage_by_pi[pi_key]["reservation_count"] += 1
+
+        user_key = _user_key(e.get("User Login Email", ""), e.get("Customer Name", ""))
+        if user_key:
+            event_usage_by_pi[pi_key]["equipment_users"].add(user_key)
+
+        if pi_email:
+            pi_email_by_name.setdefault(pi_key, pi_email)
+        if pi_key not in pi_college_by_name:
+            raw_dept = e.get("Customer Department", "").strip()
+            pi_college_by_name[pi_key] = (
+                get_college_from_charge_dept(raw_dept) if raw_dept else "Unknown"
+            )
+
+    proposal_affiliation_by_pi: dict[str, dict] = {}
+    total_iids_proposals = 0
+    total_affiliation_awarded_cost = 0.0
+    total_affiliated_pis = 0
+
+    for p in proposals:
+        pi_name = p.get("PI", "").strip()
+        if not pi_name:
+            continue
+
+        pi_key = _canonical_pi_name(pi_name).lower()
+        dept = p.get("DEPARTMENT", "").strip()
+        college = get_college_from_department(dept)
+        status = p.get("PROJECT_STATUS", "").strip()
+        total_cost = _parse_float(p.get("TOTAL_COST", "0"))
+        is_awarded = _is_proposal_awarded(status)
+        iids_checked = bool(p.get("IIDS", "").strip())
+
+        if pi_key not in proposal_affiliation_by_pi:
+            proposal_affiliation_by_pi[pi_key] = {
+                "pi_name": pi_name,
+                "pi_email": pi_email_by_name.get(pi_key, ""),
+                "college": college,
+                "college_display": get_college_display_name(college),
+                "proposal_count": 0,
+                "iids_proposal_count": 0,
+                "awarded_count": 0,
+                "awarded_cost": 0.0,
+            }
+
+        proposal_affiliation_by_pi[pi_key]["proposal_count"] += 1
+        if iids_checked:
+            proposal_affiliation_by_pi[pi_key]["iids_proposal_count"] += 1
+            total_iids_proposals += 1
+        if is_awarded:
+            proposal_affiliation_by_pi[pi_key]["awarded_count"] += 1
+            proposal_affiliation_by_pi[pi_key]["awarded_cost"] += total_cost
+            total_affiliation_awarded_cost += total_cost
+
+    pi_affiliation_rows = []
+    for entry in proposal_affiliation_by_pi.values():
+        proposal_count = entry["proposal_count"]
+        iids_count = entry["iids_proposal_count"]
+        if iids_count > 0:
+            total_affiliated_pis += 1
+        pi_affiliation_rows.append({
+            **entry,
+            "awarded_cost": round(entry["awarded_cost"], 2),
+            "iids_proposal_rate": round(iids_count / proposal_count * 100, 1) if proposal_count > 0 else 0,
+        })
+    pi_affiliation_rows.sort(
+        key=lambda x: (x["iids_proposal_count"], x["proposal_count"], x["awarded_cost"]),
+        reverse=True,
+    )
+
+    affiliation_colleges: dict[str, dict] = {}
+    for row in pi_affiliation_rows:
+        college = row["college"]
+        if college not in affiliation_colleges:
+            affiliation_colleges[college] = {
+                "college": college,
+                "college_display": row["college_display"],
+                "pi_count": 0,
+                "affiliated_pi_count": 0,
+                "proposal_count": 0,
+                "iids_proposal_count": 0,
+                "awarded_cost": 0.0,
+            }
+
+        affiliation_colleges[college]["pi_count"] += 1
+        affiliation_colleges[college]["proposal_count"] += row["proposal_count"]
+        affiliation_colleges[college]["iids_proposal_count"] += row["iids_proposal_count"]
+        affiliation_colleges[college]["awarded_cost"] += row["awarded_cost"]
+        if row["iids_proposal_count"] > 0:
+            affiliation_colleges[college]["affiliated_pi_count"] += 1
+
+    affiliation_by_college = []
+    for entry in affiliation_colleges.values():
+        proposal_count = entry["proposal_count"]
+        affiliation_by_college.append({
+            **entry,
+            "awarded_cost": round(entry["awarded_cost"], 2),
+            "iids_proposal_rate": round(entry["iids_proposal_count"] / proposal_count * 100, 1) if proposal_count > 0 else 0,
+        })
+    affiliation_by_college.sort(key=lambda x: (x["iids_proposal_count"], x["proposal_count"]), reverse=True)
+
+    pi_affiliation = {
+        "summary": {
+            "total_pis": len(pi_affiliation_rows),
+            "affiliated_pis": total_affiliated_pis,
+            "total_proposals": total_proposals,
+            "iids_proposals": total_iids_proposals,
+            "iids_proposal_rate": round(total_iids_proposals / total_proposals * 100, 1) if total_proposals > 0 else 0,
+            "total_awarded_cost": round(total_affiliation_awarded_cost, 2),
+        },
+        "by_college": affiliation_by_college,
+        "by_pi": pi_affiliation_rows,
+    }
+
+    usage_rows_by_pi: dict[str, dict] = {}
+    all_lab_users: set[str] = set()
+    all_pi_keys = set(proposal_affiliation_by_pi.keys()) | set(charge_usage_by_pi.keys()) | set(event_usage_by_pi.keys())
+
+    for pi_key in all_pi_keys:
+        proposal_entry = proposal_affiliation_by_pi.get(pi_key)
+        charge_entry = charge_usage_by_pi.get(pi_key)
+        event_entry = event_usage_by_pi.get(pi_key)
+
+        pi_name = (
+            (proposal_entry or {}).get("pi_name")
+            or (charge_entry or {}).get("pi_name")
+            or (event_entry or {}).get("pi_name")
+            or pi_key.title()
+        )
+        pi_email = (
+            (proposal_entry or {}).get("pi_email")
+            or (charge_entry or {}).get("pi_email")
+            or (event_entry or {}).get("pi_email")
+            or pi_email_by_name.get(pi_key, "")
+        )
+        college = (
+            (proposal_entry or {}).get("college")
+            or pi_college_by_name.get(pi_key)
+            or get_college_for_pi(pi_name, proposals)
+        )
+        college_display = get_college_display_name(college)
+        charge_users = set((charge_entry or {}).get("charge_users", set()))
+        equipment_users = set((event_entry or {}).get("equipment_users", set()))
+        lab_users = charge_users | equipment_users
+        all_lab_users.update(lab_users)
+
+        proposal_count = (proposal_entry or {}).get("proposal_count", 0)
+        iids_proposal_count = (proposal_entry or {}).get("iids_proposal_count", 0)
+        charge_count = (charge_entry or {}).get("charge_count", 0)
+        reservation_count = (event_entry or {}).get("reservation_count", 0)
+        has_usage = charge_count > 0 or reservation_count > 0
+
+        if proposal_count > 0 and has_usage:
+            mapping_status = "matched"
+        elif proposal_count > 0:
+            mapping_status = "proposals_only"
+        else:
+            mapping_status = "usage_only"
+
+        usage_rows_by_pi[pi_key] = {
+            "pi_name": pi_name,
+            "pi_email": pi_email,
+            "college": college,
+            "college_display": college_display,
+            "mapping_status": mapping_status,
+            "proposal_count": proposal_count,
+            "iids_proposal_count": iids_proposal_count,
+            "iids_proposal_rate": round(iids_proposal_count / proposal_count * 100, 1) if proposal_count > 0 else 0,
+            "awarded_cost": round((proposal_entry or {}).get("awarded_cost", 0.0), 2),
+            "charge_revenue": round((charge_entry or {}).get("charge_revenue", 0.0), 2),
+            "charge_count": charge_count,
+            "unique_charge_users": len(charge_users),
+            "unique_equipment_users": len(equipment_users),
+            "unique_lab_users": len(lab_users),
+            "equipment_hours": round((event_entry or {}).get("equipment_hours", 0.0), 1),
+            "reservation_count": reservation_count,
+            "_lab_users": lab_users,
+        }
+
+    usage_by_pi = sorted(
+        usage_rows_by_pi.values(),
+        key=lambda x: (
+            x["iids_proposal_count"],
+            x["unique_lab_users"],
+            x["charge_revenue"],
+            x["proposal_count"],
+        ),
+        reverse=True,
+    )
+
+    usage_colleges: dict[str, dict] = {}
+    matched_pis_count = 0
+    proposals_only_pis_count = 0
+    usage_only_pis_count = 0
+    affiliated_using_pis_count = 0
+
+    for row in usage_by_pi:
+        college = row["college"]
+        if college not in usage_colleges:
+            usage_colleges[college] = {
+                "college": college,
+                "college_display": row["college_display"],
+                "total_pis": 0,
+                "proposal_pis": 0,
+                "using_pis": 0,
+                "matched_pis": 0,
+                "affiliated_pis": 0,
+                "proposal_count": 0,
+                "iids_proposal_count": 0,
+                "charge_revenue": 0.0,
+                "equipment_hours": 0.0,
+                "_lab_users": set(),
+            }
+
+        usage_colleges[college]["total_pis"] += 1
+        usage_colleges[college]["proposal_count"] += row["proposal_count"]
+        usage_colleges[college]["iids_proposal_count"] += row["iids_proposal_count"]
+        usage_colleges[college]["charge_revenue"] += row["charge_revenue"]
+        usage_colleges[college]["equipment_hours"] += row["equipment_hours"]
+        usage_colleges[college]["_lab_users"].update(row["_lab_users"])
+
+        if row["proposal_count"] > 0:
+            usage_colleges[college]["proposal_pis"] += 1
+        if row["unique_lab_users"] > 0:
+            usage_colleges[college]["using_pis"] += 1
+        if row["mapping_status"] == "matched":
+            usage_colleges[college]["matched_pis"] += 1
+            matched_pis_count += 1
+        elif row["mapping_status"] == "proposals_only":
+            proposals_only_pis_count += 1
+        else:
+            usage_only_pis_count += 1
+
+        if row["iids_proposal_count"] > 0:
+            usage_colleges[college]["affiliated_pis"] += 1
+            if row["unique_lab_users"] > 0:
+                affiliated_using_pis_count += 1
+
+    usage_by_college = []
+    for entry in usage_colleges.values():
+        proposal_count = entry["proposal_count"]
+        usage_by_college.append({
+            "college": entry["college"],
+            "college_display": entry["college_display"],
+            "total_pis": entry["total_pis"],
+            "proposal_pis": entry["proposal_pis"],
+            "using_pis": entry["using_pis"],
+            "matched_pis": entry["matched_pis"],
+            "affiliated_pis": entry["affiliated_pis"],
+            "distinct_lab_users": len(entry["_lab_users"]),
+            "proposal_count": proposal_count,
+            "iids_proposal_count": entry["iids_proposal_count"],
+            "iids_proposal_rate": round(entry["iids_proposal_count"] / proposal_count * 100, 1) if proposal_count > 0 else 0,
+            "charge_revenue": round(entry["charge_revenue"], 2),
+            "equipment_hours": round(entry["equipment_hours"], 1),
+        })
+    usage_by_college.sort(key=lambda x: (x["matched_pis"], x["iids_proposal_count"], x["distinct_lab_users"]), reverse=True)
+
+    pi_usage_mapping = {
+        "summary": {
+            "total_pis": len(usage_by_pi),
+            "matched_pis": matched_pis_count,
+            "proposals_only_pis": proposals_only_pis_count,
+            "usage_only_pis": usage_only_pis_count,
+            "affiliated_pis": total_affiliated_pis,
+            "affiliated_using_pis": affiliated_using_pis_count,
+            "distinct_lab_users": len(all_lab_users),
+        },
+        "by_college": usage_by_college,
+        "by_pi": [
+            {key: value for key, value in row.items() if not key.startswith("_")}
+            for row in usage_by_pi
+        ],
+    }
+
+    # ----------------------------------------------------------------
+    # (i) CRC user growth: retention/churn + type breakdown
     # ----------------------------------------------------------------
     fy_usernames: dict[int, set] = {}
     fy_types: dict[int, dict] = {}
@@ -1481,4 +1831,6 @@ def get_analytics_data() -> dict:
         "cross_linkage": cross_linkage,
         "equipment_enriched": equipment_enriched,
         "crc_growth": crc_growth,
+        "pi_affiliation": pi_affiliation,
+        "pi_usage_mapping": pi_usage_mapping,
     }

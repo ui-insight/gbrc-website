@@ -13,6 +13,20 @@ interface Props {
   data: CollegeSummary[]
 }
 
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: CollegeSummary }> }) {
+  if (!active || !payload?.length) return null
+  const d = payload[0].payload
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{d.college_display || d.college}</p>
+      <p className="text-amber-600">IIDS Checkbox Revenue: {formatFullDollar(d.iids_revenue)}</p>
+      <p className="text-neutral-500">Non-Checkbox Revenue: {formatFullDollar(d.non_iids_revenue)}</p>
+      <p className="text-neutral-700 font-medium mt-1">Total: {formatFullDollar(d.total_revenue)}</p>
+      <p className="text-neutral-500 mt-1">IIDS Rate: {d.iids_percentage}% &middot; {d.unique_pis} PIs &middot; {d.charge_count} charges</p>
+    </div>
+  )
+}
+
 export default function CollegeBarChart({ data }: Props) {
   if (!data || data.length === 0) return null
 
@@ -21,20 +35,6 @@ export default function CollegeBarChart({ data }: Props) {
     ...c,
     label: c.college,
   }))
-
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: CollegeSummary }> }) => {
-    if (!active || !payload?.length) return null
-    const d = payload[0].payload
-    return (
-      <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
-        <p className="font-semibold text-neutral-900 mb-1">{d.college_display || d.college}</p>
-        <p className="text-amber-600">IIDS Checkbox Revenue: {formatFullDollar(d.iids_revenue)}</p>
-        <p className="text-neutral-500">Non-Checkbox Revenue: {formatFullDollar(d.non_iids_revenue)}</p>
-        <p className="text-neutral-700 font-medium mt-1">Total: {formatFullDollar(d.total_revenue)}</p>
-        <p className="text-neutral-500 mt-1">IIDS Rate: {d.iids_percentage}% &middot; {d.unique_pis} PIs &middot; {d.charge_count} charges</p>
-      </div>
-    )
-  }
 
   return (
     <ChartCard

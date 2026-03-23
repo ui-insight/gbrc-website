@@ -262,6 +262,46 @@ export interface SponsorAnalysisData {
   by_category: SponsorCategoryItem[]
 }
 
+// --- PI-Centric Affiliation ---
+
+export interface PIAffiliationSummary {
+  total_pis: number
+  affiliated_pis: number
+  total_proposals: number
+  iids_proposals: number
+  iids_proposal_rate: number
+  total_awarded_cost: number
+}
+
+export interface PIAffiliationItem {
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  proposal_count: number
+  iids_proposal_count: number
+  iids_proposal_rate: number
+  awarded_count: number
+  awarded_cost: number
+}
+
+export interface CollegeAffiliationItem {
+  college: string
+  college_display: string
+  pi_count: number
+  affiliated_pi_count: number
+  proposal_count: number
+  iids_proposal_count: number
+  iids_proposal_rate: number
+  awarded_cost: number
+}
+
+export interface PIAffiliationData {
+  summary: PIAffiliationSummary
+  by_college: CollegeAffiliationItem[]
+  by_pi: PIAffiliationItem[]
+}
+
 // --- Department Insights ---
 
 export interface CollegeInsight {
@@ -310,6 +350,59 @@ export interface CrossLinkageData {
   match_rate: number
 }
 
+// --- PI-to-Usage Mapping ---
+
+export interface PIUsageMappingSummary {
+  total_pis: number
+  matched_pis: number
+  proposals_only_pis: number
+  usage_only_pis: number
+  affiliated_pis: number
+  affiliated_using_pis: number
+  distinct_lab_users: number
+}
+
+export interface PIUsageCollegeItem {
+  college: string
+  college_display: string
+  total_pis: number
+  proposal_pis: number
+  using_pis: number
+  matched_pis: number
+  affiliated_pis: number
+  distinct_lab_users: number
+  proposal_count: number
+  iids_proposal_count: number
+  iids_proposal_rate: number
+  charge_revenue: number
+  equipment_hours: number
+}
+
+export interface PIUsageItem {
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  mapping_status: 'matched' | 'proposals_only' | 'usage_only'
+  proposal_count: number
+  iids_proposal_count: number
+  iids_proposal_rate: number
+  awarded_cost: number
+  charge_revenue: number
+  charge_count: number
+  unique_charge_users: number
+  unique_equipment_users: number
+  unique_lab_users: number
+  equipment_hours: number
+  reservation_count: number
+}
+
+export interface PIUsageMappingData {
+  summary: PIUsageMappingSummary
+  by_college: PIUsageCollegeItem[]
+  by_pi: PIUsageItem[]
+}
+
 // --- Equipment Enriched ---
 
 export interface EquipmentEnrichedItem {
@@ -347,4 +440,4 @@ export interface CRCGrowthData {
 
 // --- Tab Data Union ---
 
-export type DashboardTab = 'overview' | 'revenue' | 'services' | 'proposals' | 'departments' | 'infrastructure'
+export type DashboardTab = 'overview' | 'affiliation' | 'usage' | 'revenue' | 'services' | 'infrastructure'

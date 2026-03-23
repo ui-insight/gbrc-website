@@ -318,3 +318,98 @@ class CRCRetentionItem(BaseModel):
 class CRCGrowthResponse(BaseModel):
     retention: list[CRCRetentionItem]
     by_type: list[dict]
+
+
+# --- PI-Centric Affiliation ---
+
+
+class PIAffiliationSummary(BaseModel):
+    total_pis: int
+    affiliated_pis: int
+    total_proposals: int
+    iids_proposals: int
+    iids_proposal_rate: float
+    total_awarded_cost: float
+
+
+class PIAffiliationItem(BaseModel):
+    pi_name: str
+    pi_email: str = ""
+    college: str
+    college_display: str = ""
+    proposal_count: int
+    iids_proposal_count: int
+    iids_proposal_rate: float
+    awarded_count: int
+    awarded_cost: float
+
+
+class CollegeAffiliationItem(BaseModel):
+    college: str
+    college_display: str = ""
+    pi_count: int
+    affiliated_pi_count: int
+    proposal_count: int
+    iids_proposal_count: int
+    iids_proposal_rate: float
+    awarded_cost: float
+
+
+class PIAffiliationResponse(BaseModel):
+    summary: PIAffiliationSummary
+    by_college: list[CollegeAffiliationItem]
+    by_pi: list[PIAffiliationItem]
+
+
+# --- PI-to-Usage Mapping ---
+
+
+class PIUsageMappingSummary(BaseModel):
+    total_pis: int
+    matched_pis: int
+    proposals_only_pis: int
+    usage_only_pis: int
+    affiliated_pis: int
+    affiliated_using_pis: int
+    distinct_lab_users: int
+
+
+class PIUsageCollegeItem(BaseModel):
+    college: str
+    college_display: str = ""
+    total_pis: int
+    proposal_pis: int
+    using_pis: int
+    matched_pis: int
+    affiliated_pis: int
+    distinct_lab_users: int
+    proposal_count: int
+    iids_proposal_count: int
+    iids_proposal_rate: float
+    charge_revenue: float
+    equipment_hours: float
+
+
+class PIUsageItem(BaseModel):
+    pi_name: str
+    pi_email: str = ""
+    college: str
+    college_display: str = ""
+    mapping_status: str
+    proposal_count: int
+    iids_proposal_count: int
+    iids_proposal_rate: float
+    awarded_cost: float
+    charge_revenue: float
+    charge_count: int
+    unique_charge_users: int
+    unique_equipment_users: int
+    unique_lab_users: int
+    equipment_hours: float
+    reservation_count: int
+
+
+class PIUsageMappingResponse(BaseModel):
+    summary: PIUsageMappingSummary
+    by_college: list[PIUsageCollegeItem]
+    by_pi: list[PIUsageItem]

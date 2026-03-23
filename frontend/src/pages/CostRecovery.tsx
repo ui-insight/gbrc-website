@@ -2,17 +2,15 @@ import { useState, useRef } from 'react'
 import {
   useDashboardAuth,
   useDashboardData,
+  usePIAffiliationData,
+  usePIUsageMappingData,
   useRevenueSourcesData,
-  useProposalPortfolioData,
-  useCheckboxAnalysisData,
-  useSponsorAnalysisData,
-  useDepartmentInsightsData,
-  useCrossLinkageData,
   useEquipmentEnrichedData,
   useCRCGrowthData,
 } from '../hooks/useDashboardData'
 import type { DashboardTab } from '../types/dashboard'
 import DashboardAuth from '../components/dashboard/DashboardAuth'
+import ChartCard from '../components/dashboard/ChartCard'
 import StatCard from '../components/dashboard/StatCard'
 import CollegeBarChart from '../components/dashboard/CollegeBarChart'
 import TrendChart from '../components/dashboard/TrendChart'
@@ -21,17 +19,17 @@ import PIDetailTable from '../components/dashboard/PIDetailTable'
 import ServicesTab from '../components/dashboard/ServicesTab'
 import PIdrilldownPanel from '../components/dashboard/PIdrilldownPanel'
 import DataInspector from '../components/dashboard/DataInspector'
+import AffiliationTab from '../components/dashboard/AffiliationTab'
+import UsageMappingTab from '../components/dashboard/UsageMappingTab'
 import RevenueSourcesTab from '../components/dashboard/RevenueSourcesTab'
-import ProposalsTab from '../components/dashboard/ProposalsTab'
-import DepartmentsTab from '../components/dashboard/DepartmentsTab'
 import InfrastructureTab from '../components/dashboard/InfrastructureTab'
 
 const TABS: { id: DashboardTab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
+  { id: 'affiliation', label: 'Proposal Affiliation' },
+  { id: 'usage', label: 'PI To GBRC Usage' },
   { id: 'revenue', label: 'Revenue Sources' },
   { id: 'services', label: 'Services' },
-  { id: 'proposals', label: 'Proposals' },
-  { id: 'departments', label: 'Departments' },
   { id: 'infrastructure', label: 'Infrastructure' },
 ]
 
@@ -71,12 +69,9 @@ function DashboardContent({ token }: { token: string }) {
   const drilldownRef = useRef<HTMLDivElement>(null)
 
   // Lazy-loaded tab data
+  const piAffiliation = usePIAffiliationData(token, true, activeTab === 'overview' || activeTab === 'affiliation')
+  const piUsageMapping = usePIUsageMappingData(token, true, activeTab === 'overview' || activeTab === 'usage')
   const revenueSources = useRevenueSourcesData(token, true, activeTab === 'revenue')
-  const proposalPortfolio = useProposalPortfolioData(token, true, activeTab === 'proposals')
-  const checkboxAnalysis = useCheckboxAnalysisData(token, true, activeTab === 'proposals')
-  const sponsorAnalysis = useSponsorAnalysisData(token, true, activeTab === 'proposals')
-  const departmentInsights = useDepartmentInsightsData(token, true, activeTab === 'departments')
-  const crossLinkage = useCrossLinkageData(token, true, activeTab === 'departments')
   const equipmentEnriched = useEquipmentEnrichedData(token, true, activeTab === 'infrastructure')
   const crcGrowth = useCRCGrowthData(token, true, activeTab === 'infrastructure')
 
@@ -103,6 +98,8 @@ function DashboardContent({ token }: { token: string }) {
 
   if (!summary) return null
 
+  const chargeCoverage = availableFYs.filter((fy) => fy !== 'total').join(', ') || 'the available fiscal years'
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -110,7 +107,7 @@ function DashboardContent({ token }: { token: string }) {
         <h1 className="text-3xl font-bold text-neutral-900">IIDS Cost Recovery Dashboard</h1>
         <p className="mt-2 text-neutral-600">
           Analysis of GBRC infrastructure usage, IIDS checkbox compliance, revenue sources, and proposal analytics.
-          Data covers FY2023 through partial FY2025.
+          Charge-based metrics currently cover {chargeCoverage}. Proposal analytics use the full proposal dataset available in the backend.
         </p>
       </div>
 
@@ -138,10 +135,104 @@ function DashboardContent({ token }: { token: string }) {
         const fySummary = overviewFY === 'total' ? summary : (summary.by_fy?.[overviewFY] ?? summary)
         const fyPIs = piBreakdownByFY[overviewFY] ?? piBreakdown
         const fyColleges = collegeBreakdownByFY[overviewFY] ?? collegeBreakdown
+        const topAffiliationCollege = piAffiliation.data?.by_college[0]
+        const topUsageCollege = piUsageMapping.data?.by_college[0]
         return (
         <div className="space-y-8">
           {/* Fiscal Year Selector */}
           <FYSelector available={availableFYs} selected={overviewFY} onChange={setOverviewFY} />
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <ChartCard
+              title="Question 1 Snapshot"
+              subtitle="Which PIs are affiliating proposals with IIDS, and where are they concentrated?"
+            >
+              {piAffiliation.loading ? (
+                <div className="text-sm text-neutral-500">Loading proposal affiliation snapshot...</div>
+              ) : piAffiliation.data ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <StatCard
+                      label="PIs Using IIDS"
+                      value={piAffiliation.data.summary.affiliated_pis.toLocaleString()}
+                      subtitle={`${piAffiliation.data.summary.total_pis.toLocaleString()} proposal PIs`}
+                      highlight="gold"
+                    />
+                    <StatCard
+                      label="IIDS Proposals"
+                      value={piAffiliation.data.summary.iids_proposals.toLocaleString()}
+                      subtitle={`${piAffiliation.data.summary.iids_proposal_rate}% of proposals`}
+                      highlight="green"
+                    />
+                    <StatCard
+                      label="Top College"
+                      value={topAffiliationCollege?.college ?? '—'}
+                      subtitle={topAffiliationCollege ? `${topAffiliationCollege.iids_proposal_count} IIDS proposals` : 'No proposal data'}
+                      highlight="default"
+                    />
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    {topAffiliationCollege
+                      ? `${topAffiliationCollege.college_display} currently leads this view with ${topAffiliationCollege.iids_proposal_count} IIDS-affiliated proposals and an ${topAffiliationCollege.iids_proposal_rate}% affiliation rate.`
+                      : 'Proposal affiliation data is not available yet.'}
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('affiliation')}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-neutral-900 text-white hover:bg-neutral-800"
+                  >
+                    Open Proposal Affiliation
+                  </button>
+                </div>
+              ) : (
+                <div className="text-sm text-neutral-500">Proposal affiliation data is not available yet.</div>
+              )}
+            </ChartCard>
+
+            <ChartCard
+              title="Question 2 Snapshot"
+              subtitle="How do those PIs map onto the users actually showing up in GBRC activity?"
+            >
+              {piUsageMapping.loading ? (
+                <div className="text-sm text-neutral-500">Loading PI-to-usage snapshot...</div>
+              ) : piUsageMapping.data ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <StatCard
+                      label="Matched PIs"
+                      value={piUsageMapping.data.summary.matched_pis.toLocaleString()}
+                      subtitle="Proposal plus GBRC usage"
+                      highlight="green"
+                    />
+                    <StatCard
+                      label="Affiliated And Using"
+                      value={piUsageMapping.data.summary.affiliated_using_pis.toLocaleString()}
+                      subtitle={`${piUsageMapping.data.summary.affiliated_pis.toLocaleString()} affiliated PIs total`}
+                      highlight="gold"
+                    />
+                    <StatCard
+                      label="Lab Users"
+                      value={piUsageMapping.data.summary.distinct_lab_users.toLocaleString()}
+                      subtitle={topUsageCollege ? `${topUsageCollege.college} leads by matched PI count` : 'Across billed and equipment activity'}
+                      highlight="default"
+                    />
+                  </div>
+                  <p className="text-sm text-neutral-600">
+                    {topUsageCollege
+                      ? `${topUsageCollege.college_display} currently has the strongest observed linkage in this view, with ${topUsageCollege.matched_pis} matched PIs and ${topUsageCollege.distinct_lab_users} distinct lab users tied to those labs.`
+                      : 'PI-to-usage mapping data is not available yet.'}
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('usage')}
+                    className="px-4 py-2 text-sm font-medium rounded-md bg-neutral-900 text-white hover:bg-neutral-800"
+                  >
+                    Open PI To GBRC Usage
+                  </button>
+                </div>
+              ) : (
+                <div className="text-sm text-neutral-500">PI-to-usage mapping data is not available yet.</div>
+              )}
+            </ChartCard>
+          </div>
 
           {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -178,6 +269,7 @@ function DashboardContent({ token }: { token: string }) {
           {selectedPI && (
             <div ref={drilldownRef}>
               <PIdrilldownPanel
+                key={`${selectedPI}:${token}`}
                 piEmail={selectedPI}
                 token={token}
                 onClose={() => setSelectedPI(null)}
@@ -210,28 +302,27 @@ function DashboardContent({ token }: { token: string }) {
               : null
       )}
 
+      {activeTab === 'affiliation' && (
+        <AffiliationTab
+          data={piAffiliation.data}
+          loading={piAffiliation.loading}
+          onPIClick={handlePIClick}
+        />
+      )}
+
+      {activeTab === 'usage' && (
+        <UsageMappingTab
+          data={piUsageMapping.data}
+          loading={piUsageMapping.loading}
+          onPIClick={handlePIClick}
+        />
+      )}
+
       {activeTab === 'services' && (
         <ServicesTab
           services={services}
           servicesByFY={servicesByFY}
           availableFYs={availableFYs}
-        />
-      )}
-
-      {activeTab === 'proposals' && (
-        <ProposalsTab
-          portfolio={proposalPortfolio.data}
-          checkboxes={checkboxAnalysis.data}
-          sponsors={sponsorAnalysis.data}
-          loading={proposalPortfolio.loading || checkboxAnalysis.loading || sponsorAnalysis.loading}
-        />
-      )}
-
-      {activeTab === 'departments' && (
-        <DepartmentsTab
-          insights={departmentInsights.data}
-          crossLinkage={crossLinkage.data}
-          loading={departmentInsights.loading || crossLinkage.loading}
         />
       )}
 
@@ -249,6 +340,7 @@ function DashboardContent({ token }: { token: string }) {
       {selectedPI && activeTab !== 'overview' && (
         <div ref={drilldownRef}>
           <PIdrilldownPanel
+            key={`${selectedPI}:${token}`}
             piEmail={selectedPI}
             token={token}
             onClose={() => setSelectedPI(null)}

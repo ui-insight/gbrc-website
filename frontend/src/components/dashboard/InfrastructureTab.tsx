@@ -22,6 +22,17 @@ interface Props {
 export default function InfrastructureTab({ equipment, crcUsers, equipmentEnriched, crcGrowth }: Props) {
   return (
     <div className="space-y-6">
+      <ChartCard
+        title="Interpretation Note"
+        subtitle="What this tab can and cannot answer about trainees and lab users"
+      >
+        <p className="text-sm text-neutral-600">
+          CRC exports in this project are organized by department, college, and user type rather than by PI. That means
+          the PI-to-usage tab uses billed users and equipment reservation users to approximate lab members tied to a PI,
+          while the CRC views here remain institution-level context.
+        </p>
+      </ChartCard>
+
       {/* Equipment Monthly Trend */}
       {equipmentEnriched && equipmentEnriched.monthly_trend.length > 0 && (
         <ChartCard title="Equipment Usage Trend" subtitle="Total hours by month">

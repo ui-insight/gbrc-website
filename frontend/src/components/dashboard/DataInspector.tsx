@@ -96,8 +96,8 @@ export default function DataInspector({ token }: { token: string }) {
     crc_users: [],
     proposals: [],
   })
-  const [loading, setLoading] = useState(false)
   const [loaded, setLoaded] = useState<Set<Tab>>(new Set())
+  const [errors, setErrors] = useState<Partial<Record<Tab, string>>>({})
   const [filter, setFilter] = useState('')
   const [sortKey, setSortKey] = useState('')
   const [sortAsc, setSortAsc] = useState(true)
@@ -105,26 +105,33 @@ export default function DataInspector({ token }: { token: string }) {
 
   // Load data for current tab on first view
   useEffect(() => {
-    if (loaded.has(activeTab)) return
-    setLoading(true)
+    if (loaded.has(activeTab) || errors[activeTab]) return
+    let cancelled = false
+
     fetchRawData(activeTab, token)
       .then((rows) => {
+        if (cancelled) return
         setData((prev) => ({ ...prev, [activeTab]: rows }))
         setLoaded((prev) => new Set(prev).add(activeTab))
+        setErrors((prev) => ({ ...prev, [activeTab]: undefined }))
       })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [activeTab, token, loaded])
+      .catch((err) => {
+        if (cancelled) return
+        setErrors((prev) => ({
+          ...prev,
+          [activeTab]: err instanceof Error ? err.message : 'Failed to load data',
+        }))
+      })
 
-  // Reset page/sort when switching tabs
-  useEffect(() => {
-    setPage(0)
-    setSortKey('')
-    setFilter('')
-  }, [activeTab])
+    return () => {
+      cancelled = true
+    }
+  }, [activeTab, token, loaded, errors])
 
   const tabDef = TABS.find((t) => t.id === activeTab)!
   const rows = data[activeTab]
+  const activeError = errors[activeTab]
+  const loading = !loaded.has(activeTab) && !activeError
 
   const filtered = useMemo(() => {
     if (!filter) return rows
@@ -174,7 +181,13 @@ export default function DataInspector({ token }: { token: string }) {
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id)
+              setPage(0)
+              setSortKey('')
+              setSortAsc(true)
+              setFilter('')
+            }}
             className={`px-4 py-2 text-sm font-medium rounded-t-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-neutral-900 text-white'
@@ -228,6 +241,16 @@ export default function DataInspector({ token }: { token: string }) {
       {/* Table */}
       {loading ? (
         <div className="p-8 text-center text-neutral-500">Loading data...</div>
+      ) : activeError ? (
+        <div className="p-8 text-center">
+          <p className="text-red-600">Error loading data: {activeError}</p>
+          <button
+            onClick={() => setErrors((prev) => ({ ...prev, [activeTab]: undefined }))}
+            className="mt-3 px-3 py-1.5 text-sm border border-neutral-300 rounded hover:bg-neutral-50"
+          >
+            Retry
+          </button>
+        </div>
       ) : (
         <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
           <table className="w-full text-sm">
