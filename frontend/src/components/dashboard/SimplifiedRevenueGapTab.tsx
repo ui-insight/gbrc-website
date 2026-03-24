@@ -1,4 +1,13 @@
 import { Fragment, useMemo, useState } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import type {
   SimplifiedRevenueGapData,
   SimplifiedRevenueGapItem,
@@ -10,6 +19,14 @@ import StatCard from './StatCard'
 type RowQueryKey = keyof SimplifiedRevenueGapItem
 type SortDir = 'asc' | 'desc'
 
+const GRAPH_COLLEGE_CODES = ['CALS', 'COS', 'RCI', 'CNR', 'SHAMP', 'ENG'] as const
+
+interface CollegeRevenueSummary {
+  college: string
+  total_paid: number
+  grant_code_count: number
+}
+
 const formatDollar = (value: number) => {
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
@@ -18,6 +35,42 @@ const formatDollar = (value: number) => {
 
 const formatFullDollar = (value: number) =>
   `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
+function RevenueTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeRevenueSummary }>
+}) {
+  if (!active || !payload?.length) return null
+  const row = payload[0].payload
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
+      <p className="text-neutral-700">Unaffiliated revenue: {formatFullDollar(row.total_paid)}</p>
+      <p className="text-neutral-500 mt-1">{row.grant_code_count} grant code{row.grant_code_count !== 1 ? 's' : ''}</p>
+    </div>
+  )
+}
+
+function GrantCodeTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeRevenueSummary }>
+}) {
+  if (!active || !payload?.length) return null
+  const row = payload[0].payload
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
+      <p className="text-neutral-700">{row.grant_code_count} unaffiliated grant code{row.grant_code_count !== 1 ? 's' : ''}</p>
+      <p className="text-neutral-500 mt-1">Revenue: {formatFullDollar(row.total_paid)}</p>
+    </div>
+  )
+}
 
 function compareRows<T, K extends keyof T>(a: T, b: T, key: K, dir: SortDir) {
   const av = a[key] as string | number | boolean
@@ -101,6 +154,27 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
   const sortedRows = useMemo(() => (
     [...filteredRows].sort((a, b) => compareRows(a, b, sortKey, sortDir))
   ), [filteredRows, sortDir, sortKey])
+
+  const revenueByCollege = useMemo<CollegeRevenueSummary[]>(() => {
+    const byCollege = new Map<string, { total_paid: number; grant_codes: Set<string> }>(
+      GRAPH_COLLEGE_CODES.map((code) => [code, { total_paid: 0, grant_codes: new Set() }]),
+    )
+    const rows = currentView?.rows ?? []
+    rows.forEach((row) => {
+      const entry = byCollege.get(row.college)
+      if (!entry) return
+      entry.total_paid += row.total_paid
+      if (row.payment_source) entry.grant_codes.add(row.payment_source)
+    })
+    return GRAPH_COLLEGE_CODES.map((code) => {
+      const entry = byCollege.get(code)!
+      return {
+        college: code,
+        total_paid: Math.round(entry.total_paid * 100) / 100,
+        grant_code_count: entry.grant_codes.size,
+      }
+    })
+  }, [currentView])
 
   const summary = currentView?.summary ?? data?.summary
 
@@ -203,6 +277,71 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
           </button>
         ))}
       </div>
+
+      {revenueByCollege.length > 0 && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard
+            title="Unaffiliated Revenue By College"
+            subtitle="Total revenue from non-IIDS grant codes per college"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, revenueByCollege.length * 56 + 40)}>
+              <BarChart
+                data={revenueByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => formatDollar(Number(value))}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<RevenueTooltip />} />
+                <Bar
+                  dataKey="total_paid"
+                  name="Unaffiliated Revenue"
+                  fill="#ef4444"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard
+            title="Unaffiliated Grant Codes By College"
+            subtitle="Number of distinct non-IIDS payment sources per college"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, revenueByCollege.length * 56 + 40)}>
+              <BarChart
+                data={revenueByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" allowDecimals={false} />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<GrantCodeTooltip />} />
+                <Bar
+                  dataKey="grant_code_count"
+                  name="Grant Codes"
+                  fill="#f97316"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+      )}
 
       <ChartCard
         title="Non-IIDS Payment Sources"

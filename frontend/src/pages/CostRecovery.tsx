@@ -31,7 +31,7 @@ import SimplifiedRevenueGapTab from '../components/dashboard/SimplifiedRevenueGa
 const TABS: { id: DashboardTab; label: string }[] = [
   { id: 'simplified', label: 'GBRC Users' },
   { id: 'simplified-proposals', label: 'Proposal Activity' },
-  { id: 'simplified-revenue-gap', label: 'Simplified Revenue Gap' },
+  { id: 'simplified-revenue-gap', label: 'Unaffiliated Revenue' },
   { id: 'overview', label: 'Overview' },
   { id: 'affiliation', label: 'Proposal Affiliation' },
   { id: 'usage', label: 'PI To GBRC Usage' },
