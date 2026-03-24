@@ -2086,7 +2086,8 @@ def get_pi_usage_summary() -> dict:
                         break
             if pnetid in pinetid_to_pi_key:
                 continue
-            # Last resort: match canonical PI name from a CRC row where the user IS the PI
+            # Last resort: match canonical PI name from a CRC row where the
+            # user IS the PI, or try first-initial+lastname netid convention
             for crc_row in crc_rows_for_view:
                 if crc_row["_pinetid"] != pnetid:
                     continue
@@ -2100,6 +2101,19 @@ def get_pi_usage_summary() -> dict:
                             pinetid_to_pi_key[pnetid] = pk
                             break
                     break
+            if pnetid in pinetid_to_pi_key:
+                continue
+            # Try first-initial+lastname convention (e.g. mmcguire → Mark McGuire)
+            for pk, pinfo in pi_data.items():
+                pi_name = _canonical_pi_name(pinfo["pi_name"])
+                name_parts = pi_name.split()
+                if len(name_parts) >= 2:
+                    first = name_parts[0]
+                    last = name_parts[-1]
+                    candidate = (first[0] + last).lower()
+                    if candidate == pnetid:
+                        pinetid_to_pi_key[pnetid] = pk
+                        break
 
         result_pis = []
         for info in pi_data.values():
