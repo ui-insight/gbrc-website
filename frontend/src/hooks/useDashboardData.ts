@@ -21,6 +21,7 @@ import type {
   CRCGrowthData,
   PIUsageSummaryData,
   SimplifiedProposalData,
+  SimplifiedRevenueGapData,
 } from '../types/dashboard'
 
 async function fetchDashboard<T>(endpoint: string): Promise<T> {
@@ -165,4 +166,8 @@ export function usePIUsageSummaryData(active: boolean) {
 
 export function useSimplifiedProposalsData(active: boolean) {
   return useTabData<SimplifiedProposalData>('/simplified-proposals', active)
+}
+
+export function useSimplifiedRevenueGapData(active: boolean) {
+  return useTabData<SimplifiedRevenueGapData>('/simplified-revenue-gap', active)
 }

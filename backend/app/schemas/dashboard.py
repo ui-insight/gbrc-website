@@ -511,3 +511,43 @@ class SimplifiedProposalResponse(BaseModel):
     summary: SimplifiedProposalStats
     by_pi: list[SimplifiedProposalPIItem]
     proposals: list[SimplifiedProposalItem]
+
+
+class SimplifiedRevenueGapStats(BaseModel):
+    total_pis: int
+    payment_sources: int
+    total_charges: int
+    total_revenue: float
+    sources_with_pi_proposals: int
+
+
+class SimplifiedRevenueGapItem(BaseModel):
+    pi_name: str
+    pi_email: str
+    college: str
+    college_display: str
+    usage_type: str
+    payment_source: str
+    payment_source_type: str
+    payment_source_example: str = ""
+    fiscal_years_label: str = ""
+    charge_count: int
+    total_paid: float
+    pi_proposal_count: int
+    pi_iids_proposal_count: int
+    pi_funded_proposal_count: int
+    pi_requested_total: float
+    pi_grant_codes_label: str = ""
+    latest_submission_date: str = ""
+
+
+class SimplifiedRevenueGapYear(BaseModel):
+    summary: SimplifiedRevenueGapStats
+    rows: list[SimplifiedRevenueGapItem]
+
+
+class SimplifiedRevenueGapResponse(BaseModel):
+    summary: SimplifiedRevenueGapStats
+    rows: list[SimplifiedRevenueGapItem]
+    available_fiscal_years: list[str] = []
+    by_fy: dict[str, SimplifiedRevenueGapYear] = {}

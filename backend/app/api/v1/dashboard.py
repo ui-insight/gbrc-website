@@ -19,6 +19,7 @@ from app.schemas.dashboard import (
     RevenueSourcesResponse,
     ServiceCategoryItem,
     SimplifiedProposalResponse,
+    SimplifiedRevenueGapResponse,
     SponsorAnalysisResponse,
     SummaryResponse,
     TrendsResponse,
@@ -28,6 +29,7 @@ from app.services.checkbox_data import (
     get_dashboard_data,
     get_pi_charges,
     get_simplified_proposals,
+    get_simplified_revenue_gap,
     get_pi_usage_summary,
     get_raw_data,
 )
@@ -166,6 +168,12 @@ async def get_pi_usage_summary_endpoint():
 async def get_simplified_proposals_endpoint():
     """Proposal view limited to the simplified GBRC PI set."""
     return get_simplified_proposals()
+
+
+@router.get("/simplified-revenue-gap", response_model=SimplifiedRevenueGapResponse)
+async def get_simplified_revenue_gap_endpoint():
+    """Non-IIDS payment sources used by the simplified GBRC PI set."""
+    return get_simplified_revenue_gap()
 
 
 # --- Parameterized routes (must be last to avoid catching literal paths) ---
