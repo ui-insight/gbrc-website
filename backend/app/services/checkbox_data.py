@@ -1850,6 +1850,8 @@ def get_pi_usage_summary() -> dict:
         get_college_for_pi,
         get_college_display_name,
         get_college_from_charge_dept,
+        get_simplified_crc_college,
+        SIMPLIFIED_COLLEGE_CODES,
     )
 
     charges = _load_charges()
@@ -1897,7 +1899,7 @@ def get_pi_usage_summary() -> dict:
                     row.get("email", ""),
                     row.get("username", "") or f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip(),
                 ),
-                "_college": row.get("college", "").strip() or "Unknown",
+                "_college": get_simplified_crc_college(row.get("college", "").strip()),
                 "_service": row.get("service", "").strip(),
             })
 
@@ -2073,13 +2075,15 @@ def get_pi_usage_summary() -> dict:
         }
 
     def _build_crc_college_usage(rows: list[dict]) -> list[dict]:
-        colleges: dict[str, set[str]] = {}
+        colleges: dict[str, set[str]] = {
+            code: set() for code in SIMPLIFIED_COLLEGE_CODES
+        }
         for row in rows:
             college = row["_college"]
             user_key = row["_user_key"]
-            if not user_key:
+            if not college or not user_key:
                 continue
-            colleges.setdefault(college, set()).add(user_key)
+            colleges[college].add(user_key)
 
         result = [
             {
@@ -2088,7 +2092,6 @@ def get_pi_usage_summary() -> dict:
             }
             for college, users in colleges.items()
         ]
-        result.sort(key=lambda x: (x["unique_users"], x["college"]), reverse=True)
         return result
 
     fy_values = sorted({

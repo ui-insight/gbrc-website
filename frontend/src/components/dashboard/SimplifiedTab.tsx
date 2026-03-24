@@ -20,9 +20,11 @@ type SortKey = keyof PIUsageSummaryItem
 type SortDir = 'asc' | 'desc'
 type UsageFilter = 'all' | PIUsageSummaryItem['usage_type']
 
+const GRAPH_COLLEGE_CODES = ['CALS', 'COS', 'RCI', 'CNR', 'SHAMP', 'ENG'] as const
+type GraphCollegeCode = typeof GRAPH_COLLEGE_CODES[number]
+
 interface CollegeUsageSummary {
   college: string
-  college_display: string
   total_paid: number
   equipment_hours: number
   charge_count: number
@@ -57,6 +59,10 @@ function formatHours(value: number): string {
   return value.toLocaleString(undefined, { maximumFractionDigits: 1 })
 }
 
+function isGraphCollegeCode(value: string): value is GraphCollegeCode {
+  return GRAPH_COLLEGE_CODES.includes(value as GraphCollegeCode)
+}
+
 function CollegeUsageTooltip({
   active,
   payload,
@@ -72,7 +78,7 @@ function CollegeUsageTooltip({
 
   return (
     <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
-      <p className="font-semibold text-neutral-900 mb-1">{row.college_display}</p>
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
       <p className="text-neutral-700">
         {mode === 'revenue'
           ? `Paid revenue: ${formatCurrency(row.total_paid)}`
@@ -154,51 +160,58 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
   }, [filtered, sortKey, sortDir])
 
   const usageByCollege = useMemo<CollegeUsageSummary[]>(() => {
-    const byCollege = new Map<string, CollegeUsageSummary>()
+    const byCollege = new Map<string, CollegeUsageSummary>(
+      GRAPH_COLLEGE_CODES.map((college) => [college, {
+        college,
+        total_paid: 0,
+        equipment_hours: 0,
+        charge_count: 0,
+        reservation_count: 0,
+        pi_count: 0,
+      }]),
+    )
 
     filtered.forEach((pi) => {
-      const key = pi.college_display || pi.college || 'Unknown'
-      const existing = byCollege.get(key)
-
-      if (existing) {
-        existing.total_paid += pi.total_paid
-        existing.equipment_hours += pi.equipment_hours
-        existing.charge_count += pi.charge_count
-        existing.reservation_count += pi.reservation_count
-        existing.pi_count += 1
+      const key = pi.college
+      if (!isGraphCollegeCode(key)) {
         return
       }
-
-      byCollege.set(key, {
-        college: pi.college,
-        college_display: pi.college_display,
-        total_paid: pi.total_paid,
-        equipment_hours: pi.equipment_hours,
-        charge_count: pi.charge_count,
-        reservation_count: pi.reservation_count,
-        pi_count: 1,
-      })
+      const existing = byCollege.get(key)
+      if (!existing) return
+      existing.total_paid += pi.total_paid
+      existing.equipment_hours += pi.equipment_hours
+      existing.charge_count += pi.charge_count
+      existing.reservation_count += pi.reservation_count
+      existing.pi_count += 1
     })
 
-    return Array.from(byCollege.values()).sort((a, b) => b.total_paid - a.total_paid)
+    return GRAPH_COLLEGE_CODES.map((college) => byCollege.get(college)!)
   }, [filtered])
 
-  const revenueByCollege = useMemo(
-    () => [...usageByCollege].sort((a, b) => b.total_paid - a.total_paid),
-    [usageByCollege],
-  )
+  const revenueByCollege = usageByCollege
 
-  const equipmentByCollege = useMemo(
-    () => [...usageByCollege].sort((a, b) => b.equipment_hours - a.equipment_hours),
-    [usageByCollege],
-  )
+  const equipmentByCollege = usageByCollege
 
   const crcByCollege = useMemo(
     () => {
       const source = selectedFY === 'all'
         ? data?.crc_by_college ?? []
         : data?.crc_by_college_by_fy[selectedFY] ?? []
-      return [...source].sort((a, b) => b.unique_users - a.unique_users)
+      const byCollege = new Map(
+        GRAPH_COLLEGE_CODES.map((college) => [college, {
+          college,
+          unique_users: 0,
+        }]),
+      )
+      source.forEach((row) => {
+        if (isGraphCollegeCode(row.college) && byCollege.has(row.college)) {
+          byCollege.set(row.college, {
+            college: row.college,
+            unique_users: row.unique_users,
+          })
+        }
+      })
+      return GRAPH_COLLEGE_CODES.map((college) => byCollege.get(college)!)
     },
     [data, selectedFY],
   )
