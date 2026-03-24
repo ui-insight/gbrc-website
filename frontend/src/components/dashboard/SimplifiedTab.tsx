@@ -361,7 +361,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <ChartCard
               title="PIs By College"
-              subtitle="Number of principal investigators with GBRC activity"
+              subtitle="Principal investigators with paid or equipment activity by college"
             >
               <ResponsiveContainer width="100%" height={Math.max(260, usageByCollege.length * 56 + 40)}>
                 <BarChart
