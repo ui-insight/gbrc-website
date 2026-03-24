@@ -439,6 +439,8 @@ class PIUsageSummaryItem(BaseModel):
     equipment_hours: float
     reservation_count: int
     distinct_users: int
+    uses_crc: bool = False
+    crc_years_label: str = ""
 
 
 class PIUsageSummaryYear(BaseModel):

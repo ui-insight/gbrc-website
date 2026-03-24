@@ -461,6 +461,8 @@ export interface PIUsageSummaryItem {
   equipment_hours: number
   reservation_count: number
   distinct_users: number
+  uses_crc: boolean
+  crc_years_label: string
 }
 
 export interface PIUsageSummaryData {

@@ -1883,6 +1883,18 @@ def get_pi_usage_summary() -> dict:
         if c["_fy"] and c["_fy"] >= 2023
         and c["_price_type"] == "Internal"
     ]
+    crc_rows = []
+    for fy in [2023, 2024, 2025]:
+        fy_label = f"FY{str(fy)[-2:]}"
+        for row in _load_crc_users(fy):
+            crc_rows.append({
+                "_fy": fy_label,
+                "_email": row.get("email", "").strip().lower(),
+                "_name": _canonical_pi_name(
+                    f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip()
+                ).lower(),
+                "_service": row.get("service", "").strip(),
+            })
 
     def _resolve_pi_key(pi_name: str, pi_email: str) -> str:
         canonical_name = _canonical_pi_name(pi_name)
@@ -1905,7 +1917,7 @@ def get_pi_usage_summary() -> dict:
             return True
         return bool(pi_email)
 
-    def _build_summary(charge_rows: list[dict], event_rows: list[dict]) -> dict:
+    def _build_summary(charge_rows: list[dict], event_rows: list[dict], crc_rows_for_view: list[dict]) -> dict:
         pi_data: dict[str, dict] = {}
 
         for c in charge_rows:
@@ -1998,6 +2010,18 @@ def get_pi_usage_summary() -> dict:
             if college_code == "Unknown":
                 college_code = get_college_from_charge_dept(info["department"])
 
+            pi_email = info["pi_email"].strip().lower()
+            pi_name_key = _canonical_pi_name(info["pi_name"]).lower()
+            crc_matches = [
+                row for row in crc_rows_for_view
+                if (
+                    pi_email and row["_email"] == pi_email
+                ) or (
+                    pi_name_key and row["_name"] == pi_name_key
+                )
+            ]
+            crc_years = sorted({row["_fy"] for row in crc_matches})
+
             result_pis.append({
                 "pi_email": info["pi_email"],
                 "pi_name": info["pi_name"],
@@ -2010,6 +2034,8 @@ def get_pi_usage_summary() -> dict:
                 "equipment_hours": round(info["equipment_hours"], 1),
                 "reservation_count": info["reservation_count"],
                 "distinct_users": len(info["distinct_users"]),
+                "uses_crc": len(crc_matches) > 0,
+                "crc_years_label": ", ".join(crc_years) if crc_years else "",
             })
 
         result_pis.sort(
@@ -2048,11 +2074,12 @@ def get_pi_usage_summary() -> dict:
     })
     fy_labels = [f"FY{str(fy)[-2:]}" for fy in fy_values]
 
-    all_view = _build_summary(valid_charges, events)
+    all_view = _build_summary(valid_charges, events, crc_rows)
     by_fy = {
         f"FY{str(fy)[-2:]}": _build_summary(
             [c for c in valid_charges if c["_fy"] == fy],
             [ev for ev in events if ev["_fy"] == fy],
+            [row for row in crc_rows if row["_fy"] == f"FY{str(fy)[-2:]}"],
         )
         for fy in fy_values
     }

@@ -32,6 +32,11 @@ const USAGE_BADGE: Record<string, { label: string; bg: string; text: string }> =
   both: { label: 'Paid + Equipment', bg: 'bg-amber-100', text: 'text-amber-800' },
 }
 
+const CRC_BADGE = {
+  yes: 'bg-blue-100 text-blue-800',
+  no: 'bg-neutral-100 text-neutral-600',
+}
+
 const ROW_BG: Record<string, string> = {
   paid: '',
   free: 'bg-red-50/50',
@@ -217,7 +222,8 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
         <p className="text-sm text-neutral-600">
           Paying PIs have internal charge activity. Equipment-only PIs show instrument reservations but no paid internal
           charges in the current export window. Rows are grouped by PI or lab name so named labs with missing PI emails
-          still appear in this simplified view.
+          still appear in this simplified view. The CRC columns mark cases where the PI themselves also appears in the
+          CRC user exports by exact email or exact full-name match.
         </p>
       </ChartCard>
 
@@ -354,6 +360,8 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                   ['department', 'Department'],
                   ['college_display', 'College'],
                   ['usage_type', 'Usage Type'],
+                  ['uses_crc', 'CRC'],
+                  ['crc_years_label', 'CRC FYs'],
                   ['total_paid', 'Total Paid'],
                   ['equipment_hours', 'Equipment Hours'],
                   ['charge_count', 'Charges'],
@@ -389,6 +397,14 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                         {badge.label}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${pi.uses_crc ? CRC_BADGE.yes : CRC_BADGE.no}`}>
+                        {pi.uses_crc ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">
+                      {pi.crc_years_label || '—'}
+                    </td>
                     <td className="px-4 py-3 text-right font-medium text-neutral-900">
                       {pi.total_paid > 0 ? `$${pi.total_paid.toLocaleString()}` : '—'}
                     </td>
@@ -403,7 +419,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
               })}
               {sorted.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-neutral-400">
+                  <td colSpan={11} className="px-4 py-8 text-center text-neutral-400">
                     No PIs match your filter.
                   </td>
                 </tr>
