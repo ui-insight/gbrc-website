@@ -407,6 +407,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
               <BarChart
                 data={proposalCountByCollege}
                 layout="vertical"
+                barGap="-100%"
+                barCategoryGap="28%"
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -422,12 +424,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   dataKey="proposal_count"
                   name="Total Proposal Count"
                   fill="#93c5fd"
+                  barSize={24}
                   radius={[0, 4, 4, 0]}
                 />
                 <Bar
                   dataKey="iids_proposal_count"
                   name="IIDS Proposal Count"
                   fill="#1d4ed8"
+                  barSize={24}
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
@@ -452,6 +456,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
               <BarChart
                 data={proposalDollarsByCollege}
                 layout="vertical"
+                barGap="-100%"
+                barCategoryGap="28%"
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -470,12 +476,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   dataKey="requested_total"
                   name="Total Requested Dollars"
                   fill="#fde68a"
+                  barSize={24}
                   radius={[0, 4, 4, 0]}
                 />
                 <Bar
                   dataKey="iids_requested_total"
                   name="IIDS Requested Dollars"
                   fill="#d97706"
+                  barSize={24}
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
