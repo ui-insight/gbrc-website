@@ -448,11 +448,18 @@ class PIUsageSummaryYear(BaseModel):
     pis: list[PIUsageSummaryItem]
 
 
+class CRCCollegeUsageItem(BaseModel):
+    college: str
+    unique_users: int
+
+
 class PIUsageSummaryResponse(BaseModel):
     summary: PIUsageSummaryStats
     pis: list[PIUsageSummaryItem]
     available_fiscal_years: list[str] = []
     by_fy: dict[str, PIUsageSummaryYear] = {}
+    crc_by_college: list[CRCCollegeUsageItem] = []
+    crc_by_college_by_fy: dict[str, list[CRCCollegeUsageItem]] = {}
 
 
 class SimplifiedProposalStats(BaseModel):

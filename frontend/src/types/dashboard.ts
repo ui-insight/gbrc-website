@@ -465,6 +465,11 @@ export interface PIUsageSummaryItem {
   crc_years_label: string
 }
 
+export interface CRCCollegeUsageItem {
+  college: string
+  unique_users: number
+}
+
 export interface PIUsageSummaryData {
   summary: PIUsageSummaryStats
   pis: PIUsageSummaryItem[]
@@ -473,6 +478,8 @@ export interface PIUsageSummaryData {
     summary: PIUsageSummaryStats
     pis: PIUsageSummaryItem[]
   }>
+  crc_by_college: CRCCollegeUsageItem[]
+  crc_by_college_by_fy: Record<string, CRCCollegeUsageItem[]>
 }
 
 export interface SimplifiedProposalStats {

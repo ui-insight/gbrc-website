@@ -8,7 +8,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import type { PIUsageSummaryData, PIUsageSummaryItem } from '../../types/dashboard'
+import type {
+  CRCCollegeUsageItem,
+  PIUsageSummaryData,
+  PIUsageSummaryItem,
+} from '../../types/dashboard'
 import ChartCard from './ChartCard'
 import StatCard from './StatCard'
 
@@ -76,6 +80,27 @@ function CollegeUsageTooltip({
       </p>
       <p className="text-neutral-500 mt-1">
         {row.pi_count} PI{row.pi_count !== 1 ? 's' : ''} · {row.charge_count} charges · {row.reservation_count} reservations
+      </p>
+    </div>
+  )
+}
+
+function CRCCollegeTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CRCCollegeUsageItem }>
+}) {
+  if (!active || !payload?.length) return null
+
+  const row = payload[0].payload
+
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
+      <p className="text-neutral-700">
+        Unique CRC users: {row.unique_users.toLocaleString()}
       </p>
     </div>
   )
@@ -168,6 +193,16 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
     [usageByCollege],
   )
 
+  const crcByCollege = useMemo(
+    () => {
+      const source = selectedFY === 'all'
+        ? data?.crc_by_college ?? []
+        : data?.crc_by_college_by_fy[selectedFY] ?? []
+      return [...source].sort((a, b) => b.unique_users - a.unique_users)
+    },
+    [data, selectedFY],
+  )
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
@@ -245,7 +280,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
       </div>
 
       {usageByCollege.length > 0 && (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <ChartCard
             title="Paid Revenue By College"
             subtitle="Aggregated internal charges for the currently visible PI set"
@@ -304,6 +339,35 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                   dataKey="equipment_hours"
                   name="Equipment Hours"
                   fill="#f1b300"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard
+            title="Unique CRC Users By College"
+            subtitle="Distinct CRC account holders by college for the selected fiscal year"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, crcByCollege.length * 56 + 40)}>
+              <BarChart
+                data={crcByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" allowDecimals={false} />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={180}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CRCCollegeTooltip />} />
+                <Bar
+                  dataKey="unique_users"
+                  name="Unique CRC Users"
+                  fill="#2563eb"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>

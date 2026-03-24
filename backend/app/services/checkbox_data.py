@@ -1893,6 +1893,11 @@ def get_pi_usage_summary() -> dict:
                 "_name": _canonical_pi_name(
                     f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip()
                 ).lower(),
+                "_user_key": _user_key(
+                    row.get("email", ""),
+                    row.get("username", "") or f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip(),
+                ),
+                "_college": row.get("college", "").strip() or "Unknown",
                 "_service": row.get("service", "").strip(),
             })
 
@@ -2067,6 +2072,25 @@ def get_pi_usage_summary() -> dict:
             "pis": result_pis,
         }
 
+    def _build_crc_college_usage(rows: list[dict]) -> list[dict]:
+        colleges: dict[str, set[str]] = {}
+        for row in rows:
+            college = row["_college"]
+            user_key = row["_user_key"]
+            if not user_key:
+                continue
+            colleges.setdefault(college, set()).add(user_key)
+
+        result = [
+            {
+                "college": college,
+                "unique_users": len(users),
+            }
+            for college, users in colleges.items()
+        ]
+        result.sort(key=lambda x: (x["unique_users"], x["college"]), reverse=True)
+        return result
+
     fy_values = sorted({
         c["_fy"] for c in valid_charges if c["_fy"]
     } | {
@@ -2088,6 +2112,13 @@ def get_pi_usage_summary() -> dict:
         **all_view,
         "available_fiscal_years": ["all", *fy_labels],
         "by_fy": by_fy,
+        "crc_by_college": _build_crc_college_usage(crc_rows),
+        "crc_by_college_by_fy": {
+            fy_label: _build_crc_college_usage(
+                [row for row in crc_rows if row["_fy"] == fy_label]
+            )
+            for fy_label in fy_labels
+        },
     }
 
 
