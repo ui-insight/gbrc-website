@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import type {
   DashboardSummary,
   PIBreakdown,
@@ -19,6 +19,8 @@ import type {
   PIUsageMappingData,
   EquipmentEnrichedData,
   CRCGrowthData,
+  PIUsageSummaryData,
+  SimplifiedProposalData,
 } from '../types/dashboard'
 
 async function fetchDashboard<T>(endpoint: string): Promise<T> {
@@ -90,13 +92,10 @@ export function useDashboardData() {
 export function useTabData<T>(endpoint: string, active: boolean) {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const fetched = useRef(false)
 
   useEffect(() => {
-    if (!active || fetched.current) return
+    if (!active || data !== null) return
     let cancelled = false
-
-    fetched.current = true
 
     fetchDashboard<T>(endpoint)
       .then((result) => {
@@ -107,13 +106,12 @@ export function useTabData<T>(endpoint: string, active: boolean) {
       .catch((err) => {
         if (cancelled) return
         setError(err instanceof Error ? err.message : 'Failed to load data')
-        fetched.current = false
       })
 
     return () => {
       cancelled = true
     }
-  }, [active, endpoint])
+  }, [active, endpoint, data])
 
   const loading = active && data === null && error === null
 
@@ -159,4 +157,12 @@ export function usePIAffiliationData(active: boolean) {
 
 export function usePIUsageMappingData(active: boolean) {
   return useTabData<PIUsageMappingData>('/pi-usage-mapping', active)
+}
+
+export function usePIUsageSummaryData(active: boolean) {
+  return useTabData<PIUsageSummaryData>('/pi-usage-summary', active)
+}
+
+export function useSimplifiedProposalsData(active: boolean) {
+  return useTabData<SimplifiedProposalData>('/simplified-proposals', active)
 }

@@ -3,6 +3,8 @@ import {
   useDashboardData,
   usePIAffiliationData,
   usePIUsageMappingData,
+  usePIUsageSummaryData,
+  useSimplifiedProposalsData,
   useRevenueSourcesData,
   useEquipmentEnrichedData,
   useCRCGrowthData,
@@ -21,8 +23,12 @@ import AffiliationTab from '../components/dashboard/AffiliationTab'
 import UsageMappingTab from '../components/dashboard/UsageMappingTab'
 import RevenueSourcesTab from '../components/dashboard/RevenueSourcesTab'
 import InfrastructureTab from '../components/dashboard/InfrastructureTab'
+import SimplifiedTab from '../components/dashboard/SimplifiedTab'
+import SimplifiedProposalsTab from '../components/dashboard/SimplifiedProposalsTab'
 
 const TABS: { id: DashboardTab; label: string }[] = [
+  { id: 'simplified', label: 'Simplified' },
+  { id: 'simplified-proposals', label: 'Simplified Proposals' },
   { id: 'overview', label: 'Overview' },
   { id: 'affiliation', label: 'Proposal Affiliation' },
   { id: 'usage', label: 'PI To GBRC Usage' },
@@ -62,7 +68,7 @@ function FYSelector({ available, selected, onChange }: { available: string[]; se
 export default function CostRecovery() {
   const { summary, piBreakdown, piBreakdownByFY, collegeBreakdown, collegeBreakdownByFY, trends, services, servicesByFY, crcUsers, equipment, availableFYs, loading, error } = useDashboardData()
   const [selectedPI, setSelectedPI] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
+  const [activeTab, setActiveTab] = useState<DashboardTab>('simplified')
   const [overviewFY, setOverviewFY] = useState<string>('total')
   const drilldownRef = useRef<HTMLDivElement>(null)
 
@@ -72,6 +78,8 @@ export default function CostRecovery() {
   const revenueSources = useRevenueSourcesData(activeTab === 'revenue')
   const equipmentEnriched = useEquipmentEnrichedData(activeTab === 'infrastructure')
   const crcGrowth = useCRCGrowthData(activeTab === 'infrastructure')
+  const piUsageSummary = usePIUsageSummaryData(activeTab === 'simplified')
+  const simplifiedProposals = useSimplifiedProposalsData(activeTab === 'simplified-proposals')
 
   const handlePIClick = (piEmail: string) => {
     setSelectedPI((prev) => (prev === piEmail ? null : piEmail))
@@ -134,6 +142,20 @@ export default function CostRecovery() {
         </div>
 
         {/* Tab Content */}
+        {activeTab === 'simplified' && (
+          <SimplifiedTab
+            data={piUsageSummary.data}
+            loading={piUsageSummary.loading}
+          />
+        )}
+
+        {activeTab === 'simplified-proposals' && (
+          <SimplifiedProposalsTab
+            data={simplifiedProposals.data}
+            loading={simplifiedProposals.loading}
+          />
+        )}
+
         {activeTab === 'overview' && (() => {
           const fySummary = overviewFY === 'total' ? summary : (summary.by_fy?.[overviewFY] ?? summary)
           const fyPIs = piBreakdownByFY[overviewFY] ?? piBreakdown

@@ -438,6 +438,87 @@ export interface CRCGrowthData {
   by_type: Record<string, number | string>[]
 }
 
+// --- Simplified PI Usage Summary ---
+
+export interface PIUsageSummaryStats {
+  total_pis: number
+  paid_pis: number
+  free_pis: number
+  both_pis: number
+  total_revenue: number
+  total_equipment_hours: number
+}
+
+export interface PIUsageSummaryItem {
+  pi_email: string
+  pi_name: string
+  department: string
+  college: string
+  college_display: string
+  usage_type: 'paid' | 'free' | 'both'
+  total_paid: number
+  charge_count: number
+  equipment_hours: number
+  reservation_count: number
+  distinct_users: number
+}
+
+export interface PIUsageSummaryData {
+  summary: PIUsageSummaryStats
+  pis: PIUsageSummaryItem[]
+}
+
+export interface SimplifiedProposalStats {
+  total_pis: number
+  pis_with_proposals: number
+  total_proposals: number
+  iids_proposals: number
+  funded_proposals: number
+  requested_total: number
+  funded_total: number
+}
+
+export interface SimplifiedProposalPIItem {
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  usage_type: 'paid' | 'free' | 'both'
+  proposal_count: number
+  iids_proposal_count: number
+  funded_proposal_count: number
+  requested_total: number
+  funded_total: number
+  latest_submission_date: string
+}
+
+export interface SimplifiedProposalItem {
+  proposal_number: string
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  usage_type: 'paid' | 'free' | 'both'
+  title: string
+  sponsor: string
+  department: string
+  status: string
+  agreement_type: string
+  submission_date: string
+  fiscal_year: string
+  direct_cost: number
+  indirect_cost: number
+  total_cost: number
+  iids_affiliated: boolean
+  funded: boolean
+}
+
+export interface SimplifiedProposalData {
+  summary: SimplifiedProposalStats
+  by_pi: SimplifiedProposalPIItem[]
+  proposals: SimplifiedProposalItem[]
+}
+
 // --- Tab Data Union ---
 
-export type DashboardTab = 'overview' | 'affiliation' | 'usage' | 'revenue' | 'services' | 'infrastructure'
+export type DashboardTab = 'simplified' | 'simplified-proposals' | 'overview' | 'affiliation' | 'usage' | 'revenue' | 'services' | 'infrastructure'

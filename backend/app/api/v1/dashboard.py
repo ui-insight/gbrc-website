@@ -14,9 +14,11 @@ from app.schemas.dashboard import (
     PIDetailResponse,
     PIAffiliationResponse,
     PIUsageMappingResponse,
+    PIUsageSummaryResponse,
     ProposalPortfolioResponse,
     RevenueSourcesResponse,
     ServiceCategoryItem,
+    SimplifiedProposalResponse,
     SponsorAnalysisResponse,
     SummaryResponse,
     TrendsResponse,
@@ -25,6 +27,8 @@ from app.services.checkbox_data import (
     get_analytics_data,
     get_dashboard_data,
     get_pi_charges,
+    get_simplified_proposals,
+    get_pi_usage_summary,
     get_raw_data,
 )
 
@@ -150,6 +154,18 @@ async def get_pi_affiliation():
 async def get_pi_usage_mapping():
     """Map proposal PIs to the GBRC users working in their labs."""
     return get_analytics_data()["pi_usage_mapping"]
+
+
+@router.get("/pi-usage-summary", response_model=PIUsageSummaryResponse)
+async def get_pi_usage_summary_endpoint():
+    """Simplified view: which PIs use GBRC and do they pay or use for free."""
+    return get_pi_usage_summary()
+
+
+@router.get("/simplified-proposals", response_model=SimplifiedProposalResponse)
+async def get_simplified_proposals_endpoint():
+    """Proposal view limited to the simplified GBRC PI set."""
+    return get_simplified_proposals()
 
 
 # --- Parameterized routes (must be last to avoid catching literal paths) ---
