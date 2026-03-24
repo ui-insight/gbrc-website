@@ -12,6 +12,7 @@ import type {
   SimplifiedProposalData,
   SimplifiedProposalItem,
   SimplifiedProposalPIItem,
+  SimplifiedProposalPIWithoutProposals,
 } from '../../types/dashboard'
 import ChartCard from './ChartCard'
 import StatCard from './StatCard'
@@ -527,6 +528,58 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
             </ResponsiveContainer>
           </ChartCard>
         </div>
+      )}
+
+      {data.pis_without_proposals.length > 0 && (
+        <ChartCard
+          title="PIs Without Proposals"
+          subtitle={`${data.pis_without_proposals.length} of ${data.summary.total_pis} observable PIs have no proposals in the dataset`}
+        >
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-neutral-200 bg-neutral-50">
+                  <th className="px-4 py-3 text-left font-semibold">PI</th>
+                  <th className="px-4 py-3 text-left font-semibold">College</th>
+                  <th className="px-4 py-3 text-left font-semibold">GBRC Usage</th>
+                  <th className="px-4 py-3 text-right font-semibold">Paid Revenue</th>
+                  <th className="px-4 py-3 text-right font-semibold">Charges</th>
+                  <th className="px-4 py-3 text-right font-semibold">Equipment Hours</th>
+                  <th className="px-4 py-3 text-right font-semibold">Reservations</th>
+                  <th className="px-4 py-3 text-right font-semibold">Lab Users</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.pis_without_proposals.map((pi: SimplifiedProposalPIWithoutProposals) => {
+                  const badge = USAGE_BADGE[pi.usage_type]
+                  return (
+                    <tr key={pi.pi_email || pi.pi_name} className="border-b border-neutral-100 hover:bg-neutral-50">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-neutral-900">{pi.pi_name}</div>
+                        <div className="text-xs text-neutral-500">{pi.pi_email || 'No GBRC-linked email yet'}</div>
+                      </td>
+                      <td className="px-4 py-3 text-neutral-700">{pi.college_display}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${badge.tone}`}>
+                          {badge.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium text-neutral-900">
+                        {pi.total_paid > 0 ? formatFullDollar(pi.total_paid) : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-right text-neutral-600">{pi.charge_count || '—'}</td>
+                      <td className="px-4 py-3 text-right text-neutral-600">
+                        {pi.equipment_hours > 0 ? pi.equipment_hours.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-right text-neutral-600">{pi.reservation_count || '—'}</td>
+                      <td className="px-4 py-3 text-right text-neutral-600">{pi.distinct_users || '—'}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </ChartCard>
       )}
 
       <ChartCard

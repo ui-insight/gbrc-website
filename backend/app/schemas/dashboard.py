@@ -514,10 +514,24 @@ class SimplifiedProposalItem(BaseModel):
     funded: bool
 
 
+class SimplifiedProposalPIWithoutProposals(BaseModel):
+    pi_name: str
+    pi_email: str
+    college: str
+    college_display: str
+    usage_type: str
+    total_paid: float
+    charge_count: int
+    equipment_hours: float
+    reservation_count: int
+    distinct_users: int
+
+
 class SimplifiedProposalResponse(BaseModel):
     summary: SimplifiedProposalStats
     by_pi: list[SimplifiedProposalPIItem]
     proposals: list[SimplifiedProposalItem]
+    pis_without_proposals: list[SimplifiedProposalPIWithoutProposals] = []
 
 
 class SimplifiedRevenueGapStats(BaseModel):

@@ -2304,6 +2304,37 @@ def get_simplified_proposals() -> dict:
         2,
     )
 
+    # Build list of PIs with no proposals, including their GBRC usage info
+    pis_with_proposal_keys = set(proposals_by_pi.keys())
+    pis_without_proposals = []
+    # Build a quick lookup from pi_key -> full usage row
+    usage_by_key: dict[str, dict] = {}
+    for pi in simplified_usage["pis"]:
+        pk = _canonical_pi_name(pi["pi_name"]).lower()
+        if pk:
+            usage_by_key[pk] = pi
+
+    for pi_key, pi_info in pi_lookup.items():
+        if pi_key in pis_with_proposal_keys:
+            continue
+        usage = usage_by_key.get(pi_key, {})
+        pis_without_proposals.append({
+            "pi_name": pi_info["pi_name"],
+            "pi_email": pi_info["pi_email"],
+            "college": pi_info["college"],
+            "college_display": pi_info["college_display"],
+            "usage_type": pi_info["usage_type"],
+            "total_paid": usage.get("total_paid", 0.0),
+            "charge_count": usage.get("charge_count", 0),
+            "equipment_hours": usage.get("equipment_hours", 0.0),
+            "reservation_count": usage.get("reservation_count", 0),
+            "distinct_users": usage.get("distinct_users", 0),
+        })
+    pis_without_proposals.sort(
+        key=lambda row: (row["total_paid"], row["equipment_hours"], row["pi_name"]),
+        reverse=True,
+    )
+
     return {
         "summary": {
             "total_pis": simplified_usage["summary"]["total_pis"],
@@ -2316,6 +2347,7 @@ def get_simplified_proposals() -> dict:
         },
         "by_pi": by_pi,
         "proposals": proposal_rows,
+        "pis_without_proposals": pis_without_proposals,
     }
 
 

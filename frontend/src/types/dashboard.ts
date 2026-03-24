@@ -534,10 +534,24 @@ export interface SimplifiedProposalItem {
   funded: boolean
 }
 
+export interface SimplifiedProposalPIWithoutProposals {
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  usage_type: 'paid' | 'free' | 'both'
+  total_paid: number
+  charge_count: number
+  equipment_hours: number
+  reservation_count: number
+  distinct_users: number
+}
+
 export interface SimplifiedProposalData {
   summary: SimplifiedProposalStats
   by_pi: SimplifiedProposalPIItem[]
   proposals: SimplifiedProposalItem[]
+  pis_without_proposals: SimplifiedProposalPIWithoutProposals[]
 }
 
 export interface SimplifiedRevenueGapStats {
