@@ -62,6 +62,12 @@ function CollegeProposalTooltip({
   if (!active || !payload?.length) return null
 
   const row = payload[0].payload
+  const proposalAffiliationRate = row.proposal_count > 0
+    ? ((row.iids_proposal_count / row.proposal_count) * 100).toFixed(1)
+    : '0.0'
+  const requestedAffiliationRate = row.requested_total > 0
+    ? ((row.iids_requested_total / row.requested_total) * 100).toFixed(1)
+    : '0.0'
 
   return (
     <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
@@ -72,10 +78,9 @@ function CollegeProposalTooltip({
           : `Requested total: ${formatFullDollar(row.requested_total)} total · ${formatFullDollar(row.iids_requested_total)} IIDS`}
       </p>
       <p className="text-neutral-500 mt-1">
-        {row.iids_proposal_count} IIDS · {row.funded_proposal_count} funded
-      </p>
-      <p className="text-neutral-500">
-        Funded dollars: {formatFullDollar(row.funded_total)}
+        {mode === 'count'
+          ? `Affiliation rate: ${proposalAffiliationRate}%`
+          : `Affiliated-dollar share: ${requestedAffiliationRate}%`}
       </p>
     </div>
   )
