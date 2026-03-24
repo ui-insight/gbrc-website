@@ -2345,6 +2345,7 @@ def get_simplified_revenue_gap() -> dict:
             "latest_submission_date": "",
             "_latest_submission_dt": None,
             "_grant_codes": set(),
+            "_proposal_details": [],
         }
 
     def _touch_proposal_context(
@@ -2372,6 +2373,23 @@ def get_simplified_revenue_gap() -> dict:
         funded = _is_proposal_awarded(proposal.get("PROJECT_STATUS", ""))
         iids_affiliated = bool(proposal.get("IIDS", "").strip())
         grant_codes = _split_grant_codes(proposal.get("GRANT_CODE", "").strip())
+        checkbox_names = [
+            name
+            for name in ("IIDS", "IMCI", "ARI", "IGS", "IHHE", "IICS", "FII")
+            if proposal.get(name, "").strip()
+        ]
+        proposal_detail = {
+            "proposal_number": proposal.get("PROPOSAL_NUMBER", "").strip(),
+            "title": proposal.get("PROJECT_TITLE", "").strip(),
+            "grant_codes_label": ", ".join(grant_codes),
+            "checkboxes_label": ", ".join(checkbox_names) if checkbox_names else "None",
+            "status": proposal.get("PROJECT_STATUS", "").strip(),
+            "submission_date": proposal.get("SUBMISSION_DATE", "").strip(),
+            "sponsor": proposal.get("SPONSOR", "").strip() or proposal.get("PRIME", "").strip(),
+            "total_cost": total_cost,
+            "funded": funded,
+            "iids_affiliated": iids_affiliated,
+        }
 
         scopes = ["all"]
         if fiscal_year:
@@ -2386,6 +2404,7 @@ def get_simplified_revenue_gap() -> dict:
                 context["funded_proposal_count"] += 1
             context["requested_total"] += total_cost
             context["_grant_codes"].update(grant_codes)
+            context["_proposal_details"].append(proposal_detail)
             if submission_dt and (
                 context["_latest_submission_dt"] is None
                 or submission_dt > context["_latest_submission_dt"]
@@ -2470,6 +2489,15 @@ def get_simplified_revenue_gap() -> dict:
         for row in scope_rows.values():
             proposal_context = proposal_contexts.get(row["pi_key"])
             grant_codes = sorted(proposal_context["_grant_codes"]) if proposal_context else []
+            proposal_details = list(proposal_context["_proposal_details"]) if proposal_context else []
+            proposal_details.sort(
+                key=lambda item: (
+                    _parse_proposal_date(item["submission_date"]) or datetime.min,
+                    item["total_cost"],
+                    item["title"],
+                ),
+                reverse=True,
+            )
             rows.append({
                 "pi_name": row["pi_name"],
                 "pi_email": row["pi_email"],
@@ -2488,6 +2516,7 @@ def get_simplified_revenue_gap() -> dict:
                 "pi_requested_total": round(proposal_context["requested_total"], 2) if proposal_context else 0.0,
                 "pi_grant_codes_label": _format_grant_code_label(grant_codes),
                 "latest_submission_date": proposal_context["latest_submission_date"] if proposal_context else "",
+                "proposal_details": proposal_details,
             })
 
         rows.sort(

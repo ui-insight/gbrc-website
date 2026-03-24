@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import type {
   SimplifiedRevenueGapData,
   SimplifiedRevenueGapItem,
+  SimplifiedRevenueGapProposalItem,
 } from '../../types/dashboard'
 import ChartCard from './ChartCard'
 import StatCard from './StatCard'
@@ -39,11 +40,34 @@ interface Props {
   loading: boolean
 }
 
+function ProposalStatusBadge({ proposal }: { proposal: SimplifiedRevenueGapProposalItem }) {
+  if (proposal.funded) {
+    return (
+      <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+        Funded
+      </span>
+    )
+  }
+  if (proposal.iids_affiliated) {
+    return (
+      <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+        IIDS
+      </span>
+    )
+  }
+  return (
+    <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-600">
+      Non-IIDS
+    </span>
+  )
+}
+
 export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
   const [selectedFY, setSelectedFY] = useState('all')
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<RowQueryKey>('total_paid')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const [expandedRows, setExpandedRows] = useState<string[]>([])
 
   const currentView = useMemo(() => {
     if (!data) return null
@@ -62,7 +86,15 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
       || row.payment_source.toLowerCase().includes(query)
       || row.payment_source_type.toLowerCase().includes(query)
       || row.payment_source_example.toLowerCase().includes(query)
-      || row.pi_grant_codes_label.toLowerCase().includes(query),
+      || row.pi_grant_codes_label.toLowerCase().includes(query)
+      || row.proposal_details.some((proposal) =>
+        proposal.title.toLowerCase().includes(query)
+        || proposal.grant_codes_label.toLowerCase().includes(query)
+        || proposal.checkboxes_label.toLowerCase().includes(query)
+        || proposal.status.toLowerCase().includes(query)
+        || proposal.sponsor.toLowerCase().includes(query)
+        || proposal.proposal_number.toLowerCase().includes(query)
+      )
     )
   }, [currentView, search])
 
@@ -88,6 +120,14 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
       ? 'asc'
       : 'desc',
     )
+  }
+
+  const toggleExpanded = (rowKey: string) => {
+    setExpandedRows((current) => (
+      current.includes(rowKey)
+        ? current.filter((value) => value !== rowKey)
+        : [...current, rowKey]
+    ))
   }
 
   if (loading) {
@@ -184,6 +224,7 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
             <thead>
               <tr className="border-b border-neutral-200 bg-neutral-50">
                 {([
+                  ['payment_source', 'Details'],
                   ['pi_name', 'PI'],
                   ['college_display', 'College'],
                   ['payment_source', 'Payment Source'],
@@ -196,11 +237,12 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
                   ['pi_funded_proposal_count', 'PI Funded'],
                   ['pi_requested_total', 'PI Requested $'],
                   ['latest_submission_date', 'Latest Proposal'],
-                ] as [RowQueryKey, string][]).map(([key, label]) => (
+                ] as [RowQueryKey, string][]).map(([key, label], index) => (
                   <th
-                    key={key}
+                    key={`${String(key)}-${label}-${index}`}
                     className={`px-4 py-3 font-semibold cursor-pointer hover:text-amber-600 ${
-                      key === 'pi_name'
+                      label === 'Details'
+                      || key === 'pi_name'
                       || key === 'college_display'
                       || key === 'payment_source'
                       || key === 'payment_source_type'
@@ -209,44 +251,105 @@ export default function SimplifiedRevenueGapTab({ data, loading }: Props) {
                         ? 'text-left'
                         : 'text-right'
                     }`}
-                    onClick={() => toggleSort(key)}
+                    onClick={() => {
+                      if (label === 'Details') return
+                      toggleSort(key)
+                    }}
                   >
-                    {label}{sortIndicator(key === sortKey, sortDir)}
+                    {label}{label === 'Details' ? '' : sortIndicator(key === sortKey, sortDir)}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {sortedRows.map((row) => (
-                <tr
-                  key={`${row.pi_email || row.pi_name}-${row.payment_source}`}
-                  className="border-b border-neutral-100 hover:bg-neutral-50"
-                >
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-neutral-900">{row.pi_name}</div>
-                    <div className="text-xs text-neutral-500">{row.pi_email || 'No GBRC-linked email yet'}</div>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-700">{row.college_display}</td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-neutral-900">{row.payment_source}</div>
-                    {row.payment_source_example && (
-                      <div className="text-xs text-neutral-500">{row.payment_source_example}</div>
+              {sortedRows.map((row) => {
+                const rowKey = `${row.pi_email || row.pi_name}-${row.payment_source}`
+                const expanded = expandedRows.includes(rowKey)
+                return (
+                  <Fragment key={rowKey}>
+                    <tr
+                      className="border-b border-neutral-100 hover:bg-neutral-50"
+                    >
+                      <td className="px-4 py-3">
+                        <button
+                          type="button"
+                          onClick={() => toggleExpanded(rowKey)}
+                          className="px-2 py-1 rounded border border-neutral-300 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+                        >
+                          {expanded ? 'Hide' : 'Show'}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-neutral-900">{row.pi_name}</div>
+                        <div className="text-xs text-neutral-500">{row.pi_email || 'No GBRC-linked email yet'}</div>
+                      </td>
+                      <td className="px-4 py-3 text-neutral-700">{row.college_display}</td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-neutral-900">{row.payment_source}</div>
+                        {row.payment_source_example && (
+                          <div className="text-xs text-neutral-500">{row.payment_source_example}</div>
+                        )}
+                        <div className="text-xs text-neutral-500">{row.fiscal_years_label}</div>
+                      </td>
+                      <td className="px-4 py-3 text-neutral-700">{row.payment_source_type}</td>
+                      <td className="px-4 py-3 text-right">{row.charge_count}</td>
+                      <td className="px-4 py-3 text-right">{formatFullDollar(row.total_paid)}</td>
+                      <td className="px-4 py-3 text-neutral-700">
+                        {row.pi_grant_codes_label || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-right">{row.pi_proposal_count}</td>
+                      <td className="px-4 py-3 text-right">{row.pi_iids_proposal_count}</td>
+                      <td className="px-4 py-3 text-right">{row.pi_funded_proposal_count}</td>
+                      <td className="px-4 py-3 text-right">{formatFullDollar(row.pi_requested_total)}</td>
+                      <td className="px-4 py-3 text-neutral-700">{row.latest_submission_date || '—'}</td>
+                    </tr>
+                    {expanded && (
+                      <tr className="border-b border-neutral-100 bg-neutral-50/70">
+                        <td colSpan={13} className="px-4 py-4">
+                          {row.proposal_details.length > 0 ? (
+                            <div className="space-y-3">
+                              <p className="text-sm font-medium text-neutral-800">
+                                Same-PI proposal context for {selectedFY === 'all' ? 'all available years' : selectedFY}
+                              </p>
+                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                                {row.proposal_details.map((proposal) => (
+                                  <div
+                                    key={`${rowKey}-${proposal.proposal_number}-${proposal.title}`}
+                                    className="rounded-lg border border-neutral-200 bg-white px-4 py-3"
+                                  >
+                                    <div className="flex items-start justify-between gap-3">
+                                      <div>
+                                        <p className="font-medium text-neutral-900">
+                                          {proposal.title || 'Untitled proposal'}
+                                        </p>
+                                        <p className="text-xs text-neutral-500 mt-1">
+                                          {proposal.proposal_number || 'No proposal number'} · {proposal.submission_date || 'No submission date'}
+                                        </p>
+                                      </div>
+                                      <ProposalStatusBadge proposal={proposal} />
+                                    </div>
+                                    <div className="mt-3 space-y-1 text-sm text-neutral-700">
+                                      <p><span className="font-medium">Grant codes:</span> {proposal.grant_codes_label || '—'}</p>
+                                      <p><span className="font-medium">Checkboxes:</span> {proposal.checkboxes_label || 'None'}</p>
+                                      <p><span className="font-medium">Status:</span> {proposal.status || '—'}</p>
+                                      <p><span className="font-medium">Sponsor:</span> {proposal.sponsor || '—'}</p>
+                                      <p><span className="font-medium">Requested:</span> {formatFullDollar(proposal.total_cost)}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-neutral-500">
+                              No same-PI proposals are available in this fiscal-year slice.
+                            </p>
+                          )}
+                        </td>
+                      </tr>
                     )}
-                    <div className="text-xs text-neutral-500">{row.fiscal_years_label}</div>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-700">{row.payment_source_type}</td>
-                  <td className="px-4 py-3 text-right">{row.charge_count}</td>
-                  <td className="px-4 py-3 text-right">{formatFullDollar(row.total_paid)}</td>
-                  <td className="px-4 py-3 text-neutral-700">
-                    {row.pi_grant_codes_label || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right">{row.pi_proposal_count}</td>
-                  <td className="px-4 py-3 text-right">{row.pi_iids_proposal_count}</td>
-                  <td className="px-4 py-3 text-right">{row.pi_funded_proposal_count}</td>
-                  <td className="px-4 py-3 text-right">{formatFullDollar(row.pi_requested_total)}</td>
-                  <td className="px-4 py-3 text-neutral-700">{row.latest_submission_date || '—'}</td>
-                </tr>
-              ))}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         </div>

@@ -521,6 +521,19 @@ class SimplifiedRevenueGapStats(BaseModel):
     sources_with_pi_proposals: int
 
 
+class SimplifiedRevenueGapProposalItem(BaseModel):
+    proposal_number: str
+    title: str
+    grant_codes_label: str = ""
+    checkboxes_label: str = ""
+    status: str
+    submission_date: str
+    sponsor: str
+    total_cost: float
+    funded: bool
+    iids_affiliated: bool
+
+
 class SimplifiedRevenueGapItem(BaseModel):
     pi_name: str
     pi_email: str
@@ -539,6 +552,7 @@ class SimplifiedRevenueGapItem(BaseModel):
     pi_requested_total: float
     pi_grant_codes_label: str = ""
     latest_submission_date: str = ""
+    proposal_details: list[SimplifiedRevenueGapProposalItem] = []
 
 
 class SimplifiedRevenueGapYear(BaseModel):

@@ -541,6 +541,19 @@ export interface SimplifiedRevenueGapStats {
   sources_with_pi_proposals: number
 }
 
+export interface SimplifiedRevenueGapProposalItem {
+  proposal_number: string
+  title: string
+  grant_codes_label: string
+  checkboxes_label: string
+  status: string
+  submission_date: string
+  sponsor: string
+  total_cost: number
+  funded: boolean
+  iids_affiliated: boolean
+}
+
 export interface SimplifiedRevenueGapItem {
   pi_name: string
   pi_email: string
@@ -559,6 +572,7 @@ export interface SimplifiedRevenueGapItem {
   pi_requested_total: number
   pi_grant_codes_label: string
   latest_submission_date: string
+  proposal_details: SimplifiedRevenueGapProposalItem[]
 }
 
 export interface SimplifiedRevenueGapData {
