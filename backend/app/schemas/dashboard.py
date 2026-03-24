@@ -443,9 +443,15 @@ class PIUsageSummaryItem(BaseModel):
     crc_years_label: str = ""
 
 
+class CollegeUserCount(BaseModel):
+    college: str
+    unique_users: int
+
+
 class PIUsageSummaryYear(BaseModel):
     summary: PIUsageSummaryStats
     pis: list[PIUsageSummaryItem]
+    users_by_college: list[CollegeUserCount] = []
 
 
 class CRCCollegeUsageItem(BaseModel):
@@ -456,6 +462,7 @@ class CRCCollegeUsageItem(BaseModel):
 class PIUsageSummaryResponse(BaseModel):
     summary: PIUsageSummaryStats
     pis: list[PIUsageSummaryItem]
+    users_by_college: list[CollegeUserCount] = []
     available_fiscal_years: list[str] = []
     by_fy: dict[str, PIUsageSummaryYear] = {}
     crc_by_college: list[CRCCollegeUsageItem] = []

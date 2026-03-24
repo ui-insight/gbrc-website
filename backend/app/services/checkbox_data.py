@@ -2094,6 +2094,22 @@ def get_pi_usage_summary() -> dict:
             reverse=True,
         )
 
+        # Build per-college unique user counts (individual users, not PIs)
+        users_by_college_sets: dict[str, set[str]] = {
+            code: set() for code in SIMPLIFIED_COLLEGE_CODES
+        }
+        for pi_key, info in pi_data.items():
+            college_code = get_college_for_pi(info["pi_name"], proposals)
+            if college_code == "Unknown":
+                college_code = get_college_from_charge_dept(info["department"])
+            if college_code in users_by_college_sets:
+                users_by_college_sets[college_code].update(info["distinct_users"])
+
+        users_by_college = [
+            {"college": college, "unique_users": len(users)}
+            for college, users in users_by_college_sets.items()
+        ]
+
         total_pis = len(result_pis)
         paid_count = sum(1 for p in result_pis if p["usage_type"] == "paid")
         free_count = sum(1 for p in result_pis if p["usage_type"] == "free")
@@ -2111,6 +2127,7 @@ def get_pi_usage_summary() -> dict:
                 "total_equipment_hours": total_hours,
             },
             "pis": result_pis,
+            "users_by_college": users_by_college,
         }
 
     def _build_crc_college_usage(rows: list[dict]) -> list[dict]:

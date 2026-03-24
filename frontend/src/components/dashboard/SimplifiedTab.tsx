@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type {
+  CollegeUserCount,
   CRCCollegeUsageItem,
   PIUsageSummaryData,
   PIUsageSummaryItem,
@@ -107,6 +108,44 @@ function CRCCollegeTooltip({
       <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
       <p className="text-neutral-700">
         Unique CRC users: {row.unique_users.toLocaleString()}
+      </p>
+    </div>
+  )
+}
+
+function PICountTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeUsageSummary }>
+}) {
+  if (!active || !payload?.length) return null
+  const row = payload[0].payload
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
+      <p className="text-neutral-700">
+        PIs: {row.pi_count.toLocaleString()}
+      </p>
+    </div>
+  )
+}
+
+function UserCountTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeUserCount }>
+}) {
+  if (!active || !payload?.length) return null
+  const row = payload[0].payload
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college}</p>
+      <p className="text-neutral-700">
+        Unique iLab users: {row.unique_users.toLocaleString()}
       </p>
     </div>
   )
@@ -216,6 +255,30 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
     [data, selectedFY],
   )
 
+  const usersByCollege = useMemo<CollegeUserCount[]>(
+    () => {
+      const source = selectedFY === 'all'
+        ? data?.users_by_college ?? []
+        : data?.by_fy[selectedFY]?.users_by_college ?? []
+      const byCollege = new Map(
+        GRAPH_COLLEGE_CODES.map((college) => [college, {
+          college,
+          unique_users: 0,
+        }]),
+      )
+      source.forEach((row) => {
+        if (isGraphCollegeCode(row.college) && byCollege.has(row.college)) {
+          byCollege.set(row.college, {
+            college: row.college,
+            unique_users: row.unique_users,
+          })
+        }
+      })
+      return GRAPH_COLLEGE_CODES.map((college) => byCollege.get(college)!)
+    },
+    [data, selectedFY],
+  )
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
@@ -293,100 +356,164 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
       </div>
 
       {usageByCollege.length > 0 && (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <ChartCard
-            title="Paid Revenue By College"
-            subtitle="Aggregated internal charges for the currently visible PI set"
-          >
-            <ResponsiveContainer width="100%" height={Math.max(260, revenueByCollege.length * 56 + 40)}>
-              <BarChart
-                data={revenueByCollege}
-                layout="vertical"
-                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis
-                  type="number"
-                  tickFormatter={(value) => formatCurrency(Number(value))}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="college"
-                  width={70}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CollegeUsageTooltip mode="revenue" />} />
-                <Bar
-                  dataKey="total_paid"
-                  name="Paid Revenue"
-                  fill="#16a34a"
-                  radius={[0, 4, 4, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
+        <>
+          {/* Row 1: People counts */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <ChartCard
+              title="PIs By College"
+              subtitle="Number of principal investigators with GBRC activity"
+            >
+              <ResponsiveContainer width="100%" height={Math.max(260, usageByCollege.length * 56 + 40)}>
+                <BarChart
+                  data={usageByCollege}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} />
+                  <YAxis
+                    type="category"
+                    dataKey="college"
+                    width={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<PICountTooltip />} />
+                  <Bar
+                    dataKey="pi_count"
+                    name="PIs"
+                    fill="#7c3aed"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
 
-          <ChartCard
-            title="Shared Equipment By College"
-            subtitle="Aggregated equipment reservation hours for the currently visible PI set"
-          >
-            <ResponsiveContainer width="100%" height={Math.max(260, equipmentByCollege.length * 56 + 40)}>
-              <BarChart
-                data={equipmentByCollege}
-                layout="vertical"
-                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis
-                  type="number"
-                  tickFormatter={(value) => formatHours(Number(value))}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="college"
-                  width={70}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CollegeUsageTooltip mode="equipment" />} />
-                <Bar
-                  dataKey="equipment_hours"
-                  name="Equipment Hours"
-                  fill="#f1b300"
-                  radius={[0, 4, 4, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
+            <ChartCard
+              title="iLab Users By College"
+              subtitle="Distinct users from charges and equipment reservations (not rolled up to PIs)"
+            >
+              <ResponsiveContainer width="100%" height={Math.max(260, usersByCollege.length * 56 + 40)}>
+                <BarChart
+                  data={usersByCollege}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} />
+                  <YAxis
+                    type="category"
+                    dataKey="college"
+                    width={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<UserCountTooltip />} />
+                  <Bar
+                    dataKey="unique_users"
+                    name="iLab Users"
+                    fill="#0891b2"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
 
-          <ChartCard
-            title="Unique CRC Users By College"
-            subtitle="Distinct CRC account holders by college for the selected fiscal year"
-          >
-            <ResponsiveContainer width="100%" height={Math.max(260, crcByCollege.length * 56 + 40)}>
-              <BarChart
-                data={crcByCollege}
-                layout="vertical"
-                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis
-                  type="category"
-                  dataKey="college"
-                  width={70}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip content={<CRCCollegeTooltip />} />
-                <Bar
-                  dataKey="unique_users"
-                  name="Unique CRC Users"
-                  fill="#2563eb"
-                  radius={[0, 4, 4, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </div>
+            <ChartCard
+              title="Unique CRC Users By College"
+              subtitle="Distinct CRC account holders by college for the selected fiscal year"
+            >
+              <ResponsiveContainer width="100%" height={Math.max(260, crcByCollege.length * 56 + 40)}>
+                <BarChart
+                  data={crcByCollege}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} />
+                  <YAxis
+                    type="category"
+                    dataKey="college"
+                    width={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<CRCCollegeTooltip />} />
+                  <Bar
+                    dataKey="unique_users"
+                    name="Unique CRC Users"
+                    fill="#2563eb"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+
+          {/* Row 2: Financial metrics */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <ChartCard
+              title="Paid Revenue By College"
+              subtitle="Aggregated internal charges for the currently visible PI set"
+            >
+              <ResponsiveContainer width="100%" height={Math.max(260, revenueByCollege.length * 56 + 40)}>
+                <BarChart
+                  data={revenueByCollege}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis
+                    type="number"
+                    tickFormatter={(value) => formatCurrency(Number(value))}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="college"
+                    width={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<CollegeUsageTooltip mode="revenue" />} />
+                  <Bar
+                    dataKey="total_paid"
+                    name="Paid Revenue"
+                    fill="#16a34a"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard
+              title="Shared Equipment By College"
+              subtitle="Aggregated equipment reservation hours for the currently visible PI set"
+            >
+              <ResponsiveContainer width="100%" height={Math.max(260, equipmentByCollege.length * 56 + 40)}>
+                <BarChart
+                  data={equipmentByCollege}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis
+                    type="number"
+                    tickFormatter={(value) => formatHours(Number(value))}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="college"
+                    width={70}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<CollegeUsageTooltip mode="equipment" />} />
+                  <Bar
+                    dataKey="equipment_hours"
+                    name="Equipment Hours"
+                    fill="#f1b300"
+                    radius={[0, 4, 4, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          </div>
+        </>
       )}
 
       {/* Filter */}

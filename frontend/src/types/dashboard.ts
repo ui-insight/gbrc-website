@@ -470,13 +470,20 @@ export interface CRCCollegeUsageItem {
   unique_users: number
 }
 
+export interface CollegeUserCount {
+  college: string
+  unique_users: number
+}
+
 export interface PIUsageSummaryData {
   summary: PIUsageSummaryStats
   pis: PIUsageSummaryItem[]
+  users_by_college: CollegeUserCount[]
   available_fiscal_years: string[]
   by_fy: Record<string, {
     summary: PIUsageSummaryStats
     pis: PIUsageSummaryItem[]
+    users_by_college: CollegeUserCount[]
   }>
   crc_by_college: CRCCollegeUsageItem[]
   crc_by_college_by_fy: Record<string, CRCCollegeUsageItem[]>
