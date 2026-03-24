@@ -109,6 +109,38 @@ interface Props {
   loading: boolean
 }
 
+function ClickableCollegeTick({
+  x,
+  y,
+  payload,
+  activeCollege,
+  onCollegeClick,
+}: {
+  x?: number
+  y?: number
+  payload?: { value: string }
+  activeCollege: string | null
+  onCollegeClick: (college: string) => void
+}) {
+  const college = payload?.value ?? ''
+  const isActive = activeCollege === college
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="end"
+      dominantBaseline="central"
+      fontSize={12}
+      fill={isActive ? '#d97706' : '#525252'}
+      fontWeight={isActive ? 700 : 400}
+      style={{ cursor: 'pointer' }}
+      onClick={() => onCollegeClick(college)}
+    >
+      {college}
+    </text>
+  )
+}
+
 export default function SimplifiedProposalsTab({ data, loading }: Props) {
   const [selectedFY, setSelectedFY] = useState('all')
   const [piSortKey, setPISortKey] = useState<PIQueryKey>('proposal_count')
@@ -118,6 +150,11 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
   const [piFilter, setPIFilter] = useState('')
   const [proposalFilter, setProposalFilter] = useState('')
   const [proposalMode, setProposalMode] = useState<ProposalFilter>('all')
+  const [collegeFilter, setCollegeFilter] = useState<string | null>(null)
+
+  const handleCollegeClick = (college: string) => {
+    setCollegeFilter((prev) => (prev === college ? null : college))
+  }
 
   const availableFYs = useMemo(() => {
     const fiscalYears = Array.from(
@@ -203,7 +240,10 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
   }, [proposalsForFY])
 
   const filteredPIs = useMemo(() => {
-    const rows = piRows
+    let rows = piRows
+    if (collegeFilter) {
+      rows = rows.filter((row) => row.college === collegeFilter)
+    }
     if (!piFilter) return rows
     const query = piFilter.toLowerCase()
     return rows.filter((row) =>
@@ -211,7 +251,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       || row.college_display.toLowerCase().includes(query)
       || row.pi_email.toLowerCase().includes(query)
     )
-  }, [piRows, piFilter])
+  }, [piRows, piFilter, collegeFilter])
 
   const sortedPIs = useMemo(() => {
     return [...filteredPIs].sort((a, b) => compareRows(a, b, piSortKey, piSortDir))
@@ -407,7 +447,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   type="category"
                   dataKey="college"
                   width={70}
-                  tick={{ fontSize: 12 }}
+                  tick={<ClickableCollegeTick activeCollege={collegeFilter} onCollegeClick={handleCollegeClick} />}
                 />
                 <Tooltip content={<CollegeProposalTooltip mode="count" />} />
                 <Bar
@@ -416,6 +456,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   fill="#93c5fd"
                   barSize={20}
                   radius={[0, 4, 4, 0]}
+                  cursor="pointer"
+                  onClick={(entry: CollegeProposalSummary) => handleCollegeClick(entry.college)}
                 />
                 <Bar
                   dataKey="iids_proposal_count"
@@ -423,6 +465,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   fill="#1d4ed8"
                   barSize={20}
                   radius={[0, 4, 4, 0]}
+                  cursor="pointer"
+                  onClick={(entry: CollegeProposalSummary) => handleCollegeClick(entry.college)}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -458,7 +502,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   type="category"
                   dataKey="college"
                   width={70}
-                  tick={{ fontSize: 12 }}
+                  tick={<ClickableCollegeTick activeCollege={collegeFilter} onCollegeClick={handleCollegeClick} />}
                 />
                 <Tooltip content={<CollegeProposalTooltip mode="dollars" />} />
                 <Bar
@@ -467,6 +511,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   fill="#fde68a"
                   barSize={20}
                   radius={[0, 4, 4, 0]}
+                  cursor="pointer"
+                  onClick={(entry: CollegeProposalSummary) => handleCollegeClick(entry.college)}
                 />
                 <Bar
                   dataKey="iids_requested_total"
@@ -474,6 +520,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   fill="#d97706"
                   barSize={20}
                   radius={[0, 4, 4, 0]}
+                  cursor="pointer"
+                  onClick={(entry: CollegeProposalSummary) => handleCollegeClick(entry.college)}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -486,13 +534,24 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
         subtitle="How proposal activity is distributed across the simplified PI set"
       >
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <input
-            type="text"
-            placeholder="Search PI, college, or email..."
-            value={piFilter}
-            onChange={(event) => setPIFilter(event.target.value)}
-            className="w-full max-w-md px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f1b300] focus:border-transparent text-sm"
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            <input
+              type="text"
+              placeholder="Search PI, college, or email..."
+              value={piFilter}
+              onChange={(event) => setPIFilter(event.target.value)}
+              className="w-full max-w-md px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f1b300] focus:border-transparent text-sm"
+            />
+            {collegeFilter && (
+              <button
+                onClick={() => setCollegeFilter(null)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+              >
+                {collegeFilter}
+                <span className="text-amber-600">×</span>
+              </button>
+            )}
+          </div>
           <p className="text-sm text-neutral-500">{sortedPIs.length} PIs shown</p>
         </div>
 
