@@ -21,6 +21,8 @@ type ProposalQueryKey = keyof SimplifiedProposalItem
 type SortDir = 'asc' | 'desc'
 type ProposalFilter = 'all' | 'iids' | 'funded' | 'unfunded'
 
+const GRAPH_COLLEGE_CODES = ['CALS', 'COS', 'RCI', 'CNR', 'SHAMP', 'ENG'] as const
+
 interface CollegeProposalSummary {
   college: string
   college_display: string
@@ -248,50 +250,39 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
   }, [filteredProposals, proposalSortKey, proposalSortDir])
 
   const proposalsByCollege = useMemo<CollegeProposalSummary[]>(() => {
-    const byCollege = new Map<string, CollegeProposalSummary>()
+    const byCollege = new Map<string, CollegeProposalSummary>(
+      GRAPH_COLLEGE_CODES.map((code) => [code, {
+        college: code,
+        college_display: code,
+        proposal_count: 0,
+        iids_proposal_count: 0,
+        funded_proposal_count: 0,
+        requested_total: 0,
+        iids_requested_total: 0,
+        funded_total: 0,
+      }]),
+    )
 
     filteredProposals.forEach((proposal) => {
-      const key = proposal.college_display || proposal.college || 'Unknown'
+      const key = proposal.college
       const existing = byCollege.get(key)
+      if (!existing) return
 
-      if (existing) {
-        existing.proposal_count += 1
-        existing.requested_total += proposal.total_cost
-        if (proposal.iids_affiliated) {
-          existing.iids_proposal_count += 1
-          existing.iids_requested_total += proposal.total_cost
-        }
-        if (proposal.funded) {
-          existing.funded_proposal_count += 1
-          existing.funded_total += proposal.total_cost
-        }
-        return
+      existing.proposal_count += 1
+      existing.requested_total += proposal.total_cost
+      if (proposal.college_display) existing.college_display = proposal.college_display
+      if (proposal.iids_affiliated) {
+        existing.iids_proposal_count += 1
+        existing.iids_requested_total += proposal.total_cost
       }
-
-      byCollege.set(key, {
-        college: proposal.college,
-        college_display: proposal.college_display,
-        proposal_count: 1,
-        iids_proposal_count: proposal.iids_affiliated ? 1 : 0,
-        funded_proposal_count: proposal.funded ? 1 : 0,
-        requested_total: proposal.total_cost,
-        iids_requested_total: proposal.iids_affiliated ? proposal.total_cost : 0,
-        funded_total: proposal.funded ? proposal.total_cost : 0,
-      })
+      if (proposal.funded) {
+        existing.funded_proposal_count += 1
+        existing.funded_total += proposal.total_cost
+      }
     })
 
-    return Array.from(byCollege.values())
+    return GRAPH_COLLEGE_CODES.map((code) => byCollege.get(code)!)
   }, [filteredProposals])
-
-  const proposalCountByCollege = useMemo(
-    () => [...proposalsByCollege].sort((a, b) => b.proposal_count - a.proposal_count),
-    [proposalsByCollege],
-  )
-
-  const proposalDollarsByCollege = useMemo(
-    () => [...proposalsByCollege].sort((a, b) => b.requested_total - a.requested_total),
-    [proposalsByCollege],
-  )
 
   const toggleSort = <T extends string>(key: T, currentKey: T, currentDir: SortDir, setKey: (value: T) => void, setDir: (value: SortDir) => void) => {
     if (key === currentKey) {
@@ -403,11 +394,11 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                 IIDS-affiliated proposals
               </span>
             </div>
-            <ResponsiveContainer width="100%" height={Math.max(260, proposalCountByCollege.length * 56 + 40)}>
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalsByCollege.length * 56 + 40)}>
               <BarChart
-                data={proposalCountByCollege}
+                data={proposalsByCollege}
                 layout="vertical"
-                barGap="-100%"
+                barGap={-1}
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -423,12 +414,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   dataKey="proposal_count"
                   name="Total Proposal Count"
                   fill="#93c5fd"
+                  barSize={20}
                   radius={[0, 4, 4, 0]}
                 />
                 <Bar
                   dataKey="iids_proposal_count"
                   name="IIDS Proposal Count"
                   fill="#1d4ed8"
+                  barSize={20}
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
@@ -449,11 +442,11 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                 IIDS-affiliated requested
               </span>
             </div>
-            <ResponsiveContainer width="100%" height={Math.max(260, proposalDollarsByCollege.length * 56 + 40)}>
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalsByCollege.length * 56 + 40)}>
               <BarChart
-                data={proposalDollarsByCollege}
+                data={proposalsByCollege}
                 layout="vertical"
-                barGap="-100%"
+                barGap={-1}
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -472,12 +465,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                   dataKey="requested_total"
                   name="Total Requested Dollars"
                   fill="#fde68a"
+                  barSize={20}
                   radius={[0, 4, 4, 0]}
                 />
                 <Bar
                   dataKey="iids_requested_total"
                   name="IIDS Requested Dollars"
                   fill="#d97706"
+                  barSize={20}
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
