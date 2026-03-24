@@ -150,6 +150,17 @@ COLLEGE_DISPLAY_NAMES: dict[str, str] = {
     "OTHER": "Other",
 }
 
+SIMPLIFIED_COLLEGE_CODES: list[str] = ["CALS", "COS", "RCI", "CNR", "SHAMP", "ENG"]
+
+CRC_COLLEGE_TO_SIMPLIFIED: dict[str, str] = {
+    "Agriculture and Life Sciences": "CALS",
+    "Science": "COS",
+    "Office of Research and Economic Development": "RCI",
+    "Natural Resources": "CNR",
+    "Education, Health, and Human Sciences": "SHAMP",
+    "Engineering": "ENG",
+}
+
 
 def get_college_from_department(department: str) -> str:
     """Extract college code from a proposal DEPARTMENT string.
@@ -239,3 +250,13 @@ def get_college_for_pi(pi_name: str, proposals: list[dict]) -> str:
 def get_college_display_name(code: str) -> str:
     """Get the display label for a college code."""
     return COLLEGE_DISPLAY_NAMES.get(code, code)
+
+
+def get_simplified_crc_college(college_label: str) -> str | None:
+    """Map a CRC college label into the simplified dashboard college set.
+
+    Returns None when the CRC row should be excluded from the simplified graphs.
+    """
+    if not college_label:
+        return None
+    return CRC_COLLEGE_TO_SIMPLIFIED.get(college_label.strip())

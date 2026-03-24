@@ -461,11 +461,25 @@ export interface PIUsageSummaryItem {
   equipment_hours: number
   reservation_count: number
   distinct_users: number
+  uses_crc: boolean
+  crc_years_label: string
+}
+
+export interface CRCCollegeUsageItem {
+  college: string
+  unique_users: number
 }
 
 export interface PIUsageSummaryData {
   summary: PIUsageSummaryStats
   pis: PIUsageSummaryItem[]
+  available_fiscal_years: string[]
+  by_fy: Record<string, {
+    summary: PIUsageSummaryStats
+    pis: PIUsageSummaryItem[]
+  }>
+  crc_by_college: CRCCollegeUsageItem[]
+  crc_by_college_by_fy: Record<string, CRCCollegeUsageItem[]>
 }
 
 export interface SimplifiedProposalStats {

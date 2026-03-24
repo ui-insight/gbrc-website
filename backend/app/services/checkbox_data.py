@@ -1850,6 +1850,8 @@ def get_pi_usage_summary() -> dict:
         get_college_for_pi,
         get_college_display_name,
         get_college_from_charge_dept,
+        get_simplified_crc_college,
+        SIMPLIFIED_COLLEGE_CODES,
     )
 
     charges = _load_charges()
@@ -1871,11 +1873,35 @@ def get_pi_usage_summary() -> dict:
         dt = _parse_date(c.get("Billing Date", "") or c.get("Purchase Date", ""))
         c["_fy"] = _fiscal_year(dt) if dt else None
 
+    for ev in events:
+        ev["_pi_email"] = ev.get("PI Email", "").strip().lower()
+        ev["_pi_name"] = _extract_pi_name(ev.get("Customer Lab", ""))
+        ev["_department"] = ev.get("Customer Department", "").strip()
+        dt = _parse_date(ev.get("Scheduled Start", ""))
+        ev["_fy"] = _fiscal_year(dt) if dt else None
+
     valid_charges = [
         c for c in charges
         if c["_fy"] and c["_fy"] >= 2023
         and c["_price_type"] == "Internal"
     ]
+    crc_rows = []
+    for fy in [2023, 2024, 2025]:
+        fy_label = f"FY{str(fy)[-2:]}"
+        for row in _load_crc_users(fy):
+            crc_rows.append({
+                "_fy": fy_label,
+                "_email": row.get("email", "").strip().lower(),
+                "_name": _canonical_pi_name(
+                    f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip()
+                ).lower(),
+                "_user_key": _user_key(
+                    row.get("email", ""),
+                    row.get("username", "") or f"{row.get('fname', '').strip()} {row.get('lname', '').strip()}".strip(),
+                ),
+                "_college": get_simplified_crc_college(row.get("college", "").strip()),
+                "_service": row.get("service", "").strip(),
+            })
 
     def _resolve_pi_key(pi_name: str, pi_email: str) -> str:
         canonical_name = _canonical_pi_name(pi_name)
@@ -1898,142 +1924,204 @@ def get_pi_usage_summary() -> dict:
             return True
         return bool(pi_email)
 
-    # Build PI dict from charges
-    pi_data: dict[str, dict] = {}
-    for c in valid_charges:
-        if not _should_include_charge(c):
-            continue
-        pi_key = _resolve_pi_key(c["_pi_name"], c["_pi_email"])
-        if not pi_key:
-            continue
-        if pi_key not in pi_data:
-            pi_data[pi_key] = {
-                "pi_email": c["_pi_email"],
-                "pi_name": _canonical_pi_name(c["_pi_name"]),
-                "department": c["_department"],
-                "total_paid": 0.0,
-                "charge_count": 0,
-                "equipment_hours": 0.0,
-                "reservation_count": 0,
-                "distinct_users": set(),
-                "has_charges": True,
-                "has_events": False,
-            }
-        else:
-            if not pi_data[pi_key]["pi_email"] and c["_pi_email"]:
-                pi_data[pi_key]["pi_email"] = c["_pi_email"]
-            if (
-                (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
-                and c["_pi_name"]
-            ):
-                pi_data[pi_key]["pi_name"] = _canonical_pi_name(c["_pi_name"])
-            if not pi_data[pi_key]["department"] and c["_department"]:
-                pi_data[pi_key]["department"] = c["_department"]
-            pi_data[pi_key]["has_charges"] = True
-        pi_data[pi_key]["total_paid"] += c["_total_price"]
-        pi_data[pi_key]["charge_count"] += 1
+    def _build_summary(charge_rows: list[dict], event_rows: list[dict], crc_rows_for_view: list[dict]) -> dict:
+        pi_data: dict[str, dict] = {}
 
-        user_key = _user_key(c.get("User Login Email", ""), c.get("Customer Name", ""))
-        if user_key:
-            pi_data[pi_key]["distinct_users"].add(user_key)
-
-    # Process events
-    for ev in events:
-        pi_email = ev.get("PI Email", "").strip().lower()
-        pi_name = _extract_pi_name(ev.get("Customer Lab", ""))
-        pi_key = _resolve_pi_key(pi_name, pi_email)
-        if not pi_key:
-            continue
-        hours = _parse_hours(ev.get("Actual Hours", "") or ev.get("Scheduled Hours", ""))
-        if pi_key not in pi_data:
-            if not _is_ui_email(pi_email) and pi_key not in proposal_names:
+        for c in charge_rows:
+            if not _should_include_charge(c):
                 continue
-            pi_data[pi_key] = {
-                "pi_email": pi_email,
-                "pi_name": _canonical_pi_name(pi_name),
-                "department": ev.get("Customer Department", "").strip(),
-                "total_paid": 0.0,
-                "charge_count": 0,
-                "equipment_hours": 0.0,
-                "reservation_count": 0,
-                "distinct_users": set(),
-                "has_charges": False,
-                "has_events": True,
+            pi_key = _resolve_pi_key(c["_pi_name"], c["_pi_email"])
+            if not pi_key:
+                continue
+            if pi_key not in pi_data:
+                pi_data[pi_key] = {
+                    "pi_email": c["_pi_email"],
+                    "pi_name": _canonical_pi_name(c["_pi_name"]),
+                    "department": c["_department"],
+                    "total_paid": 0.0,
+                    "charge_count": 0,
+                    "equipment_hours": 0.0,
+                    "reservation_count": 0,
+                    "distinct_users": set(),
+                    "has_charges": True,
+                    "has_events": False,
+                }
+            else:
+                if not pi_data[pi_key]["pi_email"] and c["_pi_email"]:
+                    pi_data[pi_key]["pi_email"] = c["_pi_email"]
+                if (
+                    (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
+                    and c["_pi_name"]
+                ):
+                    pi_data[pi_key]["pi_name"] = _canonical_pi_name(c["_pi_name"])
+                if not pi_data[pi_key]["department"] and c["_department"]:
+                    pi_data[pi_key]["department"] = c["_department"]
+                pi_data[pi_key]["has_charges"] = True
+            pi_data[pi_key]["total_paid"] += c["_total_price"]
+            pi_data[pi_key]["charge_count"] += 1
+
+            user_key = _user_key(c.get("User Login Email", ""), c.get("Customer Name", ""))
+            if user_key:
+                pi_data[pi_key]["distinct_users"].add(user_key)
+
+        for ev in event_rows:
+            pi_email = ev["_pi_email"]
+            pi_name = ev["_pi_name"]
+            pi_key = _resolve_pi_key(pi_name, pi_email)
+            if not pi_key:
+                continue
+            hours = _parse_hours(ev.get("Actual Hours", "") or ev.get("Scheduled Hours", ""))
+            if pi_key not in pi_data:
+                if not _is_ui_email(pi_email) and pi_key not in proposal_names:
+                    continue
+                pi_data[pi_key] = {
+                    "pi_email": pi_email,
+                    "pi_name": _canonical_pi_name(pi_name),
+                    "department": ev["_department"],
+                    "total_paid": 0.0,
+                    "charge_count": 0,
+                    "equipment_hours": 0.0,
+                    "reservation_count": 0,
+                    "distinct_users": set(),
+                    "has_charges": False,
+                    "has_events": True,
+                }
+            else:
+                if not pi_data[pi_key]["pi_email"] and pi_email:
+                    pi_data[pi_key]["pi_email"] = pi_email
+                if (
+                    (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
+                    and pi_name
+                ):
+                    pi_data[pi_key]["pi_name"] = _canonical_pi_name(pi_name)
+                if not pi_data[pi_key]["department"] and ev["_department"]:
+                    pi_data[pi_key]["department"] = ev["_department"]
+                pi_data[pi_key]["has_events"] = True
+            pi_data[pi_key]["equipment_hours"] += hours
+            pi_data[pi_key]["reservation_count"] += 1
+
+            user_key = _user_key(ev.get("User Login Email", ""), ev.get("Customer Name", ""))
+            if user_key:
+                pi_data[pi_key]["distinct_users"].add(user_key)
+
+        result_pis = []
+        for info in pi_data.values():
+            if info["has_charges"] and info["has_events"]:
+                usage_type = "both"
+            elif info["has_charges"]:
+                usage_type = "paid"
+            else:
+                usage_type = "free"
+
+            college_code = get_college_for_pi(info["pi_name"], proposals)
+            if college_code == "Unknown":
+                college_code = get_college_from_charge_dept(info["department"])
+
+            pi_email = info["pi_email"].strip().lower()
+            pi_name_key = _canonical_pi_name(info["pi_name"]).lower()
+            crc_matches = [
+                row for row in crc_rows_for_view
+                if (
+                    pi_email and row["_email"] == pi_email
+                ) or (
+                    pi_name_key and row["_name"] == pi_name_key
+                )
+            ]
+            crc_years = sorted({row["_fy"] for row in crc_matches})
+
+            result_pis.append({
+                "pi_email": info["pi_email"],
+                "pi_name": info["pi_name"],
+                "department": info["department"],
+                "college": college_code,
+                "college_display": get_college_display_name(college_code),
+                "usage_type": usage_type,
+                "total_paid": round(info["total_paid"], 2),
+                "charge_count": info["charge_count"],
+                "equipment_hours": round(info["equipment_hours"], 1),
+                "reservation_count": info["reservation_count"],
+                "distinct_users": len(info["distinct_users"]),
+                "uses_crc": len(crc_matches) > 0,
+                "crc_years_label": ", ".join(crc_years) if crc_years else "",
+            })
+
+        result_pis.sort(
+            key=lambda x: (
+                x["total_paid"],
+                x["equipment_hours"],
+                x["reservation_count"],
+                x["pi_name"],
+            ),
+            reverse=True,
+        )
+
+        total_pis = len(result_pis)
+        paid_count = sum(1 for p in result_pis if p["usage_type"] == "paid")
+        free_count = sum(1 for p in result_pis if p["usage_type"] == "free")
+        both_count = sum(1 for p in result_pis if p["usage_type"] == "both")
+        total_revenue = round(sum(p["total_paid"] for p in result_pis), 2)
+        total_hours = round(sum(p["equipment_hours"] for p in result_pis), 1)
+
+        return {
+            "summary": {
+                "total_pis": total_pis,
+                "paid_pis": paid_count,
+                "free_pis": free_count,
+                "both_pis": both_count,
+                "total_revenue": total_revenue,
+                "total_equipment_hours": total_hours,
+            },
+            "pis": result_pis,
+        }
+
+    def _build_crc_college_usage(rows: list[dict]) -> list[dict]:
+        colleges: dict[str, set[str]] = {
+            code: set() for code in SIMPLIFIED_COLLEGE_CODES
+        }
+        for row in rows:
+            college = row["_college"]
+            user_key = row["_user_key"]
+            if not college or not user_key:
+                continue
+            colleges[college].add(user_key)
+
+        result = [
+            {
+                "college": college,
+                "unique_users": len(users),
             }
-        else:
-            if not pi_data[pi_key]["pi_email"] and pi_email:
-                pi_data[pi_key]["pi_email"] = pi_email
-            if (
-                (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
-                and pi_name
-            ):
-                pi_data[pi_key]["pi_name"] = _canonical_pi_name(pi_name)
-            if not pi_data[pi_key]["department"] and ev.get("Customer Department", "").strip():
-                pi_data[pi_key]["department"] = ev.get("Customer Department", "").strip()
-            pi_data[pi_key]["has_events"] = True
-        pi_data[pi_key]["equipment_hours"] += hours
-        pi_data[pi_key]["reservation_count"] += 1
+            for college, users in colleges.items()
+        ]
+        return result
 
-        user_key = _user_key(ev.get("User Login Email", ""), ev.get("Customer Name", ""))
-        if user_key:
-            pi_data[pi_key]["distinct_users"].add(user_key)
+    fy_values = sorted({
+        c["_fy"] for c in valid_charges if c["_fy"]
+    } | {
+        ev["_fy"] for ev in events if ev["_fy"] and ev["_fy"] >= 2023
+    })
+    fy_labels = [f"FY{str(fy)[-2:]}" for fy in fy_values]
 
-    result_pis = []
-    for info in pi_data.values():
-        # Determine usage type
-        if info["has_charges"] and info["has_events"]:
-            usage_type = "both"
-        elif info["has_charges"]:
-            usage_type = "paid"
-        else:
-            usage_type = "free"
-
-        # Get college
-        college_code = get_college_for_pi(info["pi_name"], proposals)
-        if college_code == "Unknown":
-            college_code = get_college_from_charge_dept(info["department"])
-
-        result_pis.append({
-            "pi_email": info["pi_email"],
-            "pi_name": info["pi_name"],
-            "department": info["department"],
-            "college": college_code,
-            "college_display": get_college_display_name(college_code),
-            "usage_type": usage_type,
-            "total_paid": round(info["total_paid"], 2),
-            "charge_count": info["charge_count"],
-            "equipment_hours": round(info["equipment_hours"], 1),
-            "reservation_count": info["reservation_count"],
-            "distinct_users": len(info["distinct_users"]),
-        })
-
-    result_pis.sort(
-        key=lambda x: (
-            x["total_paid"],
-            x["equipment_hours"],
-            x["reservation_count"],
-            x["pi_name"],
-        ),
-        reverse=True,
-    )
-
-    total_pis = len(result_pis)
-    paid_count = sum(1 for p in result_pis if p["usage_type"] == "paid")
-    free_count = sum(1 for p in result_pis if p["usage_type"] == "free")
-    both_count = sum(1 for p in result_pis if p["usage_type"] == "both")
-    total_revenue = round(sum(p["total_paid"] for p in result_pis), 2)
-    total_hours = round(sum(p["equipment_hours"] for p in result_pis), 1)
+    all_view = _build_summary(valid_charges, events, crc_rows)
+    by_fy = {
+        f"FY{str(fy)[-2:]}": _build_summary(
+            [c for c in valid_charges if c["_fy"] == fy],
+            [ev for ev in events if ev["_fy"] == fy],
+            [row for row in crc_rows if row["_fy"] == f"FY{str(fy)[-2:]}"],
+        )
+        for fy in fy_values
+    }
 
     return {
-        "summary": {
-            "total_pis": total_pis,
-            "paid_pis": paid_count,
-            "free_pis": free_count,
-            "both_pis": both_count,
-            "total_revenue": total_revenue,
-            "total_equipment_hours": total_hours,
+        **all_view,
+        "available_fiscal_years": ["all", *fy_labels],
+        "by_fy": by_fy,
+        "crc_by_college": _build_crc_college_usage(crc_rows),
+        "crc_by_college_by_fy": {
+            fy_label: _build_crc_college_usage(
+                [row for row in crc_rows if row["_fy"] == fy_label]
+            )
+            for fy_label in fy_labels
         },
-        "pis": result_pis,
     }
 
 

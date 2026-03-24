@@ -1,4 +1,13 @@
 import { useMemo, useState } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import type {
   SimplifiedProposalData,
   SimplifiedProposalItem,
@@ -11,6 +20,16 @@ type PIQueryKey = keyof SimplifiedProposalPIItem
 type ProposalQueryKey = keyof SimplifiedProposalItem
 type SortDir = 'asc' | 'desc'
 type ProposalFilter = 'all' | 'iids' | 'funded' | 'unfunded'
+
+interface CollegeProposalSummary {
+  college: string
+  college_display: string
+  proposal_count: number
+  iids_proposal_count: number
+  funded_proposal_count: number
+  requested_total: number
+  funded_total: number
+}
 
 const USAGE_BADGE: Record<SimplifiedProposalPIItem['usage_type'], { label: string; tone: string }> = {
   paid: { label: 'Paid', tone: 'bg-emerald-100 text-emerald-800' },
@@ -29,6 +48,37 @@ const formatDollar = (value: number) => {
 
 const formatFullDollar = (value: number) =>
   `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
+function CollegeProposalTooltip({
+  active,
+  payload,
+  mode,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeProposalSummary }>
+  mode: 'count' | 'dollars'
+}) {
+  if (!active || !payload?.length) return null
+
+  const row = payload[0].payload
+
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college_display}</p>
+      <p className="text-neutral-700">
+        {mode === 'count'
+          ? `Proposals: ${row.proposal_count.toLocaleString()}`
+          : `Requested total: ${formatFullDollar(row.requested_total)}`}
+      </p>
+      <p className="text-neutral-500 mt-1">
+        {row.iids_proposal_count} IIDS · {row.funded_proposal_count} funded
+      </p>
+      <p className="text-neutral-500">
+        Funded dollars: {formatFullDollar(row.funded_total)}
+      </p>
+    </div>
+  )
+}
 
 function compareRows<T, K extends keyof T>(a: T, b: T, key: K, dir: SortDir) {
   const av = a[key] as string | number | boolean
@@ -52,6 +102,7 @@ interface Props {
 }
 
 export default function SimplifiedProposalsTab({ data, loading }: Props) {
+  const [selectedFY, setSelectedFY] = useState('all')
   const [piSortKey, setPISortKey] = useState<PIQueryKey>('proposal_count')
   const [piSortDir, setPISortDir] = useState<SortDir>('desc')
   const [proposalSortKey, setProposalSortKey] = useState<ProposalQueryKey>('submission_date')
@@ -60,8 +111,91 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
   const [proposalFilter, setProposalFilter] = useState('')
   const [proposalMode, setProposalMode] = useState<ProposalFilter>('all')
 
+  const availableFYs = useMemo(() => {
+    const fiscalYears = Array.from(
+      new Set((data?.proposals ?? []).map((row) => row.fiscal_year).filter(Boolean)),
+    ).sort()
+    return ['all', ...fiscalYears]
+  }, [data])
+
+  const proposalsForFY = useMemo(() => {
+    const rows = data?.proposals ?? []
+    if (selectedFY === 'all') return rows
+    return rows.filter((row) => row.fiscal_year === selectedFY)
+  }, [data, selectedFY])
+
+  const summary = useMemo(() => {
+    const proposalPIs = new Set(proposalsForFY.map((row) => row.pi_name))
+    const totalPIs = data?.summary.total_pis ?? 0
+    const iidsCount = proposalsForFY.filter((row) => row.iids_affiliated).length
+    const fundedCount = proposalsForFY.filter((row) => row.funded).length
+    const requestedTotal = proposalsForFY.reduce((sum, row) => sum + row.total_cost, 0)
+    const fundedTotal = proposalsForFY
+      .filter((row) => row.funded)
+      .reduce((sum, row) => sum + row.total_cost, 0)
+
+    return {
+      total_pis: totalPIs,
+      pis_with_proposals: proposalPIs.size,
+      total_proposals: proposalsForFY.length,
+      iids_proposals: iidsCount,
+      funded_proposals: fundedCount,
+      requested_total: requestedTotal,
+      funded_total: fundedTotal,
+    }
+  }, [data, proposalsForFY])
+
+  const piRows = useMemo<SimplifiedProposalPIItem[]>(() => {
+    const byPI = new Map<string, SimplifiedProposalPIItem & { latest_sort_value: number }>()
+
+    proposalsForFY.forEach((proposal) => {
+      const key = proposal.pi_email || proposal.pi_name
+      const latestSortValue = Date.parse(proposal.submission_date) || 0
+      const existing = byPI.get(key)
+
+      if (existing) {
+        existing.proposal_count += 1
+        existing.requested_total += proposal.total_cost
+        if (proposal.iids_affiliated) existing.iids_proposal_count += 1
+        if (proposal.funded) {
+          existing.funded_proposal_count += 1
+          existing.funded_total += proposal.total_cost
+        }
+        if (latestSortValue > existing.latest_sort_value) {
+          existing.latest_sort_value = latestSortValue
+          existing.latest_submission_date = proposal.submission_date
+        }
+        return
+      }
+
+      byPI.set(key, {
+        pi_name: proposal.pi_name,
+        pi_email: proposal.pi_email,
+        college: proposal.college,
+        college_display: proposal.college_display,
+        usage_type: proposal.usage_type,
+        proposal_count: 1,
+        iids_proposal_count: proposal.iids_affiliated ? 1 : 0,
+        funded_proposal_count: proposal.funded ? 1 : 0,
+        requested_total: proposal.total_cost,
+        funded_total: proposal.funded ? proposal.total_cost : 0,
+        latest_submission_date: proposal.submission_date,
+        latest_sort_value: latestSortValue,
+      })
+    })
+
+    return Array.from(byPI.values())
+      .map(({ latest_sort_value, ...row }) => row)
+      .sort((a, b) => (
+        b.proposal_count - a.proposal_count
+        || b.funded_proposal_count - a.funded_proposal_count
+        || b.requested_total - a.requested_total
+        || a.pi_name.localeCompare(b.pi_name)
+      ))
+  }, [proposalsForFY])
+
   const filteredPIs = useMemo(() => {
-    const rows = data?.by_pi ?? []
+    const rows = piRows
     if (!piFilter) return rows
     const query = piFilter.toLowerCase()
     return rows.filter((row) =>
@@ -69,14 +203,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       || row.college_display.toLowerCase().includes(query)
       || row.pi_email.toLowerCase().includes(query)
     )
-  }, [data, piFilter])
+  }, [piRows, piFilter])
 
   const sortedPIs = useMemo(() => {
     return [...filteredPIs].sort((a, b) => compareRows(a, b, piSortKey, piSortDir))
   }, [filteredPIs, piSortKey, piSortDir])
 
   const filteredProposals = useMemo(() => {
-    let rows = data?.proposals ?? []
+    let rows = proposalsForFY
     if (proposalMode === 'iids') {
       rows = rows.filter((row) => row.iids_affiliated)
     } else if (proposalMode === 'funded') {
@@ -94,7 +228,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       || row.department.toLowerCase().includes(query)
       || row.proposal_number.toLowerCase().includes(query)
     )
-  }, [data, proposalFilter, proposalMode])
+  }, [proposalFilter, proposalMode, proposalsForFY])
 
   const sortedProposals = useMemo(() => {
     return [...filteredProposals].sort((a, b) => {
@@ -106,6 +240,48 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       return compareRows(a, b, proposalSortKey, proposalSortDir)
     })
   }, [filteredProposals, proposalSortKey, proposalSortDir])
+
+  const proposalsByCollege = useMemo<CollegeProposalSummary[]>(() => {
+    const byCollege = new Map<string, CollegeProposalSummary>()
+
+    filteredProposals.forEach((proposal) => {
+      const key = proposal.college_display || proposal.college || 'Unknown'
+      const existing = byCollege.get(key)
+
+      if (existing) {
+        existing.proposal_count += 1
+        existing.requested_total += proposal.total_cost
+        if (proposal.iids_affiliated) existing.iids_proposal_count += 1
+        if (proposal.funded) {
+          existing.funded_proposal_count += 1
+          existing.funded_total += proposal.total_cost
+        }
+        return
+      }
+
+      byCollege.set(key, {
+        college: proposal.college,
+        college_display: proposal.college_display,
+        proposal_count: 1,
+        iids_proposal_count: proposal.iids_affiliated ? 1 : 0,
+        funded_proposal_count: proposal.funded ? 1 : 0,
+        requested_total: proposal.total_cost,
+        funded_total: proposal.funded ? proposal.total_cost : 0,
+      })
+    })
+
+    return Array.from(byCollege.values())
+  }, [filteredProposals])
+
+  const proposalCountByCollege = useMemo(
+    () => [...proposalsByCollege].sort((a, b) => b.proposal_count - a.proposal_count),
+    [proposalsByCollege],
+  )
+
+  const proposalDollarsByCollege = useMemo(
+    () => [...proposalsByCollege].sort((a, b) => b.requested_total - a.requested_total),
+    [proposalsByCollege],
+  )
 
   const toggleSort = <T extends string>(key: T, currentKey: T, currentDir: SortDir, setKey: (value: T) => void, setDir: (value: SortDir) => void) => {
     if (key === currentKey) {
@@ -131,11 +307,11 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
 
   if (!data) return null
 
-  const iidsRate = data.summary.total_proposals > 0
-    ? ((data.summary.iids_proposals / data.summary.total_proposals) * 100).toFixed(1)
+  const iidsRate = summary.total_proposals > 0
+    ? ((summary.iids_proposals / summary.total_proposals) * 100).toFixed(1)
     : '0.0'
-  const fundedRate = data.summary.total_proposals > 0
-    ? ((data.summary.funded_proposals / data.summary.total_proposals) * 100).toFixed(1)
+  const fundedRate = summary.total_proposals > 0
+    ? ((summary.funded_proposals / summary.total_proposals) * 100).toFixed(1)
     : '0.0'
 
   return (
@@ -143,32 +319,32 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         <StatCard
           label="Proposal PIs"
-          value={data.summary.pis_with_proposals.toLocaleString()}
-          subtitle={`${data.summary.total_pis.toLocaleString()} observable PIs total`}
+          value={summary.pis_with_proposals.toLocaleString()}
+          subtitle={`${summary.total_pis.toLocaleString()} observable PIs total`}
           highlight="default"
         />
         <StatCard
           label="Total Proposals"
-          value={data.summary.total_proposals.toLocaleString()}
+          value={summary.total_proposals.toLocaleString()}
           subtitle="Submitted by the simplified PI set"
           highlight="gold"
         />
         <StatCard
           label="IIDS Proposals"
-          value={data.summary.iids_proposals.toLocaleString()}
+          value={summary.iids_proposals.toLocaleString()}
           subtitle={`${iidsRate}% of proposals in this view`}
           highlight="green"
         />
         <StatCard
           label="Funded Proposals"
-          value={data.summary.funded_proposals.toLocaleString()}
+          value={summary.funded_proposals.toLocaleString()}
           subtitle={`${fundedRate}% currently marked funded`}
           highlight="green"
         />
         <StatCard
           label="Requested Total"
-          value={formatDollar(data.summary.requested_total)}
-          subtitle={`${formatDollar(data.summary.funded_total)} funded total`}
+          value={formatDollar(summary.requested_total)}
+          subtitle={`${formatDollar(summary.funded_total)} funded total`}
           highlight="default"
         />
       </div>
@@ -183,6 +359,88 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
           proposals are currently marked funded, and the amount requested across the portfolio.
         </p>
       </ChartCard>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm font-medium text-neutral-500">Fiscal Year:</span>
+        {availableFYs.map((fy) => (
+          <button
+            key={fy}
+            onClick={() => setSelectedFY(fy)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedFY === fy
+                ? 'bg-amber-500 text-white'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+            }`}
+          >
+            {fy === 'all' ? 'All' : fy}
+          </button>
+        ))}
+      </div>
+
+      {proposalsByCollege.length > 0 && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard
+            title="Proposal Volume By College"
+            subtitle="Aggregated proposal counts for the currently visible proposal set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalCountByCollege.length * 56 + 40)}>
+              <BarChart
+                data={proposalCountByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeProposalTooltip mode="count" />} />
+                <Bar
+                  dataKey="proposal_count"
+                  name="Proposal Count"
+                  fill="#3b82f6"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard
+            title="Requested Dollars By College"
+            subtitle="Aggregated requested totals for the currently visible proposal set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalDollarsByCollege.length * 56 + 40)}>
+              <BarChart
+                data={proposalDollarsByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => formatDollar(Number(value))}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeProposalTooltip mode="dollars" />} />
+                <Bar
+                  dataKey="requested_total"
+                  name="Requested Dollars"
+                  fill="#f1b300"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+      )}
 
       <ChartCard
         title="PI Proposal Rollup"
