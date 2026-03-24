@@ -441,9 +441,16 @@ class PIUsageSummaryItem(BaseModel):
     distinct_users: int
 
 
+class PIUsageSummaryYear(BaseModel):
+    summary: PIUsageSummaryStats
+    pis: list[PIUsageSummaryItem]
+
+
 class PIUsageSummaryResponse(BaseModel):
     summary: PIUsageSummaryStats
     pis: list[PIUsageSummaryItem]
+    available_fiscal_years: list[str] = []
+    by_fy: dict[str, PIUsageSummaryYear] = {}
 
 
 class SimplifiedProposalStats(BaseModel):

@@ -82,16 +82,23 @@ interface SimplifiedTabProps {
 }
 
 export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
+  const [selectedFY, setSelectedFY] = useState('all')
   const [sortKey, setSortKey] = useState<SortKey>('total_paid')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [filter, setFilter] = useState('')
   const [usageFilter, setUsageFilter] = useState<UsageFilter>('all')
 
+  const activeData = useMemo(() => {
+    if (!data) return null
+    if (selectedFY === 'all') return data
+    return data.by_fy[selectedFY] ?? { summary: data.summary, pis: [] }
+  }, [data, selectedFY])
+
   const filtered = useMemo(() => {
-    if (!data) return []
+    if (!activeData) return []
     const source = usageFilter === 'all'
-      ? data.pis
-      : data.pis.filter((p) => p.usage_type === usageFilter)
+      ? activeData.pis
+      : activeData.pis.filter((p) => p.usage_type === usageFilter)
     if (!filter) return source
     const q = filter.toLowerCase()
     return source.filter(
@@ -101,7 +108,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
         p.college_display.toLowerCase().includes(q) ||
         p.pi_email.toLowerCase().includes(q)
     )
-  }, [data, filter, usageFilter])
+  }, [activeData, filter, usageFilter])
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -169,9 +176,9 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
     return <div className="text-center py-12 text-neutral-500">Loading PI usage summary...</div>
   }
 
-  if (!data) return null
+  if (!data || !activeData) return null
 
-  const { summary } = data
+  const { summary } = activeData
 
   return (
     <div className="space-y-6">
@@ -213,6 +220,23 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
           still appear in this simplified view.
         </p>
       </ChartCard>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm font-medium text-neutral-500">Fiscal Year:</span>
+        {data.available_fiscal_years.map((fy) => (
+          <button
+            key={fy}
+            onClick={() => setSelectedFY(fy)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedFY === fy
+                ? 'bg-amber-500 text-white'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+            }`}
+          >
+            {fy === 'all' ? 'All' : fy}
+          </button>
+        ))}
+      </div>
 
       {usageByCollege.length > 0 && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -315,7 +339,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
         </div>
         <span className="text-sm text-neutral-500">
           {sorted.length} PI{sorted.length !== 1 ? 's' : ''}
-          {(filter || usageFilter !== 'all') && ` (filtered from ${data.pis.length})`}
+          {(filter || usageFilter !== 'all') && ` (filtered from ${activeData.pis.length})`}
         </span>
       </div>
 

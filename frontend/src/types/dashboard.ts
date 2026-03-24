@@ -466,6 +466,11 @@ export interface PIUsageSummaryItem {
 export interface PIUsageSummaryData {
   summary: PIUsageSummaryStats
   pis: PIUsageSummaryItem[]
+  available_fiscal_years: string[]
+  by_fy: Record<string, {
+    summary: PIUsageSummaryStats
+    pis: PIUsageSummaryItem[]
+  }>
 }
 
 export interface SimplifiedProposalStats {
