@@ -44,6 +44,27 @@ const USAGE_BADGE: Record<SimplifiedProposalPIItem['usage_type'], { label: strin
 const YES_BADGE = 'bg-green-100 text-green-800'
 const NO_BADGE = 'bg-neutral-100 text-neutral-600'
 
+/** Parse dates like '8/28/25' or '12/9/22' (M/D/YY) into a sortable timestamp. */
+function parseDateValue(dateStr: string): number {
+  if (!dateStr) return 0
+  // Try M/D/YY format first
+  const parts = dateStr.split('/')
+  if (parts.length === 3) {
+    const month = parseInt(parts[0], 10)
+    const day = parseInt(parts[1], 10)
+    let year = parseInt(parts[2], 10)
+    if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
+      // Expand 2-digit year: 00-79 → 2000s, 80-99 → 1900s
+      if (year < 80) year += 2000
+      else if (year < 100) year += 1900
+      return new Date(year, month - 1, day).getTime()
+    }
+  }
+  // Fallback to native parser
+  const ts = Date.parse(dateStr)
+  return isNaN(ts) ? 0 : ts
+}
+
 const formatDollar = (value: number) => {
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
   if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
@@ -196,7 +217,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
 
     proposalsForFY.forEach((proposal) => {
       const key = proposal.pi_email || proposal.pi_name
-      const latestSortValue = Date.parse(proposal.submission_date) || 0
+      const latestSortValue = parseDateValue(proposal.submission_date)
       const existing = byPI.get(key)
 
       if (existing) {
@@ -282,8 +303,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
   const sortedProposals = useMemo(() => {
     return [...filteredProposals].sort((a, b) => {
       if (proposalSortKey === 'submission_date') {
-        const ad = Date.parse(a.submission_date) || 0
-        const bd = Date.parse(b.submission_date) || 0
+        const ad = parseDateValue(a.submission_date)
+        const bd = parseDateValue(b.submission_date)
         return proposalSortDir === 'asc' ? ad - bd : bd - ad
       }
       return compareRows(a, b, proposalSortKey, proposalSortDir)
@@ -726,8 +747,8 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
               </tr>
             </thead>
             <tbody>
-              {sortedProposals.map((row) => (
-                <tr key={`${row.proposal_number || row.title}-${row.pi_name}-${row.submission_date}`} className="border-b border-neutral-100 hover:bg-neutral-50">
+              {sortedProposals.map((row, idx) => (
+                <tr key={`${row.proposal_number || row.title}-${row.pi_name}-${row.submission_date}-${idx}`} className="border-b border-neutral-100 hover:bg-neutral-50">
                   <td className="px-4 py-3 text-neutral-700 whitespace-nowrap">{row.submission_date || '—'}</td>
                   <td className="px-4 py-3">
                     <div className="font-medium text-neutral-900">{row.pi_name}</div>
