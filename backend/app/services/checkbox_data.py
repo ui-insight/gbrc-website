@@ -471,7 +471,10 @@ def _load_proposals() -> list[dict]:
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            proposals.append(row)
+            proposals.append({
+                (key or "").lstrip("\ufeff"): value
+                for key, value in row.items()
+            })
     return proposals
 
 
@@ -1833,4 +1836,340 @@ def get_analytics_data() -> dict:
         "crc_growth": crc_growth,
         "pi_affiliation": pi_affiliation,
         "pi_usage_mapping": pi_usage_mapping,
+    }
+
+
+@lru_cache(maxsize=1)
+def get_pi_usage_summary() -> dict:
+    """Build a simplified view of all PIs: who uses GBRC and do they pay or use for free.
+
+    Cross-references charges (paid services) with events (equipment reservations)
+    to classify each PI as 'paid', 'free', or 'both'.
+    """
+    from app.services.college_mapping import (
+        get_college_for_pi,
+        get_college_display_name,
+        get_college_from_charge_dept,
+    )
+
+    charges = _load_charges()
+    events = _load_events()
+    proposals = _load_proposals()
+    proposal_names = {
+        _canonical_pi_name(p.get("PI", "").strip()).lower()
+        for p in proposals
+        if p.get("PI", "").strip()
+    }
+
+    # Annotate charges
+    for c in charges:
+        c["_total_price"] = _parse_float(c.get("Total Price", "0"))
+        c["_pi_email"] = c.get("PI Email", "").strip().lower()
+        c["_pi_name"] = _extract_pi_name(c.get("Customer Lab", ""))
+        c["_department"] = c.get("Customer Department", "").strip()
+        c["_price_type"] = c.get("Price Type", "").strip() or "Internal"
+        dt = _parse_date(c.get("Billing Date", "") or c.get("Purchase Date", ""))
+        c["_fy"] = _fiscal_year(dt) if dt else None
+
+    valid_charges = [
+        c for c in charges
+        if c["_fy"] and c["_fy"] >= 2023
+        and c["_price_type"] == "Internal"
+    ]
+
+    def _resolve_pi_key(pi_name: str, pi_email: str) -> str:
+        canonical_name = _canonical_pi_name(pi_name)
+        if canonical_name and canonical_name != "Unknown":
+            return canonical_name.lower()
+        return pi_email.strip().lower()
+
+    def _should_include_charge(charge: dict) -> bool:
+        pi_name = charge["_pi_name"]
+        pi_email = charge["_pi_email"]
+        customer_lab = charge.get("Customer Lab", "")
+        pi_key = _resolve_pi_key(pi_name, pi_email)
+        if not pi_key:
+            return False
+        if _is_ui_email(pi_email):
+            return True
+        if "(UI)" in customer_lab:
+            return True
+        if pi_key in proposal_names:
+            return True
+        return bool(pi_email)
+
+    # Build PI dict from charges
+    pi_data: dict[str, dict] = {}
+    for c in valid_charges:
+        if not _should_include_charge(c):
+            continue
+        pi_key = _resolve_pi_key(c["_pi_name"], c["_pi_email"])
+        if not pi_key:
+            continue
+        if pi_key not in pi_data:
+            pi_data[pi_key] = {
+                "pi_email": c["_pi_email"],
+                "pi_name": _canonical_pi_name(c["_pi_name"]),
+                "department": c["_department"],
+                "total_paid": 0.0,
+                "charge_count": 0,
+                "equipment_hours": 0.0,
+                "reservation_count": 0,
+                "distinct_users": set(),
+                "has_charges": True,
+                "has_events": False,
+            }
+        else:
+            if not pi_data[pi_key]["pi_email"] and c["_pi_email"]:
+                pi_data[pi_key]["pi_email"] = c["_pi_email"]
+            if (
+                (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
+                and c["_pi_name"]
+            ):
+                pi_data[pi_key]["pi_name"] = _canonical_pi_name(c["_pi_name"])
+            if not pi_data[pi_key]["department"] and c["_department"]:
+                pi_data[pi_key]["department"] = c["_department"]
+            pi_data[pi_key]["has_charges"] = True
+        pi_data[pi_key]["total_paid"] += c["_total_price"]
+        pi_data[pi_key]["charge_count"] += 1
+
+        user_key = _user_key(c.get("User Login Email", ""), c.get("Customer Name", ""))
+        if user_key:
+            pi_data[pi_key]["distinct_users"].add(user_key)
+
+    # Process events
+    for ev in events:
+        pi_email = ev.get("PI Email", "").strip().lower()
+        pi_name = _extract_pi_name(ev.get("Customer Lab", ""))
+        pi_key = _resolve_pi_key(pi_name, pi_email)
+        if not pi_key:
+            continue
+        hours = _parse_hours(ev.get("Actual Hours", "") or ev.get("Scheduled Hours", ""))
+        if pi_key not in pi_data:
+            if not _is_ui_email(pi_email) and pi_key not in proposal_names:
+                continue
+            pi_data[pi_key] = {
+                "pi_email": pi_email,
+                "pi_name": _canonical_pi_name(pi_name),
+                "department": ev.get("Customer Department", "").strip(),
+                "total_paid": 0.0,
+                "charge_count": 0,
+                "equipment_hours": 0.0,
+                "reservation_count": 0,
+                "distinct_users": set(),
+                "has_charges": False,
+                "has_events": True,
+            }
+        else:
+            if not pi_data[pi_key]["pi_email"] and pi_email:
+                pi_data[pi_key]["pi_email"] = pi_email
+            if (
+                (not pi_data[pi_key]["pi_name"] or pi_data[pi_key]["pi_name"] == "Unknown")
+                and pi_name
+            ):
+                pi_data[pi_key]["pi_name"] = _canonical_pi_name(pi_name)
+            if not pi_data[pi_key]["department"] and ev.get("Customer Department", "").strip():
+                pi_data[pi_key]["department"] = ev.get("Customer Department", "").strip()
+            pi_data[pi_key]["has_events"] = True
+        pi_data[pi_key]["equipment_hours"] += hours
+        pi_data[pi_key]["reservation_count"] += 1
+
+        user_key = _user_key(ev.get("User Login Email", ""), ev.get("Customer Name", ""))
+        if user_key:
+            pi_data[pi_key]["distinct_users"].add(user_key)
+
+    result_pis = []
+    for info in pi_data.values():
+        # Determine usage type
+        if info["has_charges"] and info["has_events"]:
+            usage_type = "both"
+        elif info["has_charges"]:
+            usage_type = "paid"
+        else:
+            usage_type = "free"
+
+        # Get college
+        college_code = get_college_for_pi(info["pi_name"], proposals)
+        if college_code == "Unknown":
+            college_code = get_college_from_charge_dept(info["department"])
+
+        result_pis.append({
+            "pi_email": info["pi_email"],
+            "pi_name": info["pi_name"],
+            "department": info["department"],
+            "college": college_code,
+            "college_display": get_college_display_name(college_code),
+            "usage_type": usage_type,
+            "total_paid": round(info["total_paid"], 2),
+            "charge_count": info["charge_count"],
+            "equipment_hours": round(info["equipment_hours"], 1),
+            "reservation_count": info["reservation_count"],
+            "distinct_users": len(info["distinct_users"]),
+        })
+
+    result_pis.sort(
+        key=lambda x: (
+            x["total_paid"],
+            x["equipment_hours"],
+            x["reservation_count"],
+            x["pi_name"],
+        ),
+        reverse=True,
+    )
+
+    total_pis = len(result_pis)
+    paid_count = sum(1 for p in result_pis if p["usage_type"] == "paid")
+    free_count = sum(1 for p in result_pis if p["usage_type"] == "free")
+    both_count = sum(1 for p in result_pis if p["usage_type"] == "both")
+    total_revenue = round(sum(p["total_paid"] for p in result_pis), 2)
+    total_hours = round(sum(p["equipment_hours"] for p in result_pis), 1)
+
+    return {
+        "summary": {
+            "total_pis": total_pis,
+            "paid_pis": paid_count,
+            "free_pis": free_count,
+            "both_pis": both_count,
+            "total_revenue": total_revenue,
+            "total_equipment_hours": total_hours,
+        },
+        "pis": result_pis,
+    }
+
+
+@lru_cache(maxsize=1)
+def get_simplified_proposals() -> dict:
+    """Return proposal-level analysis for the simplified GBRC PI set."""
+    simplified_usage = get_pi_usage_summary()
+    proposals = _load_proposals()
+
+    pi_lookup: dict[str, dict] = {}
+    for pi in simplified_usage["pis"]:
+        pi_key = _canonical_pi_name(pi["pi_name"]).lower()
+        if not pi_key:
+            continue
+        pi_lookup[pi_key] = {
+            "pi_name": pi["pi_name"],
+            "pi_email": pi["pi_email"],
+            "college": pi["college"],
+            "college_display": pi["college_display"],
+            "usage_type": pi["usage_type"],
+        }
+
+    proposals_by_pi: dict[str, dict] = {}
+    proposal_rows: list[dict] = []
+
+    for proposal in proposals:
+        pi_name = _canonical_pi_name(proposal.get("PI", "").strip())
+        pi_key = pi_name.lower()
+        if not pi_key or pi_key not in pi_lookup:
+            continue
+
+        submission_dt = _parse_proposal_date(proposal.get("SUBMISSION_DATE", "").strip())
+        fiscal_year = f"FY{str(_fiscal_year(submission_dt))[-2:]}" if submission_dt else ""
+        total_cost = _parse_float(proposal.get("TOTAL_COST", "0"))
+        direct_cost = _parse_float(proposal.get("DIRECT_COST", "0"))
+        indirect_cost = _parse_float(proposal.get("INDIRECT_COST", "0"))
+        funded = _is_proposal_awarded(proposal.get("PROJECT_STATUS", ""))
+        iids_affiliated = bool(proposal.get("IIDS", "").strip())
+        pi_info = pi_lookup[pi_key]
+
+        proposal_rows.append({
+            "proposal_number": proposal.get("PROPOSAL_NUMBER", "").strip(),
+            "pi_name": pi_info["pi_name"],
+            "pi_email": pi_info["pi_email"],
+            "college": pi_info["college"],
+            "college_display": pi_info["college_display"],
+            "usage_type": pi_info["usage_type"],
+            "title": proposal.get("PROJECT_TITLE", "").strip(),
+            "sponsor": proposal.get("SPONSOR", "").strip() or proposal.get("PRIME", "").strip(),
+            "department": proposal.get("DEPARTMENT", "").strip(),
+            "status": proposal.get("PROJECT_STATUS", "").strip(),
+            "agreement_type": proposal.get("AGREEMENT_TYPE", "").strip(),
+            "submission_date": proposal.get("SUBMISSION_DATE", "").strip(),
+            "fiscal_year": fiscal_year,
+            "direct_cost": direct_cost,
+            "indirect_cost": indirect_cost,
+            "total_cost": total_cost,
+            "iids_affiliated": iids_affiliated,
+            "funded": funded,
+        })
+
+        if pi_key not in proposals_by_pi:
+            proposals_by_pi[pi_key] = {
+                "pi_name": pi_info["pi_name"],
+                "pi_email": pi_info["pi_email"],
+                "college": pi_info["college"],
+                "college_display": pi_info["college_display"],
+                "usage_type": pi_info["usage_type"],
+                "proposal_count": 0,
+                "iids_proposal_count": 0,
+                "funded_proposal_count": 0,
+                "requested_total": 0.0,
+                "funded_total": 0.0,
+                "latest_submission_date": "",
+                "_latest_submission_dt": None,
+            }
+
+        proposals_by_pi[pi_key]["proposal_count"] += 1
+        proposals_by_pi[pi_key]["requested_total"] += total_cost
+        if iids_affiliated:
+            proposals_by_pi[pi_key]["iids_proposal_count"] += 1
+        if funded:
+            proposals_by_pi[pi_key]["funded_proposal_count"] += 1
+            proposals_by_pi[pi_key]["funded_total"] += total_cost
+        if submission_dt and (
+            proposals_by_pi[pi_key]["_latest_submission_dt"] is None
+            or submission_dt > proposals_by_pi[pi_key]["_latest_submission_dt"]
+        ):
+            proposals_by_pi[pi_key]["_latest_submission_dt"] = submission_dt
+            proposals_by_pi[pi_key]["latest_submission_date"] = proposal.get("SUBMISSION_DATE", "").strip()
+
+    proposal_rows.sort(
+        key=lambda row: (
+            _parse_proposal_date(row["submission_date"]) or datetime.min,
+            row["total_cost"],
+            row["pi_name"],
+        ),
+        reverse=True,
+    )
+
+    by_pi = []
+    for row in proposals_by_pi.values():
+        by_pi.append({
+            key: value
+            for key, value in row.items()
+            if not key.startswith("_")
+        })
+    by_pi.sort(
+        key=lambda row: (
+            row["proposal_count"],
+            row["funded_proposal_count"],
+            row["requested_total"],
+            row["pi_name"],
+        ),
+        reverse=True,
+    )
+
+    total_proposals = len(proposal_rows)
+    iids_proposals = sum(1 for row in proposal_rows if row["iids_affiliated"])
+    funded_proposals = sum(1 for row in proposal_rows if row["funded"])
+    requested_total = round(sum(row["total_cost"] for row in proposal_rows), 2)
+    funded_total = round(
+        sum(row["total_cost"] for row in proposal_rows if row["funded"]),
+        2,
+    )
+
+    return {
+        "summary": {
+            "total_pis": simplified_usage["summary"]["total_pis"],
+            "pis_with_proposals": len(by_pi),
+            "total_proposals": total_proposals,
+            "iids_proposals": iids_proposals,
+            "funded_proposals": funded_proposals,
+            "requested_total": requested_total,
+            "funded_total": funded_total,
+        },
+        "by_pi": by_pi,
+        "proposals": proposal_rows,
     }

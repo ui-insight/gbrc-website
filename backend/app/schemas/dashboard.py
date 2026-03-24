@@ -413,3 +413,85 @@ class PIUsageMappingResponse(BaseModel):
     summary: PIUsageMappingSummary
     by_college: list[PIUsageCollegeItem]
     by_pi: list[PIUsageItem]
+
+
+# --- Simplified PI Usage Summary ---
+
+
+class PIUsageSummaryStats(BaseModel):
+    total_pis: int
+    paid_pis: int
+    free_pis: int
+    both_pis: int
+    total_revenue: float
+    total_equipment_hours: float
+
+
+class PIUsageSummaryItem(BaseModel):
+    pi_email: str
+    pi_name: str
+    department: str
+    college: str
+    college_display: str
+    usage_type: str  # "paid", "free", "both"
+    total_paid: float
+    charge_count: int
+    equipment_hours: float
+    reservation_count: int
+    distinct_users: int
+
+
+class PIUsageSummaryResponse(BaseModel):
+    summary: PIUsageSummaryStats
+    pis: list[PIUsageSummaryItem]
+
+
+class SimplifiedProposalStats(BaseModel):
+    total_pis: int
+    pis_with_proposals: int
+    total_proposals: int
+    iids_proposals: int
+    funded_proposals: int
+    requested_total: float
+    funded_total: float
+
+
+class SimplifiedProposalPIItem(BaseModel):
+    pi_name: str
+    pi_email: str
+    college: str
+    college_display: str
+    usage_type: str
+    proposal_count: int
+    iids_proposal_count: int
+    funded_proposal_count: int
+    requested_total: float
+    funded_total: float
+    latest_submission_date: str
+
+
+class SimplifiedProposalItem(BaseModel):
+    proposal_number: str
+    pi_name: str
+    pi_email: str
+    college: str
+    college_display: str
+    usage_type: str
+    title: str
+    sponsor: str
+    department: str
+    status: str
+    agreement_type: str
+    submission_date: str
+    fiscal_year: str
+    direct_cost: float
+    indirect_cost: float
+    total_cost: float
+    iids_affiliated: bool
+    funded: bool
+
+
+class SimplifiedProposalResponse(BaseModel):
+    summary: SimplifiedProposalStats
+    by_pi: list[SimplifiedProposalPIItem]
+    proposals: list[SimplifiedProposalItem]
