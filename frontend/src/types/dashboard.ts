@@ -463,6 +463,7 @@ export interface PIUsageSummaryItem {
   distinct_users: number
   uses_crc: boolean
   crc_years_label: string
+  crc_user_count: number
 }
 
 export interface CRCCollegeUsageItem {

@@ -1,240 +1,240 @@
-fname	lname	username	email	type	serviceid	service	dept	college	inst
-Sun	Chi	sunchi	sunchi@wustl.edu	Post Doc	76	Collaborator	Biological Sciences	Science	University of Idaho
-Courtney	Schreiner	schr5461	schr5461@vandals.uidaho.edu	Graduate Student	76	Collaborator	Computer Science	Engineering	University of Idaho
-Natalie	Sofaly	nataliesofaly	nataliesofaly@u.boisestate.edu	Undergraduate Student	76	Collaborator	Biological Sciences	College of Arts and Sciences	Boise State University
-Maria	Hamilton	mchamilton	mchamilton@uidaho.edu		76	Collaborator	Physics	Science	University of Idaho
-John	Phillips	jphillips	jphillips@uidaho.edu	Post Doc	76	Collaborator	Biological Sciences	Science	University of Idaho
-Trevor	Griffin	grif1718	trevorjacob715@gmail.com	Graduate Student	76	Collaborator	Center for Modeling Complex Interactions	Science	University of Idaho
-Benjamin	Rosen	benrosen	ben.rosen@usda.gov		76	Collaborator	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government
-Flavien	Beaud	fbeaud	fbeaud@uidaho.edu	Graduate Student	39	Kennicott	Geological Sciences	Science	University of Idaho
-Camila	Lopez-Anido	cbla	cbla@reed.edu	Research Faculty	57	Research	Biology	Mathematics and Natural Sciences	Reed College
-Shivani	Ahuja	ahujas	ahujas@reed.edu	Research Faculty	57	Research	Information Technology	Information Technology	Reed College
-Zhongqi	Chen	zhongqic	zhongqic@uidaho.edu	Post Doc	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
-Zhenhao	Zhong	zhon8751	zhon8751@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Zachariah	Etienne	zetienne	zetienne@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho
-Mete	Yuksel	yuks1141	yuks1141@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Michael	Youngwirth	youn4490	youn4490@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Xiang	Li	xiangl	xiangl@uidaho.edu		84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Matt	Wamelduff	wome5579	wome5579@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-William	Reeder	wjreeder	wjreeder@uidaho.edu	Post Doc	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Jennifer	Wilcox	wilc0697	wilc0697@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Craig	Wells	well0766	well0766@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Jonna	Waage	waag1991	waag1991@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Vincent	Jansen	vjansen	vjansen@uidaho.edu	Postdoc	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Kurt	Vedros	vedr0217	vedr0217@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Vanessa	Otero Jimenez	vanessao	vanessao@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Jacob	Styhl	tys	tys@uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Tanner	Varrelman	tvarrelman	tvarrelman@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Terrence	Soule	tsoule	tsoule@uidaho.edu	Research Faculty	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Tracey	Peters	tpeters	tpeters@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Temitayo	Olagunju	tolagunju	tolagunju@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Tristan	Moxley	tmoxley	tmoxley@uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Tyler	Meadows	tmeadows	tmeadows@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Tais	Ribeiro	tmattoso	tmattoso@umd.edu	Graduate Student	84	Standard Account 2023	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland
-Jacob	Thorne	thor1897	thor1897@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Travis	Chiarelli	tchiarelli	chia4149@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Shangqian	Xie	sxie	sxie@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Sven	Buerki	svenbuerki	svenbuerki@boisestate.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	College of Arts and Sciences	Boise State University
-Meng	Su	su4011	su4011@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Torrey	Stephenson	step8904	step8904@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Soraia	Barbosa	soraiabarbosa	soraiabarbosa@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Scott	Nuismer	snuismer	snuismer@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-David	Sneddon	sned7690	sned7690@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Brienna	Sipley	sipl0809	sipl0809@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Andrew	Simpson	simp5363	simp5363@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Karina	Silvestre Bringas	silv0869	silv0869@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Carson	Silsby	sils7953	sils7953@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho
-Mason	Shipley	ship8879	ship8879@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Luke	Sheneman	sheneman	sheneman@uidaho.edu	Research Faculty	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Sarah	Hendricks	shendricks	shendricks@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Akorede	Seriki	seri5256	seri5256@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Scott	Grieshaber	scottg	scottg@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Shannon	Blair	sblair	sblair@uidaho.edu		84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Sarah	Basing	sbassing	sbassing@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Yesol	Sapozhnikov	sapo2075	sapo2075@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Manuel	Santiago Plata	sant9899	sant9899@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Sam	Fox	samanthafox	samanthafox@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho
-Ryan	Vosbigian	rvosbigian	rvosbigian@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Carson	Rueber	rueb8071	rueb8071@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Loretta	Rodman	rodm6099	rodm6099@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Ryan	Pace	rmpace	rmpace@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Kameron	Richardson	rich0859	rich0859@vandals.uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Hallie	Walker	rhwalker	rhwalker@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-David	Reetz	reet6145	reet6145@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Ralph	Budwig	rbudwig	rbudwig@uidaho.edu	Research Faculty	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Raee Suresh	Bhagat	rbhagat	rbhagat@uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Ray	Anderson	ray	ray@uidaho.edu		84	Standard Account 2023	Electrical and Computer Engineering	Engineering	University of Idaho
-Balan	Ramesh	ramesh	ramesh@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Paul	Refalo	prefalo	prefalo@uidaho.edu		84	Standard Account 2023	Mathematics	Science	University of Idaho
-Daniel	Pope	pope	pope@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Diego	Pineda	pine5510	pine5510@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Electrical and Computer Engineering	Engineering	University of Idaho
-Haley	Peterson	pete8842	pete8842@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Samuel	Paytosh	paytosh	paytosh@uidaho.edu		84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Jarod	Parsons	pars5515	pars5515@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Olamide	Oluwatade	oluw5072	oluw5072@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Statistical Science	Science	University of Idaho
-Ian	Oiler	oile6353	oile6353@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Nathan	Redman	nredman	nredman@uidaho.edu	Post Doc	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
-Neil	Paprocki	npaprocki	npaprocki@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-norman	pendegraft	norman	norman@uidaho.edu	Faculty	84	Standard Account 2023	Business	Letters, Arts and Social Sciences	University of Idaho
-Nolan	Helmstetter	nolanh	nolanh@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Azadeh	Nikoukar	niko8060	niko8060@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Nicole	Grieshaber	ngrieshaber	ngrieshaber@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Nkrumah	Grant	ngrant	ngrant@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Nurbanu	Bursa	nbursa	nbursa@uidaho.edu	Post Doc	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Anas	Nawafleh	nawa5715	nawa5715@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Marty	Ytreberg	mytrebe	ytreberg@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho
-Min	Xian	mxian	mxian@uidaho.edu	Research Faculty	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Morgan	Stegemiller	mstegemiller	mstegemiller@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Michael	Overton	moverton	moverton@uidaho.edu	Research Faculty	84	Standard Account 2023	Politics and Philosophy	Letters, Arts and Social Sciences	University of Idaho
-Michelle	Mousel	mmousel	mousel@vetmed.wsu.edu	Research Faculty	84	Standard Account 2023	Veterinary Medicine 	Veterinary Medicine	Washington State University
-Poolakkal	Jaslam	mjaslam	mjaslam@uidaho.edu	Post Doc	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Matt	Falcy	mfalcy	mfalcy@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Meng	Zhao	mengz	mengz@uidaho.edu	Research Faculty	84	Standard Account 2023	Earth and Spatial Sciences	Science	University of Idaho
-Mohamed	Megheib	megheib	megheib@uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Meggan	Alston	megganalston	meggan.alston@ndsu.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Alexander	Mckeeken	mcke6630	mcke6630@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Marek	Borowiec	mborowiec	mborowiec@uidaho.edu	Research Faculty	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Malia	Santos	masantos	sant0556@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Martyna	Lukaszewicz	martyna	martyna@uidaho.edu	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
-Akshat	Mall	mall6305	mall6305@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Ruprecht	Machleidt	machleid	machleid@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho
-Felino	Macatuno	maca8748	maca8748@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Peik	Lund	lund7780	lund7780@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Kyle	Lucke	luck0692	luck0692@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Louis	Friend	louisf	louisf@uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Linh	Nguyen	lnguyen	lnguyen@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Johnny	Li	liujunl	liujunl@uidaho.edu	Research Faculty	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Lindsay	Wright	lindsaywright	lindsay.piel@usda.gov		84	Standard Account 2023	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government
-Li	Huang	lhuang	lhuang@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Leonardo	Rosa Werneck	leonardo	leonardo@uidaho.edu	Post Doc	84	Standard Account 2023	Physics	Science	University of Idaho
-Henry	Landis	land9388	land9388@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Koffi	Anderson	koff9454	koff9454@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Kimberly	Davenport	kmdavenport	kmdavenport@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Kamal	Kumar	kkumar	kkumar@uidaho.edu	Research Faculty	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Sarem	Khilji	khil9988	khil9988@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Martin	Kelly	kell8957	kell8957@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Logan	Kearney	kear2386	kear2386@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Krista	Bonfantine	kbonfantine	kbonfantine@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho
-Bandita	Karki	kark6289	kark6289@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Kimberly	Andrews	kandrews	kimberlya@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-James	VanLeuven	jvanleuven	jvanleuven@uidaho.edu	Faculty	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Jagdish	Patel	jspatel	jspatel@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical & Biological Engineering	Engineering	University of Idaho
-Jagdish	Patel	jpatel	jpatel@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Pabitra	Joshi	josh0365	josh0365@vandals.uidaho.edu	Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Justin	Mathias	jmathias	jmathias@uidaho.edu	Post Doc	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Joseph	Leister	jleister	jleister@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Joseph	Kuhl	jkuhl	jkuhl@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Jennifer	Dodd	jkdodd	jkdodd@uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Jason	Karl	jkarl	jkarl@uidaho.edu	Research Faculty	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-John	Hiller	jhiller	jhiller@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho
-Joshua	Heishman	jheishman	jheishman@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-James	Moberly	jgmoberly	jgmoberly@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho
-Jennifer	Johnson Leung	jenfns	jenfns@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Josh	Egan	jegan	jegan@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Jane	Dostart	jedostart	jedostart@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Jonathan	Barnes	jebarnes	jebarnes@uidaho.edu	Post Doc	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Jennifer	Dahan	jdahan	jdahan@uidaho.edu	Post Doc	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Jianli	Chen	jchen	jchen@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-John	Brunsfeld	jbrunsfeld	jbrunsfeld@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Janet	Williams	janetw	janetw@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Jane	Lucas	janelucas	janelucas@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Jamin	Smitchger	jamins	jamins@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Paul	Hohenlohe	hohenlo	hohenlohe@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Nicholas	Hoffman	hoff7655	hoff7655@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Brandon	Hilliard	hill9023	hill9023@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Ecohydraulics Research	Office of Research and Economic Development	University of Idaho
-Sarah	Hendricks	hend6746	hend6746@vandals.uidaho.edu  	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
-Jake	Hayden	hayd8826	hayd8826@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Ahmad	Hammad	hammad	hammad@uidaho.edu	Graduate Student	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho
-Chris	Hamilton	hamiltonlab	hamiltonlab@uidaho.edu	Research Faculty	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Hamed	Arfania	hamed	hamed@uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Gustavo	de Almeida Teixeira	gteixeira	gteixeira@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Lukas	Grossfurthner	gros3875	gros3875@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho
-Brendan	Grieshaber	grie8041	grie8041@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Drew	Glenna	glen3534	glen3534@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Nuclear Engineering & Industrial Management	Engineering	University of Idaho
-Guriqbal Singh	Dhillon	gdhillon	gdhillon@uidaho.edu	Post Doc	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Molly	Garrett	garr0808	garr0808@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Yaotian	Gao	gao2485	gao2485@vandals.uidaho.edu	Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Fuchang	Gao	fuchang	fuchang@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Francesca	Sammarruca	fsammarr	fsammarr@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho
-Jacob	Friedberg	frie2142	frie2142@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Edward	Flathers	flathers	flathers@uidaho.edu		84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Kaveesha	Fernando	fern5249	fern5249@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Statistical Science	Science	University of Idaho
-Francisco	Bautista	fbautista	fbautista@uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Mary	Everett	ever6812	ever6812@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Evan	Eskew	evane	evane@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Stephanie	Eskew	eske8732	eske8732@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Erich	Seamon	erichs	erichs@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho
-Elyce	Gosselin	engosselin	engosselin@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Mary	Engels	engels	engels@uidaho.edu	Research Faculty	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho
-Eric	Mittelstaedt	emittelstaedt	emittelstaedt@uidaho.edu	Research Faculty	84	Standard Account 2023	Geological Sciences	Science	University of Idaho
-Mohamed Tharwat	Elshazli	elsh0996	elsh0996@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho
-Elizabeth	Milano	elizabethmilano	Elizabeth.Milano@usda.gov		84	Standard Account 2023	Rocky Mountain Research Station	United States Dept of Agriculture	US Government
-Yva	Eline	elin1473	elin1473@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Ernest	Osburn	edosburn	edosburn@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Edison	Reyes Proano	edison	edison@uidaho.edu	Graduate Student	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho
-Erin	Mack	eamack	eamack@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Daniel	Turck	dturck	dturck@uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Donelle	Schwalm	dschwalm	dschwalm@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-David	Navarro	dnavarro	dnavarro@uidaho.edu		84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-David	Herndon	dherndon	herndon@vetmed.wsu.edu	Research Faculty	84	Standard Account 2023	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government
-Dev	Shrestha	devs	devs@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho
-David	Condon	dcondon	dcondon@uidaho.edu		84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-David	Ausband	dausband	dausband@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Elijah	Danquah Darko	danq7270	danq7270@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Dan	Du	dandu	dandu@uidaho.edu	Graduate Student	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho
-Chenangnon	Tovissode	ctovissode	ctovissode@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Billy	Croston	cros9542	cros9542@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho
-Chris	Remien	cremien	cremien@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Jack	Creagh-Grave	crea4321	crea4321@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Sarah	Coss	coss2120	coss2120@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Alexander	Cornwall	corn7760	corn7760@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University
-Craig	Miller	cmiller	crmiller@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Cameron	Macias	cmacias	cmacias@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Hannah	Cook	clar4866	clar4866@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University
-Erik	Ciaccio	ciac1074	ciac1074@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Lawhori	Chakrabarti	chak1423	chak1423@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Christine	Parent	ceparent	ceparent@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Clinton	Elg	celg	celg@uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-CJ	Brush	cbrush	cbrush@uidaho.edu	Research Faculty	84	Standard Account 2023	Movement Sciences	Education, Health, and Human Sciences	University of Idaho
-Clayton	Balfe	cbalfe	cbalfe@uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Salvador	Castaneda Barba	cast9836	cast9836@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Alonso	Longoria	carr5506	carr5506@vandals.uidaho.edu	Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Calatayud	Mascarell	cala5572	cala5572@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho
-Tatiana	Bush	bush6721	bush6721@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University
-Barrie	Robison	brobison	brobison@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Benjamin	Ridenhour	bridenho	bridenhour@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Boyu	Zhang	boyuz	boyuz@uidaho.edu	Faculty	84	Standard Account 2023	Computer Science	Engineering	University of Idaho
-Brenda	Murdoch	bmurdoch	bmurdoch@uidaho.edu	Research Faculty	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Jake	Bledsoe	bledsoe	bledsoe@uidaho.edu	Faculty	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho
-Brent	Barry	barr3731	barr3731@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Elyse	Barker	bark9299	bark9299@vandals.uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Catherine	Barcheck	barcheck	barcheck@uidaho.edu	Post Doc	84	Standard Account 2023	Geological Sciences	Science	University of Idaho
-Thys	Ballard	ball5821	ball5821@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Alexander	Whitlock	awhitlock	awhitlock@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Andrew	Child	awchild	awchild@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho
-Anne	Veillet	aveillet	aveillet@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-William	Auten	aute1114	aute1114@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Audrey	Fu	audreyf	audreyf@uidaho.edu	Research Faculty	84	Standard Account 2023	Statistical Science	Science	University of Idaho
-Cody	Appa	appa0328	appa0328@vandals.uidaho.edu	Staff	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Anthony	Melton	anthonymelton	anthonymelton@boisestate.edu	Post Doc	84	Standard Account 2023	Biological Sciences	College of Arts and Sciences	Boise State University
-Andrea	Noble Stuen	andrean	andrean@uidaho.edu	Staff	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-Anahi	Espindola	anahi	anahiesp@umd.edu	Post Doc	84	Standard Account 2023	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland
-Angel	Monsalve Sepulveda	amonsalve	amonsalve@uidaho.edu	Faculty	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho
-Abigail	Lute	alute	alute@uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho
-Alexander	Alleman	alleman	alleman@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Adefemi	Alade	alade	alade@uidaho.edu	Post Doc	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho
-Tominwa	Ajagbonna	ajag8146	ajag8146@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho
-Ahmed	Ibrahim	aibrahim	aibrahim@uidaho.edu	Research Faculty	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho
-Alexandra	Fraik	afraik	afraik@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Jennifer	Adams	adamsj	adamsj@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho
-Adam	Jones	adamjones	adamjones@uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Amanda	Culley	aculley	aculley@uidaho.edu	Staff	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho
-America	Chi Uluac	achi	achi@uidaho.edu	Post Doc	84	Standard Account 2023	Physics	Science	University of Idaho
-Abo	Hirotachi	abo	abo@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho
-Andrew	Basinski	abasinski	abasinski@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho
-Mosope	Abanikannda	aban3311	aban3311@vandals.uidaho.edu	Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho
-Nicole	Xu	xuj	xuj@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
-Tommy	Shi	tomshi	tomshi@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
-Sky	Peterson	skypeters	skypeters@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
-Kyle	Rowan	rowank	rowank@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
-Oliver	Nicholson	nicholol	nicholol@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College
+fname	lname	username	email	type	serviceid	service	dept	college	inst	pinetid
+Sun	Chi	sunchi	sunchi@wustl.edu	Post Doc	76	Collaborator	Biological Sciences	Science	University of Idaho	dstenkam
+Courtney	Schreiner	schr5461	schr5461@vandals.uidaho.edu	Graduate Student	76	Collaborator	Computer Science	Engineering	University of Idaho	snuismer
+Natalie	Sofaly	nataliesofaly	nataliesofaly@u.boisestate.edu	Undergraduate Student	76	Collaborator	Biological Sciences	College of Arts and Sciences	Boise State University	hohenlohe
+Maria	Hamilton	mchamilton	mchamilton@uidaho.edu		76	Collaborator	Physics	Science	University of Idaho	zetienne
+John	Phillips	jphillips	jphillips@uidaho.edu	Post Doc	76	Collaborator	Biological Sciences	Science	University of Idaho	ceparent
+Trevor	Griffin	grif1718	trevorjacob715@gmail.com	Graduate Student	76	Collaborator	Center for Modeling Complex Interactions	Science	University of Idaho	jenfns
+Benjamin	Rosen	benrosen	ben.rosen@usda.gov		76	Collaborator	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government	bmurdoch
+Flavien	Beaud	fbeaud	fbeaud@uidaho.edu	Graduate Student	39	Kennicott	Geological Sciences	Science	University of Idaho	tbartholomaus
+Camila	Lopez-Anido	cbla	cbla@reed.edu	Research Faculty	57	Research	Biology	Mathematics and Natural Sciences	Reed College	marmaret@reed.edu
+Shivani	Ahuja	ahujas	ahujas@reed.edu	Research Faculty	57	Research	Information Technology	Information Technology	Reed College	ahujas@reed.edu
+Zhongqi	Chen	zhongqic	zhongqic@uidaho.edu	Post Doc	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho	bcsmall
+Zhenhao	Zhong	zhon8751	zhon8751@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jvanleuven
+Zachariah	Etienne	zetienne	zetienne@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho	zetienne
+Mete	Yuksel	yuks1141	yuks1141@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Michael	Youngwirth	youn4490	youn4490@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Xiang	Li	xiangl	xiangl@uidaho.edu		84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	ytreberg
+Matt	Wamelduff	wome5579	wome5579@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+William	Reeder	wjreeder	wjreeder@uidaho.edu	Post Doc	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	rbudwig
+Jennifer	Wilcox	wilc0697	wilc0697@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Craig	Wells	well0766	well0766@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Jonna	Waage	waag1991	waag1991@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	boswald
+Vincent	Jansen	vjansen	vjansen@uidaho.edu	Postdoc	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	jkarl
+Kurt	Vedros	vedr0217	vedr0217@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	kolias
+Vanessa	Otero Jimenez	vanessao	vanessao@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	mstrickland
+Jacob	Styhl	tys	tys@uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	dtank
+Tanner	Varrelman	tvarrelman	tvarrelman@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	sheneman
+Terrence	Soule	tsoule	tsoule@uidaho.edu	Research Faculty	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	tsoule
+Tracey	Peters	tpeters	tpeters@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho	crmiller
+Temitayo	Olagunju	tolagunju	tolagunju@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Tristan	Moxley	tmoxley	tmoxley@uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho	bridenhour
+Tyler	Meadows	tmeadows	tmeadows@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	bridenhour
+Tais	Ribeiro	tmattoso	tmattoso@umd.edu	Graduate Student	84	Standard Account 2023	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland	anahiesp
+Jacob	Thorne	thor1897	thor1897@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	bmurdoch
+Travis	Chiarelli	tchiarelli	chia4149@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	scottg
+Shangqian	Xie	sxie	sxie@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Sven	Buerki	svenbuerki	svenbuerki@boisestate.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	College of Arts and Sciences	Boise State University	svenbuerki
+Meng	Su	su4011	su4011@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	jchen
+Torrey	Stephenson	step8904	step8904@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	llynch
+Soraia	Barbosa	soraiabarbosa	soraiabarbosa@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	hohenlohe
+Scott	Nuismer	snuismer	snuismer@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	snuismer
+David	Sneddon	sned7690	sned7690@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Brienna	Sipley	sipl0809	sipl0809@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	lukeh
+Andrew	Simpson	simp5363	simp5363@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	cmarx
+Karina	Silvestre Bringas	silv0869	silv0869@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	hamiltonlab
+Carson	Silsby	sils7953	sils7953@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho	jgmoberly
+Mason	Shipley	ship8879	ship8879@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	prowley
+Luke	Sheneman	sheneman	sheneman@uidaho.edu	Research Faculty	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	sheneman
+Sarah	Hendricks	shendricks	shendricks@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	kimberlya
+Akorede	Seriki	seri5256	seri5256@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Scott	Grieshaber	scottg	scottg@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	scottg
+Shannon	Blair	sblair	sblair@uidaho.edu		84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+Sarah	Basing	sbassing	sbassing@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	mfalcy
+Yesol	Sapozhnikov	sapo2075	sapo2075@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	crmiller
+Manuel	Santiago Plata	sant9899	sant9899@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+Sam	Fox	samanthafox	samanthafox@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho	lkobziar
+Ryan	Vosbigian	rvosbigian	rvosbigian@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	mfalcy
+Carson	Rueber	rueb8071	rueb8071@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	boswald
+Loretta	Rodman	rodm6099	rodm6099@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Ryan	Pace	rmpace	rmpace@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	mmcguire
+Kameron	Richardson	rich0859	rich0859@vandals.uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	adamjones
+Hallie	Walker	rhwalker	rhwalker@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	ralong
+David	Reetz	reet6145	reet6145@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Ralph	Budwig	rbudwig	rbudwig@uidaho.edu	Research Faculty	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	rbudwig
+Raee Suresh	Bhagat	rbhagat	rbhagat@uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho	bridenhour
+Ray	Anderson	ray	ray@uidaho.edu		84	Standard Account 2023	Electrical and Computer Engineering	Engineering	University of Idaho	ray
+Balan	Ramesh	ramesh	ramesh@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	adamjones
+Paul	Refalo	prefalo	prefalo@uidaho.edu		84	Standard Account 2023	Mathematics	Science	University of Idaho	bridenhour
+Daniel	Pope	pope	pope@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	abasinski
+Diego	Pineda	pine5510	pine5510@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Electrical and Computer Engineering	Engineering	University of Idaho	jkuhl
+Haley	Peterson	pete8842	pete8842@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	mmcguire
+Samuel	Paytosh	paytosh	paytosh@uidaho.edu		84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	gteixeira
+Jarod	Parsons	pars5515	pars5515@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	jkarl
+Olamide	Oluwatade	oluw5072	oluw5072@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Statistical Science	Science	University of Idaho	audreyf
+Ian	Oiler	oile6353	oile6353@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	ceparent
+Nathan	Redman	nredman	nredman@uidaho.edu	Post Doc	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho	bcsmall
+Neil	Paprocki	npaprocki	npaprocki@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+norman	pendegraft	norman	norman@uidaho.edu	Faculty	84	Standard Account 2023	Business	Letters, Arts and Social Sciences	University of Idaho	norman
+Nolan	Helmstetter	nolanh	nolanh@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+Azadeh	Nikoukar	niko8060	niko8060@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	tsoule
+Nicole	Grieshaber	ngrieshaber	ngrieshaber@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho	scottg
+Nkrumah	Grant	ngrant	ngrant@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	cmarx
+Nurbanu	Bursa	nbursa	nbursa@uidaho.edu	Post Doc	84	Standard Account 2023	Mathematics	Science	University of Idaho	erichs
+Anas	Nawafleh	nawa5715	nawa5715@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	xing
+Marty	Ytreberg	mytrebe	ytreberg@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Min	Xian	mxian	mxian@uidaho.edu	Research Faculty	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	mxian
+Morgan	Stegemiller	mstegemiller	mstegemiller@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Michael	Overton	moverton	moverton@uidaho.edu	Research Faculty	84	Standard Account 2023	Politics and Philosophy	Letters, Arts and Social Sciences	University of Idaho	moverton
+Michelle	Mousel	mmousel	mousel@vetmed.wsu.edu	Research Faculty	84	Standard Account 2023	Veterinary Medicine 	Veterinary Medicine	Washington State University	herndon
+Poolakkal	Jaslam	mjaslam	mjaslam@uidaho.edu	Post Doc	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	mkimsey
+Matt	Falcy	mfalcy	mfalcy@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	mfalcy
+Meng	Zhao	mengz	mengz@uidaho.edu	Research Faculty	84	Standard Account 2023	Earth and Spatial Sciences	Science	University of Idaho	mengz
+Mohamed	Megheib	megheib	megheib@uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	hwichman
+Meggan	Alston	megganalston	meggan.alston@ndsu.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	caudill
+Alexander	Mckeeken	mcke6630	mcke6630@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	mborowiec
+Marek	Borowiec	mborowiec	mborowiec@uidaho.edu	Research Faculty	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	mborowiec
+Malia	Santos	masantos	sant0556@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Martyna	Lukaszewicz	martyna	martyna@uidaho.edu	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho	hohenlohe
+Akshat	Mall	mall6305	mall6305@vandals.uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Ruprecht	Machleidt	machleid	machleid@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho	machleid
+Felino	Macatuno	maca8748	maca8748@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	jenfns
+Peik	Lund	lund7780	lund7780@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Kyle	Lucke	luck0692	luck0692@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	mxian
+Louis	Friend	louisf	louisf@uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	louisf
+Linh	Nguyen	lnguyen	lnguyen@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho	lnguyen
+Johnny	Li	liujunl	liujunl@uidaho.edu	Research Faculty	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	liujunl
+Lindsay	Wright	lindsaywright	lindsay.piel@usda.gov		84	Standard Account 2023	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government	herndon
+Li	Huang	lhuang	lhuang@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	caudill
+Leonardo	Rosa Werneck	leonardo	leonardo@uidaho.edu	Post Doc	84	Standard Account 2023	Physics	Science	University of Idaho	zetienne
+Henry	Landis	land9388	land9388@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Koffi	Anderson	koff9454	koff9454@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	kolias
+Kimberly	Davenport	kmdavenport	kmdavenport@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Kamal	Kumar	kkumar	kkumar@uidaho.edu	Research Faculty	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	kkumar
+Sarem	Khilji	khil9988	khil9988@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Martin	Kelly	kell8957	kell8957@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	ceparent
+Logan	Kearney	kear2386	kear2386@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	dcordon
+Krista	Bonfantine	kbonfantine	kbonfantine@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho	lkobziar
+Bandita	Karki	kark6289	kark6289@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	audreyf
+Kimberly	Andrews	kandrews	kimberlya@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	kimberlya
+James	VanLeuven	jvanleuven	jvanleuven@uidaho.edu	Faculty	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Jagdish	Patel	jspatel	jspatel@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical & Biological Engineering	Engineering	University of Idaho	jspatel
+Jagdish	Patel	jpatel	jpatel@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jspatel
+Pabitra	Joshi	josh0365	josh0365@vandals.uidaho.edu	Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	jchen
+Justin	Mathias	jmathias	jmathias@uidaho.edu	Post Doc	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	thudiburg
+Joseph	Leister	jleister	jleister@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	boswald
+Joseph	Kuhl	jkuhl	jkuhl@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	jkuhl
+Jennifer	Dodd	jkdodd	jkdodd@uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	luigi
+Jason	Karl	jkarl	jkarl@uidaho.edu	Research Faculty	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	jkarl
+John	Hiller	jhiller	jhiller@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho	jhiller
+Joshua	Heishman	jheishman	jheishman@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	mfalcy
+James	Moberly	jgmoberly	jgmoberly@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho	jgmoberly
+Jennifer	Johnson Leung	jenfns	jenfns@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho	jenfns
+Josh	Egan	jegan	jegan@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Jane	Dostart	jedostart	jedostart@uidaho.edu		84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Jonathan	Barnes	jebarnes	jebarnes@uidaho.edu	Post Doc	84	Standard Account 2023	Mathematics	Science	University of Idaho	crmiller
+Jennifer	Dahan	jdahan	jdahan@uidaho.edu	Post Doc	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	akarasev
+Jianli	Chen	jchen	jchen@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	jchen
+John	Brunsfeld	jbrunsfeld	jbrunsfeld@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	sheneman
+Janet	Williams	janetw	janetw@uidaho.edu	Graduate Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	mmcguire
+Jane	Lucas	janelucas	janelucas@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	mstrickland
+Jamin	Smitchger	jamins	jamins@uidaho.edu	Post Doc	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Paul	Hohenlohe	hohenlo	hohenlohe@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Nicholas	Hoffman	hoff7655	hoff7655@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jamesn
+Brandon	Hilliard	hill9023	hill9023@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Ecohydraulics Research	Office of Research and Economic Development	University of Idaho	wjreeder
+Sarah	Hendricks	hend6746	hend6746@vandals.uidaho.edu  	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho	hohenlohe
+Jake	Hayden	hayd8826	hayd8826@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	fsammarr
+Ahmad	Hammad	hammad	hammad@uidaho.edu	Graduate Student	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho	devs
+Chris	Hamilton	hamiltonlab	hamiltonlab@uidaho.edu	Research Faculty	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	hamiltonlab
+Hamed	Arfania	hamed	hamed@uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Gustavo	de Almeida Teixeira	gteixeira	gteixeira@uidaho.edu	Research Faculty	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	gteixeira
+Lukas	Grossfurthner	gros3875	gros3875@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Bioinformatics and Computational Biology	Graduate Studies	University of Idaho	hohenlohe
+Brendan	Grieshaber	grie8041	grie8041@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho	scottg
+Drew	Glenna	glen3534	glen3534@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Nuclear Engineering & Industrial Management	Engineering	University of Idaho	haiyanz
+Guriqbal Singh	Dhillon	gdhillon	gdhillon@uidaho.edu	Post Doc	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	jchen
+Molly	Garrett	garr0808	garr0808@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Yaotian	Gao	gao2485	gao2485@vandals.uidaho.edu	Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	jchen
+Fuchang	Gao	fuchang	fuchang@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho	fuchang
+Francesca	Sammarruca	fsammarr	fsammarr@uidaho.edu	Research Faculty	84	Standard Account 2023	Physics	Science	University of Idaho	fsammarr
+Jacob	Friedberg	frie2142	frie2142@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	jshovic
+Edward	Flathers	flathers	flathers@uidaho.edu		84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	mkimsey
+Kaveesha	Fernando	fern5249	fern5249@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Statistical Science	Science	University of Idaho	audreyf
+Francisco	Bautista	fbautista	fbautista@uidaho.edu	Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Mary	Everett	ever6812	ever6812@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	jshovic
+Evan	Eskew	evane	evane@uidaho.edu		84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	evane
+Stephanie	Eskew	eske8732	eske8732@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Erich	Seamon	erichs	erichs@uidaho.edu	Post Doc	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho	hwichman
+Elyce	Gosselin	engosselin	engosselin@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	hohenlohe
+Mary	Engels	engels	engels@uidaho.edu	Research Faculty	84	Standard Account 2023	Natural Resouces and Society	Natural Resources	University of Idaho	engels
+Eric	Mittelstaedt	emittelstaedt	emittelstaedt@uidaho.edu	Research Faculty	84	Standard Account 2023	Geological Sciences	Science	University of Idaho	emittelstaedt
+Mohamed Tharwat	Elshazli	elsh0996	elsh0996@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho	aibrahim
+Elizabeth	Milano	elizabethmilano	Elizabeth.Milano@usda.gov		84	Standard Account 2023	Rocky Mountain Research Station	United States Dept of Agriculture	US Government	brycerichardson
+Yva	Eline	elin1473	elin1473@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	jvanleuven
+Ernest	Osburn	edosburn	edosburn@uidaho.edu	Post Doc	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	mstrickland
+Edison	Reyes Proano	edison	edison@uidaho.edu	Graduate Student	84	Standard Account 2023	Plant Sciences	Agriculture and Life Sciences	University of Idaho	akarasev
+Erin	Mack	eamack	eamack@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	evatop
+Daniel	Turck	dturck	dturck@uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	jacks
+Donelle	Schwalm	dschwalm	dschwalm@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+David	Navarro	dnavarro	dnavarro@uidaho.edu		84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+David	Herndon	dherndon	herndon@vetmed.wsu.edu	Research Faculty	84	Standard Account 2023	USDA - Agriculture Research Service	United States Dept of Agriculture	US Government	herndon
+Dev	Shrestha	devs	devs@uidaho.edu	Research Faculty	84	Standard Account 2023	Chemical and Materials Engineering	Engineering	University of Idaho	devs
+David	Condon	dcondon	dcondon@uidaho.edu		84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	ytreberg
+David	Ausband	dausband	dausband@uidaho.edu	Research Faculty	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	dausband
+Elijah	Danquah Darko	danq7270	danq7270@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	mxian
+Dan	Du	dandu	dandu@uidaho.edu	Graduate Student	84	Standard Account 2023	Soil and Water Systems	Agriculture and Life Sciences	University of Idaho	mstrickland
+Chenangnon	Tovissode	ctovissode	ctovissode@uidaho.edu	Post Doc	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	crmiller
+Billy	Croston	cros9542	cros9542@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Mechanical Engineering	Engineering	University of Idaho	dcordon
+Chris	Remien	cremien	cremien@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho	cremien
+Jack	Creagh-Grave	crea4321	crea4321@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	prowley
+Sarah	Coss	coss2120	coss2120@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	prowley
+Alexander	Cornwall	corn7760	corn7760@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University	jacks
+Craig	Miller	cmiller	crmiller@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	crmiller
+Cameron	Macias	cmacias	cmacias@uidaho.edu	Graduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+Hannah	Cook	clar4866	clar4866@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University	jacks
+Erik	Ciaccio	ciac1074	ciac1074@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	hamiltonlab
+Lawhori	Chakrabarti	chak1423	chak1423@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Christine	Parent	ceparent	ceparent@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	ceparent
+Clinton	Elg	celg	celg@uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	evatop
+CJ	Brush	cbrush	cbrush@uidaho.edu	Research Faculty	84	Standard Account 2023	Movement Sciences	Education, Health, and Human Sciences	University of Idaho	cbrush
+Clayton	Balfe	cbalfe	cbalfe@uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	jmarshall
+Salvador	Castaneda Barba	cast9836	cast9836@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	foster
+Alonso	Longoria	carr5506	carr5506@vandals.uidaho.edu	Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	mpowell
+Calatayud	Mascarell	cala5572	cala5572@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Entomology, Plant Pathology & Nematology	Agriculture and Life Sciences	University of Idaho	hamiltonlab
+Tatiana	Bush	bush6721	bush6721@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	School of Biological Sciences	Arts and Sciences	Washington State University	jacks
+Barrie	Robison	brobison	brobison@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	brobison
+Benjamin	Ridenhour	bridenho	bridenhour@uidaho.edu	Research Faculty	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	bridenhour
+Boyu	Zhang	boyuz	boyuz@uidaho.edu	Faculty	84	Standard Account 2023	Computer Science	Engineering	University of Idaho	boyuz
+Brenda	Murdoch	bmurdoch	bmurdoch@uidaho.edu	Research Faculty	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	bmurdoch
+Jake	Bledsoe	bledsoe	bledsoe@uidaho.edu	Faculty	84	Standard Account 2023	Aquaculture Research Institute	Office of Research and Economic Development	University of Idaho	bledsoe
+Brent	Barry	barr3731	barr3731@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	sophiegilbert
+Elyse	Barker	bark9299	bark9299@vandals.uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	adamjones
+Catherine	Barcheck	barcheck	barcheck@uidaho.edu	Post Doc	84	Standard Account 2023	Geological Sciences	Science	University of Idaho	tbartholomaus
+Thys	Ballard	ball5821	ball5821@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Mathematics	Science	University of Idaho	fuchang
+Alexander	Whitlock	awhitlock	awhitlock@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	snuismer
+Andrew	Child	awchild	awchild@uidaho.edu	Staff	84	Standard Account 2023	Institute for Bioinformatics & Evolutionary Studies	Office of Research and Economic Development	University of Idaho	sheneman
+Anne	Veillet	aveillet	aveillet@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+William	Auten	aute1114	aute1114@vandals.uidaho.edu	Undergraduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Audrey	Fu	audreyf	audreyf@uidaho.edu	Research Faculty	84	Standard Account 2023	Statistical Science	Science	University of Idaho	audreyf
+Cody	Appa	appa0328	appa0328@vandals.uidaho.edu	Staff	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	scottg
+Anthony	Melton	anthonymelton	anthonymelton@boisestate.edu	Post Doc	84	Standard Account 2023	Biological Sciences	College of Arts and Sciences	Boise State University	svenbuerki
+Andrea	Noble Stuen	andrean	andrean@uidaho.edu	Staff	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	hamiltonlab
+Anahi	Espindola	anahi	anahiesp@umd.edu	Post Doc	84	Standard Account 2023	Department of Entomology	 College of Computer, Mathematical, and Natural Sciences	University of Maryland	anahiesp
+Angel	Monsalve Sepulveda	amonsalve	amonsalve@uidaho.edu	Faculty	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho	amonsalve
+Abigail	Lute	alute	alute@uidaho.edu	Graduate Student	84	Standard Account 2023	Forest, Rangeland, and Fire Sciences	Natural Resources	University of Idaho	tlink
+Alexander	Alleman	alleman	alleman@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	cmarx
+Adefemi	Alade	alade	alade@uidaho.edu	Post Doc	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho	aibrahim
+Tominwa	Ajagbonna	ajag8146	ajag8146@vandals.uidaho.edu	Graduate Student	84	Standard Account 2023	Physics	Science	University of Idaho	fsammarr
+Ahmed	Ibrahim	aibrahim	aibrahim@uidaho.edu	Research Faculty	84	Standard Account 2023	Civil & Environmental Engineering	Engineering	University of Idaho	aibrahim
+Alexandra	Fraik	afraik	afraik@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	hohenlohe
+Jennifer	Adams	adamsj	adamsj@uidaho.edu	Post Doc	84	Standard Account 2023	Fish and Wildlife Sciences	Natural Resources	University of Idaho	lwaits
+Adam	Jones	adamjones	adamjones@uidaho.edu	Student	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	adamjones
+Amanda	Culley	aculley	aculley@uidaho.edu	Staff	84	Standard Account 2023	Center for Modeling Complex Interactions	Science	University of Idaho	erichs
+America	Chi Uluac	achi	achi@uidaho.edu	Post Doc	84	Standard Account 2023	Physics	Science	University of Idaho	ytreberg
+Abo	Hirotachi	abo	abo@uidaho.edu	Research Faculty	84	Standard Account 2023	Mathematics	Science	University of Idaho	abo
+Andrew	Basinski	abasinski	abasinski@uidaho.edu	Post Doc	84	Standard Account 2023	Biological Sciences	Science	University of Idaho	snuismer
+Mosope	Abanikannda	aban3311	aban3311@vandals.uidaho.edu	Student	84	Standard Account 2023	Animal and Veterinary Sciences	Agriculture and Life Sciences	University of Idaho	vikaskumar
+Nicole	Xu	xuj	xuj@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College	ahujas@reed.edu
+Tommy	Shi	tomshi	tomshi@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College	ahujas@reed.edu
+Sky	Peterson	skypeters	skypeters@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College	ahujas@reed.edu
+Kyle	Rowan	rowank	rowank@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College	ahujas@reed.edu
+Oliver	Nicholson	nicholol	nicholol@reed.edu	Undergraduate Student	56	Thesis	Chemistry	Mathematics and Natural Sciences	Reed College	ahujas@reed.edu

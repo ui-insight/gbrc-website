@@ -1940,6 +1940,7 @@ def get_pi_usage_summary() -> dict:
                 ),
                 "_college": get_simplified_crc_college(row.get("college", "").strip()),
                 "_service": row.get("service", "").strip(),
+                "_pinetid": row.get("pinetid", "").strip().lower(),
             })
 
     def _resolve_pi_key(pi_name: str, pi_email: str) -> str:
@@ -2068,6 +2069,14 @@ def get_pi_usage_summary() -> dict:
             ]
             crc_years = sorted({row["_fy"] for row in crc_matches})
 
+            # Count unique CRC accounts that roll up to this PI via pinetid
+            pi_netid = pi_email.split("@")[0] if pi_email else ""
+            crc_users_under_pi: set[str] = set()
+            if pi_netid:
+                for crc_row in crc_rows_for_view:
+                    if crc_row["_pinetid"] == pi_netid and crc_row["_user_key"]:
+                        crc_users_under_pi.add(crc_row["_user_key"])
+
             result_pis.append({
                 "pi_email": info["pi_email"],
                 "pi_name": info["pi_name"],
@@ -2082,6 +2091,7 @@ def get_pi_usage_summary() -> dict:
                 "distinct_users": len(info["distinct_users"]),
                 "uses_crc": len(crc_matches) > 0,
                 "crc_years_label": ", ".join(crc_years) if crc_years else "",
+                "crc_user_count": len(crc_users_under_pi),
             })
 
         result_pis.sort(

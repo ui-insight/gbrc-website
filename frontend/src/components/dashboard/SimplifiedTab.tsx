@@ -565,6 +565,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                   ['college_display', 'College'],
                   ['usage_type', 'Usage Type'],
                   ['uses_crc', 'CRC'],
+                  ['crc_user_count', 'CRC Users'],
                   ['crc_years_label', 'CRC FYs'],
                   ['total_paid', 'Total Paid'],
                   ['equipment_hours', 'Equipment Hours'],
@@ -606,6 +607,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                         {pi.uses_crc ? 'Yes' : 'No'}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-right text-neutral-600">{pi.crc_user_count || '—'}</td>
                     <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">
                       {pi.crc_years_label || '—'}
                     </td>
@@ -623,7 +625,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
               })}
               {sorted.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="px-4 py-8 text-center text-neutral-400">
+                  <td colSpan={12} className="px-4 py-8 text-center text-neutral-400">
                     No PIs match your filter.
                   </td>
                 </tr>

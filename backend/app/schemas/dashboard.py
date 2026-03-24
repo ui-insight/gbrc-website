@@ -441,6 +441,7 @@ class PIUsageSummaryItem(BaseModel):
     distinct_users: int
     uses_crc: bool = False
     crc_years_label: str = ""
+    crc_user_count: int = 0
 
 
 class CollegeUserCount(BaseModel):
