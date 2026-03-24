@@ -6,6 +6,7 @@ cost recovery dashboard. All results are cached in memory on first load.
 
 import csv
 import os
+import re
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -104,6 +105,44 @@ def _load_crc_users(fiscal_year: int) -> list[dict]:
         for row in reader:
             users.append(row)
     return users
+
+
+_PAYMENT_INDEX_RE = re.compile(r"\b(\d{6})\b")
+
+
+def _normalize_payment_source(payment_info: str) -> str:
+    """Normalize charge payment info into a stable payment-source key."""
+    cleaned = " ".join((payment_info or "").strip().split())
+    if not cleaned:
+        return ""
+    match = _PAYMENT_INDEX_RE.search(cleaned)
+    if match:
+        return match.group(1)
+    return cleaned
+
+
+def _classify_payment_source(payment_source: str) -> str:
+    """Bucket payment sources into a few plain-language types."""
+    source = (payment_source or "").strip()
+    if not source:
+        return "Unknown"
+    lower = source.lower()
+    if _PAYMENT_INDEX_RE.fullmatch(source):
+        return "Index"
+    if lower in {"po", "p.o."} or "purchase order" in lower:
+        return "PO"
+    if "credit card" in lower:
+        return "Credit Card"
+    if re.fullmatch(r"[A-Za-z0-9._-]+", source):
+        return "Code"
+    return "Text"
+
+
+def _split_grant_codes(grant_code_value: str) -> list[str]:
+    """Split a proposal GRANT_CODE field into individual codes."""
+    if not grant_code_value or not grant_code_value.strip():
+        return []
+    return [part.strip() for part in grant_code_value.split(",") if part.strip()]
 
 
 def _extract_pi_name(lab_field: str) -> str:
@@ -2260,4 +2299,257 @@ def get_simplified_proposals() -> dict:
         },
         "by_pi": by_pi,
         "proposals": proposal_rows,
+    }
+
+
+@lru_cache(maxsize=1)
+def get_simplified_revenue_gap() -> dict:
+    """Return non-IIDS payment-source rows for the simplified GBRC PI set."""
+    simplified_usage = get_pi_usage_summary()
+    proposals = _load_proposals()
+    charges = _load_charges()
+
+    pi_lookup: dict[str, dict] = {}
+    for pi in simplified_usage["pis"]:
+        pi_name = _canonical_pi_name(pi["pi_name"]).strip()
+        pi_email = pi["pi_email"].strip().lower()
+        pi_key = pi_name.lower() if pi_name and pi_name != "Unknown" else pi_email
+        if not pi_key:
+            continue
+        pi_lookup[pi_key] = {
+            "pi_name": pi["pi_name"],
+            "pi_email": pi["pi_email"],
+            "college": pi["college"],
+            "college_display": pi["college_display"],
+            "usage_type": pi["usage_type"],
+        }
+
+    def _resolve_pi_key(pi_name: str, pi_email: str) -> str:
+        canonical_name = _canonical_pi_name(pi_name).strip()
+        if canonical_name and canonical_name != "Unknown":
+            return canonical_name.lower()
+        return pi_email.strip().lower()
+
+    def _proposal_context_template(pi_key: str) -> dict:
+        pi_info = pi_lookup[pi_key]
+        return {
+            "pi_name": pi_info["pi_name"],
+            "pi_email": pi_info["pi_email"],
+            "college": pi_info["college"],
+            "college_display": pi_info["college_display"],
+            "usage_type": pi_info["usage_type"],
+            "proposal_count": 0,
+            "iids_proposal_count": 0,
+            "funded_proposal_count": 0,
+            "requested_total": 0.0,
+            "latest_submission_date": "",
+            "_latest_submission_dt": None,
+            "_grant_codes": set(),
+            "_proposal_details": [],
+        }
+
+    def _touch_proposal_context(
+        contexts_by_scope: dict[str, dict[str, dict]],
+        scope: str,
+        pi_key: str,
+    ) -> dict:
+        if scope not in contexts_by_scope:
+            contexts_by_scope[scope] = {}
+        if pi_key not in contexts_by_scope[scope]:
+            contexts_by_scope[scope][pi_key] = _proposal_context_template(pi_key)
+        return contexts_by_scope[scope][pi_key]
+
+    proposal_context_by_scope: dict[str, dict[str, dict]] = {}
+
+    for proposal in proposals:
+        pi_name = _canonical_pi_name(proposal.get("PI", "").strip())
+        pi_key = pi_name.lower()
+        if not pi_key or pi_key not in pi_lookup:
+            continue
+
+        submission_dt = _parse_proposal_date(proposal.get("SUBMISSION_DATE", "").strip())
+        fiscal_year = f"FY{str(_fiscal_year(submission_dt))[-2:]}" if submission_dt else ""
+        total_cost = _parse_float(proposal.get("TOTAL_COST", "0"))
+        funded = _is_proposal_awarded(proposal.get("PROJECT_STATUS", ""))
+        iids_affiliated = bool(proposal.get("IIDS", "").strip())
+        grant_codes = _split_grant_codes(proposal.get("GRANT_CODE", "").strip())
+        checkbox_names = [
+            name
+            for name in ("IIDS", "IMCI", "ARI", "IGS", "IHHE", "IICS", "FII")
+            if proposal.get(name, "").strip()
+        ]
+        proposal_detail = {
+            "proposal_number": proposal.get("PROPOSAL_NUMBER", "").strip(),
+            "title": proposal.get("PROJECT_TITLE", "").strip(),
+            "grant_codes_label": ", ".join(grant_codes),
+            "checkboxes_label": ", ".join(checkbox_names) if checkbox_names else "None",
+            "status": proposal.get("PROJECT_STATUS", "").strip(),
+            "submission_date": proposal.get("SUBMISSION_DATE", "").strip(),
+            "sponsor": proposal.get("SPONSOR", "").strip() or proposal.get("PRIME", "").strip(),
+            "total_cost": total_cost,
+            "funded": funded,
+            "iids_affiliated": iids_affiliated,
+        }
+
+        scopes = ["all"]
+        if fiscal_year:
+            scopes.append(fiscal_year)
+
+        for scope in scopes:
+            context = _touch_proposal_context(proposal_context_by_scope, scope, pi_key)
+            context["proposal_count"] += 1
+            if iids_affiliated:
+                context["iids_proposal_count"] += 1
+            if funded:
+                context["funded_proposal_count"] += 1
+            context["requested_total"] += total_cost
+            context["_grant_codes"].update(grant_codes)
+            context["_proposal_details"].append(proposal_detail)
+            if submission_dt and (
+                context["_latest_submission_dt"] is None
+                or submission_dt > context["_latest_submission_dt"]
+            ):
+                context["_latest_submission_dt"] = submission_dt
+                context["latest_submission_date"] = proposal.get("SUBMISSION_DATE", "").strip()
+
+    rows_by_scope: dict[str, dict[tuple[str, str], dict]] = {"all": {}}
+    fiscal_year_labels: set[str] = set()
+    iids_indices = _load_iids_index_set()
+
+    for charge in charges:
+        total_price = _parse_float(charge.get("Total Price", "0"))
+        if total_price <= 0:
+            continue
+
+        dt = _parse_date(charge.get("Billing Date", "") or charge.get("Purchase Date", ""))
+        fy = _fiscal_year(dt) if dt else None
+        if not fy or fy < 2023:
+            continue
+
+        price_type = charge.get("Price Type", "").strip() or "Internal"
+        if price_type != "Internal":
+            continue
+
+        pi_name = _extract_pi_name(charge.get("Customer Lab", ""))
+        pi_email = charge.get("PI Email", "").strip().lower()
+        pi_key = _resolve_pi_key(pi_name, pi_email)
+        if not pi_key or pi_key not in pi_lookup:
+            continue
+
+        raw_payment_source = " ".join(charge.get("Payment Information", "").strip().split())
+        payment_source = _normalize_payment_source(raw_payment_source)
+        if not payment_source or payment_source in iids_indices:
+            continue
+
+        fy_label = f"FY{str(fy)[-2:]}"
+        fiscal_year_labels.add(fy_label)
+
+        for scope in ("all", fy_label):
+            if scope not in rows_by_scope:
+                rows_by_scope[scope] = {}
+            row_key = (pi_key, payment_source)
+            if row_key not in rows_by_scope[scope]:
+                pi_info = pi_lookup[pi_key]
+                rows_by_scope[scope][row_key] = {
+                    "pi_key": pi_key,
+                    "pi_name": pi_info["pi_name"],
+                    "pi_email": pi_info["pi_email"],
+                    "college": pi_info["college"],
+                    "college_display": pi_info["college_display"],
+                    "usage_type": pi_info["usage_type"],
+                    "payment_source": payment_source,
+                    "payment_source_type": _classify_payment_source(payment_source),
+                    "payment_source_example": raw_payment_source if raw_payment_source != payment_source else "",
+                    "charge_count": 0,
+                    "total_paid": 0.0,
+                    "_fiscal_years": set(),
+                }
+
+            row = rows_by_scope[scope][row_key]
+            row["charge_count"] += 1
+            row["total_paid"] += total_price
+            row["_fiscal_years"].add(fy_label)
+            if not row["payment_source_example"] and raw_payment_source != payment_source:
+                row["payment_source_example"] = raw_payment_source
+
+    def _format_grant_code_label(grant_codes: list[str]) -> str:
+        if not grant_codes:
+            return ""
+        preview = grant_codes[:3]
+        label = ", ".join(preview)
+        if len(grant_codes) > len(preview):
+            label += f" +{len(grant_codes) - len(preview)} more"
+        return label
+
+    def _build_scope(scope: str) -> dict:
+        scope_rows = rows_by_scope.get(scope, {})
+        proposal_contexts = proposal_context_by_scope.get(scope, {})
+        rows: list[dict] = []
+
+        for row in scope_rows.values():
+            proposal_context = proposal_contexts.get(row["pi_key"])
+            grant_codes = sorted(proposal_context["_grant_codes"]) if proposal_context else []
+            proposal_details = list(proposal_context["_proposal_details"]) if proposal_context else []
+            proposal_details.sort(
+                key=lambda item: (
+                    _parse_proposal_date(item["submission_date"]) or datetime.min,
+                    item["total_cost"],
+                    item["title"],
+                ),
+                reverse=True,
+            )
+            rows.append({
+                "pi_name": row["pi_name"],
+                "pi_email": row["pi_email"],
+                "college": row["college"],
+                "college_display": row["college_display"],
+                "usage_type": row["usage_type"],
+                "payment_source": row["payment_source"],
+                "payment_source_type": row["payment_source_type"],
+                "payment_source_example": row["payment_source_example"],
+                "fiscal_years_label": ", ".join(sorted(row["_fiscal_years"])),
+                "charge_count": row["charge_count"],
+                "total_paid": round(row["total_paid"], 2),
+                "pi_proposal_count": proposal_context["proposal_count"] if proposal_context else 0,
+                "pi_iids_proposal_count": proposal_context["iids_proposal_count"] if proposal_context else 0,
+                "pi_funded_proposal_count": proposal_context["funded_proposal_count"] if proposal_context else 0,
+                "pi_requested_total": round(proposal_context["requested_total"], 2) if proposal_context else 0.0,
+                "pi_grant_codes_label": _format_grant_code_label(grant_codes),
+                "latest_submission_date": proposal_context["latest_submission_date"] if proposal_context else "",
+                "proposal_details": proposal_details,
+            })
+
+        rows.sort(
+            key=lambda item: (
+                item["total_paid"],
+                item["charge_count"],
+                item["pi_proposal_count"],
+                item["pi_name"],
+                item["payment_source"],
+            ),
+            reverse=True,
+        )
+
+        return {
+            "summary": {
+                "total_pis": len({row["pi_name"] for row in rows}),
+                "payment_sources": len(rows),
+                "total_charges": sum(row["charge_count"] for row in rows),
+                "total_revenue": round(sum(row["total_paid"] for row in rows), 2),
+                "sources_with_pi_proposals": sum(
+                    1 for row in rows if row["pi_proposal_count"] > 0
+                ),
+            },
+            "rows": rows,
+        }
+
+    fy_labels = sorted(fiscal_year_labels)
+
+    return {
+        **_build_scope("all"),
+        "available_fiscal_years": ["all", *fy_labels],
+        "by_fy": {
+            fy_label: _build_scope(fy_label)
+            for fy_label in fy_labels
+        },
     }

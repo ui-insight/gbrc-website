@@ -373,7 +373,7 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
                 <YAxis
                   type="category"
                   dataKey="college"
-                  width={180}
+                  width={70}
                   tick={{ fontSize: 12 }}
                 />
                 <Tooltip content={<CRCCollegeTooltip />} />

@@ -5,6 +5,7 @@ import {
   usePIUsageMappingData,
   usePIUsageSummaryData,
   useSimplifiedProposalsData,
+  useSimplifiedRevenueGapData,
   useRevenueSourcesData,
   useEquipmentEnrichedData,
   useCRCGrowthData,
@@ -25,10 +26,12 @@ import RevenueSourcesTab from '../components/dashboard/RevenueSourcesTab'
 import InfrastructureTab from '../components/dashboard/InfrastructureTab'
 import SimplifiedTab from '../components/dashboard/SimplifiedTab'
 import SimplifiedProposalsTab from '../components/dashboard/SimplifiedProposalsTab'
+import SimplifiedRevenueGapTab from '../components/dashboard/SimplifiedRevenueGapTab'
 
 const TABS: { id: DashboardTab; label: string }[] = [
   { id: 'simplified', label: 'Simplified' },
   { id: 'simplified-proposals', label: 'Simplified Proposals' },
+  { id: 'simplified-revenue-gap', label: 'Simplified Revenue Gap' },
   { id: 'overview', label: 'Overview' },
   { id: 'affiliation', label: 'Proposal Affiliation' },
   { id: 'usage', label: 'PI To GBRC Usage' },
@@ -80,6 +83,7 @@ export default function CostRecovery() {
   const crcGrowth = useCRCGrowthData(activeTab === 'infrastructure')
   const piUsageSummary = usePIUsageSummaryData(activeTab === 'simplified')
   const simplifiedProposals = useSimplifiedProposalsData(activeTab === 'simplified-proposals')
+  const simplifiedRevenueGap = useSimplifiedRevenueGapData(activeTab === 'simplified-revenue-gap')
 
   const handlePIClick = (piEmail: string) => {
     setSelectedPI((prev) => (prev === piEmail ? null : piEmail))
@@ -153,6 +157,13 @@ export default function CostRecovery() {
           <SimplifiedProposalsTab
             data={simplifiedProposals.data}
             loading={simplifiedProposals.loading}
+          />
+        )}
+
+        {activeTab === 'simplified-revenue-gap' && (
+          <SimplifiedRevenueGapTab
+            data={simplifiedRevenueGap.data}
+            loading={simplifiedRevenueGap.loading}
           />
         )}
 

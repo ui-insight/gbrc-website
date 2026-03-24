@@ -533,6 +533,58 @@ export interface SimplifiedProposalData {
   proposals: SimplifiedProposalItem[]
 }
 
+export interface SimplifiedRevenueGapStats {
+  total_pis: number
+  payment_sources: number
+  total_charges: number
+  total_revenue: number
+  sources_with_pi_proposals: number
+}
+
+export interface SimplifiedRevenueGapProposalItem {
+  proposal_number: string
+  title: string
+  grant_codes_label: string
+  checkboxes_label: string
+  status: string
+  submission_date: string
+  sponsor: string
+  total_cost: number
+  funded: boolean
+  iids_affiliated: boolean
+}
+
+export interface SimplifiedRevenueGapItem {
+  pi_name: string
+  pi_email: string
+  college: string
+  college_display: string
+  usage_type: 'paid' | 'free' | 'both'
+  payment_source: string
+  payment_source_type: string
+  payment_source_example: string
+  fiscal_years_label: string
+  charge_count: number
+  total_paid: number
+  pi_proposal_count: number
+  pi_iids_proposal_count: number
+  pi_funded_proposal_count: number
+  pi_requested_total: number
+  pi_grant_codes_label: string
+  latest_submission_date: string
+  proposal_details: SimplifiedRevenueGapProposalItem[]
+}
+
+export interface SimplifiedRevenueGapData {
+  summary: SimplifiedRevenueGapStats
+  rows: SimplifiedRevenueGapItem[]
+  available_fiscal_years: string[]
+  by_fy: Record<string, {
+    summary: SimplifiedRevenueGapStats
+    rows: SimplifiedRevenueGapItem[]
+  }>
+}
+
 // --- Tab Data Union ---
 
-export type DashboardTab = 'simplified' | 'simplified-proposals' | 'overview' | 'affiliation' | 'usage' | 'revenue' | 'services' | 'infrastructure'
+export type DashboardTab = 'simplified' | 'simplified-proposals' | 'simplified-revenue-gap' | 'overview' | 'affiliation' | 'usage' | 'revenue' | 'services' | 'infrastructure'
