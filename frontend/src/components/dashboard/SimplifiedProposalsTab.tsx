@@ -257,7 +257,10 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       if (existing) {
         existing.proposal_count += 1
         existing.requested_total += proposal.total_cost
-        if (proposal.iids_affiliated) existing.iids_proposal_count += 1
+        if (proposal.iids_affiliated) {
+          existing.iids_proposal_count += 1
+          existing.iids_requested_total += proposal.total_cost
+        }
         if (proposal.funded) {
           existing.funded_proposal_count += 1
           existing.funded_total += proposal.total_cost
