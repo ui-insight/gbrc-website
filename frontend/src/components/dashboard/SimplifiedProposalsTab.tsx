@@ -28,6 +28,7 @@ interface CollegeProposalSummary {
   iids_proposal_count: number
   funded_proposal_count: number
   requested_total: number
+  iids_requested_total: number
   funded_total: number
 }
 
@@ -61,20 +62,25 @@ function CollegeProposalTooltip({
   if (!active || !payload?.length) return null
 
   const row = payload[0].payload
+  const proposalAffiliationRate = row.proposal_count > 0
+    ? ((row.iids_proposal_count / row.proposal_count) * 100).toFixed(1)
+    : '0.0'
+  const requestedAffiliationRate = row.requested_total > 0
+    ? ((row.iids_requested_total / row.requested_total) * 100).toFixed(1)
+    : '0.0'
 
   return (
     <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
       <p className="font-semibold text-neutral-900 mb-1">{row.college_display}</p>
       <p className="text-neutral-700">
         {mode === 'count'
-          ? `Proposals: ${row.proposal_count.toLocaleString()}`
-          : `Requested total: ${formatFullDollar(row.requested_total)}`}
+          ? `Proposals: ${row.proposal_count.toLocaleString()} total · ${row.iids_proposal_count.toLocaleString()} IIDS`
+          : `Requested total: ${formatFullDollar(row.requested_total)} total · ${formatFullDollar(row.iids_requested_total)} IIDS`}
       </p>
       <p className="text-neutral-500 mt-1">
-        {row.iids_proposal_count} IIDS · {row.funded_proposal_count} funded
-      </p>
-      <p className="text-neutral-500">
-        Funded dollars: {formatFullDollar(row.funded_total)}
+        {mode === 'count'
+          ? `Affiliation rate: ${proposalAffiliationRate}%`
+          : `Affiliated-dollar share: ${requestedAffiliationRate}%`}
       </p>
     </div>
   )
@@ -251,7 +257,10 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
       if (existing) {
         existing.proposal_count += 1
         existing.requested_total += proposal.total_cost
-        if (proposal.iids_affiliated) existing.iids_proposal_count += 1
+        if (proposal.iids_affiliated) {
+          existing.iids_proposal_count += 1
+          existing.iids_requested_total += proposal.total_cost
+        }
         if (proposal.funded) {
           existing.funded_proposal_count += 1
           existing.funded_total += proposal.total_cost
@@ -266,6 +275,7 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
         iids_proposal_count: proposal.iids_affiliated ? 1 : 0,
         funded_proposal_count: proposal.funded ? 1 : 0,
         requested_total: proposal.total_cost,
+        iids_requested_total: proposal.iids_affiliated ? proposal.total_cost : 0,
         funded_total: proposal.funded ? proposal.total_cost : 0,
       })
     })
@@ -381,12 +391,23 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <ChartCard
             title="Proposal Volume By College"
-            subtitle="Aggregated proposal counts for the currently visible proposal set"
+            subtitle="Total proposal counts with the IIDS-affiliated subset highlighted"
           >
+            <div className="mb-3 flex items-center gap-4 text-xs text-neutral-500">
+              <span className="inline-flex items-center gap-2">
+                <span className="h-3 w-3 rounded-sm bg-[#93c5fd]" />
+                Total proposals
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="h-3 w-3 rounded-sm bg-[#1d4ed8]" />
+                IIDS-affiliated proposals
+              </span>
+            </div>
             <ResponsiveContainer width="100%" height={Math.max(260, proposalCountByCollege.length * 56 + 40)}>
               <BarChart
                 data={proposalCountByCollege}
                 layout="vertical"
+                barGap="-100%"
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -400,8 +421,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                 <Tooltip content={<CollegeProposalTooltip mode="count" />} />
                 <Bar
                   dataKey="proposal_count"
-                  name="Proposal Count"
-                  fill="#3b82f6"
+                  name="Total Proposal Count"
+                  fill="#93c5fd"
+                  radius={[0, 4, 4, 0]}
+                />
+                <Bar
+                  dataKey="iids_proposal_count"
+                  name="IIDS Proposal Count"
+                  fill="#1d4ed8"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
@@ -410,12 +437,23 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
 
           <ChartCard
             title="Requested Dollars By College"
-            subtitle="Aggregated requested totals for the currently visible proposal set"
+            subtitle="Requested totals with the IIDS-affiliated subset highlighted"
           >
+            <div className="mb-3 flex items-center gap-4 text-xs text-neutral-500">
+              <span className="inline-flex items-center gap-2">
+                <span className="h-3 w-3 rounded-sm bg-[#fde68a]" />
+                Total requested
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="h-3 w-3 rounded-sm bg-[#d97706]" />
+                IIDS-affiliated requested
+              </span>
+            </div>
             <ResponsiveContainer width="100%" height={Math.max(260, proposalDollarsByCollege.length * 56 + 40)}>
               <BarChart
                 data={proposalDollarsByCollege}
                 layout="vertical"
+                barGap="-100%"
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -432,8 +470,14 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
                 <Tooltip content={<CollegeProposalTooltip mode="dollars" />} />
                 <Bar
                   dataKey="requested_total"
-                  name="Requested Dollars"
-                  fill="#f1b300"
+                  name="Total Requested Dollars"
+                  fill="#fde68a"
+                  radius={[0, 4, 4, 0]}
+                />
+                <Bar
+                  dataKey="iids_requested_total"
+                  name="IIDS Requested Dollars"
+                  fill="#d97706"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
