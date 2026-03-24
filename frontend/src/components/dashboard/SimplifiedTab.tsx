@@ -1,4 +1,13 @@
 import { useState, useMemo } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import type { PIUsageSummaryData, PIUsageSummaryItem } from '../../types/dashboard'
 import ChartCard from './ChartCard'
 import StatCard from './StatCard'
@@ -6,6 +15,16 @@ import StatCard from './StatCard'
 type SortKey = keyof PIUsageSummaryItem
 type SortDir = 'asc' | 'desc'
 type UsageFilter = 'all' | PIUsageSummaryItem['usage_type']
+
+interface CollegeUsageSummary {
+  college: string
+  college_display: string
+  total_paid: number
+  equipment_hours: number
+  charge_count: number
+  reservation_count: number
+  pi_count: number
+}
 
 const USAGE_BADGE: Record<string, { label: string; bg: string; text: string }> = {
   paid: { label: 'Paid', bg: 'bg-emerald-100', text: 'text-emerald-800' },
@@ -22,6 +41,39 @@ const ROW_BG: Record<string, string> = {
 function formatCurrency(value: number): string {
   if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`
   return `$${value.toLocaleString()}`
+}
+
+function formatHours(value: number): string {
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 })
+}
+
+function CollegeUsageTooltip({
+  active,
+  payload,
+  mode,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeUsageSummary }>
+  mode: 'revenue' | 'equipment'
+}) {
+  if (!active || !payload?.length) return null
+
+  const row = payload[0].payload
+
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college_display}</p>
+      <p className="text-neutral-700">
+        {mode === 'revenue'
+          ? `Paid revenue: ${formatCurrency(row.total_paid)}`
+          : `Equipment hours: ${formatHours(row.equipment_hours)}`}
+      </p>
+      <p className="text-neutral-500 mt-1">
+        {row.pi_count} PI{row.pi_count !== 1 ? 's' : ''} · {row.charge_count} charges · {row.reservation_count} reservations
+      </p>
+    </div>
+  )
 }
 
 interface SimplifiedTabProps {
@@ -63,6 +115,46 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
         : String(bv).localeCompare(String(av))
     })
   }, [filtered, sortKey, sortDir])
+
+  const usageByCollege = useMemo<CollegeUsageSummary[]>(() => {
+    const byCollege = new Map<string, CollegeUsageSummary>()
+
+    filtered.forEach((pi) => {
+      const key = pi.college_display || pi.college || 'Unknown'
+      const existing = byCollege.get(key)
+
+      if (existing) {
+        existing.total_paid += pi.total_paid
+        existing.equipment_hours += pi.equipment_hours
+        existing.charge_count += pi.charge_count
+        existing.reservation_count += pi.reservation_count
+        existing.pi_count += 1
+        return
+      }
+
+      byCollege.set(key, {
+        college: pi.college,
+        college_display: pi.college_display,
+        total_paid: pi.total_paid,
+        equipment_hours: pi.equipment_hours,
+        charge_count: pi.charge_count,
+        reservation_count: pi.reservation_count,
+        pi_count: 1,
+      })
+    })
+
+    return Array.from(byCollege.values()).sort((a, b) => b.total_paid - a.total_paid)
+  }, [filtered])
+
+  const revenueByCollege = useMemo(
+    () => [...usageByCollege].sort((a, b) => b.total_paid - a.total_paid),
+    [usageByCollege],
+  )
+
+  const equipmentByCollege = useMemo(
+    () => [...usageByCollege].sort((a, b) => b.equipment_hours - a.equipment_hours),
+    [usageByCollege],
+  )
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -121,6 +213,74 @@ export default function SimplifiedTab({ data, loading }: SimplifiedTabProps) {
           still appear in this simplified view.
         </p>
       </ChartCard>
+
+      {usageByCollege.length > 0 && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard
+            title="Paid Revenue By College"
+            subtitle="Aggregated internal charges for the currently visible PI set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, revenueByCollege.length * 56 + 40)}>
+              <BarChart
+                data={revenueByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => formatCurrency(Number(value))}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeUsageTooltip mode="revenue" />} />
+                <Bar
+                  dataKey="total_paid"
+                  name="Paid Revenue"
+                  fill="#16a34a"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard
+            title="Shared Equipment By College"
+            subtitle="Aggregated equipment reservation hours for the currently visible PI set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, equipmentByCollege.length * 56 + 40)}>
+              <BarChart
+                data={equipmentByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => formatHours(Number(value))}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeUsageTooltip mode="equipment" />} />
+                <Bar
+                  dataKey="equipment_hours"
+                  name="Equipment Hours"
+                  fill="#f1b300"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+      )}
 
       {/* Filter */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

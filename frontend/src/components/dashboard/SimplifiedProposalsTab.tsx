@@ -1,4 +1,13 @@
 import { useMemo, useState } from 'react'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import type {
   SimplifiedProposalData,
   SimplifiedProposalItem,
@@ -11,6 +20,16 @@ type PIQueryKey = keyof SimplifiedProposalPIItem
 type ProposalQueryKey = keyof SimplifiedProposalItem
 type SortDir = 'asc' | 'desc'
 type ProposalFilter = 'all' | 'iids' | 'funded' | 'unfunded'
+
+interface CollegeProposalSummary {
+  college: string
+  college_display: string
+  proposal_count: number
+  iids_proposal_count: number
+  funded_proposal_count: number
+  requested_total: number
+  funded_total: number
+}
 
 const USAGE_BADGE: Record<SimplifiedProposalPIItem['usage_type'], { label: string; tone: string }> = {
   paid: { label: 'Paid', tone: 'bg-emerald-100 text-emerald-800' },
@@ -29,6 +48,37 @@ const formatDollar = (value: number) => {
 
 const formatFullDollar = (value: number) =>
   `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
+function CollegeProposalTooltip({
+  active,
+  payload,
+  mode,
+}: {
+  active?: boolean
+  payload?: Array<{ payload: CollegeProposalSummary }>
+  mode: 'count' | 'dollars'
+}) {
+  if (!active || !payload?.length) return null
+
+  const row = payload[0].payload
+
+  return (
+    <div className="bg-white border border-neutral-200 rounded-lg shadow-lg px-4 py-3 text-sm">
+      <p className="font-semibold text-neutral-900 mb-1">{row.college_display}</p>
+      <p className="text-neutral-700">
+        {mode === 'count'
+          ? `Proposals: ${row.proposal_count.toLocaleString()}`
+          : `Requested total: ${formatFullDollar(row.requested_total)}`}
+      </p>
+      <p className="text-neutral-500 mt-1">
+        {row.iids_proposal_count} IIDS · {row.funded_proposal_count} funded
+      </p>
+      <p className="text-neutral-500">
+        Funded dollars: {formatFullDollar(row.funded_total)}
+      </p>
+    </div>
+  )
+}
 
 function compareRows<T, K extends keyof T>(a: T, b: T, key: K, dir: SortDir) {
   const av = a[key] as string | number | boolean
@@ -107,6 +157,48 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
     })
   }, [filteredProposals, proposalSortKey, proposalSortDir])
 
+  const proposalsByCollege = useMemo<CollegeProposalSummary[]>(() => {
+    const byCollege = new Map<string, CollegeProposalSummary>()
+
+    filteredProposals.forEach((proposal) => {
+      const key = proposal.college_display || proposal.college || 'Unknown'
+      const existing = byCollege.get(key)
+
+      if (existing) {
+        existing.proposal_count += 1
+        existing.requested_total += proposal.total_cost
+        if (proposal.iids_affiliated) existing.iids_proposal_count += 1
+        if (proposal.funded) {
+          existing.funded_proposal_count += 1
+          existing.funded_total += proposal.total_cost
+        }
+        return
+      }
+
+      byCollege.set(key, {
+        college: proposal.college,
+        college_display: proposal.college_display,
+        proposal_count: 1,
+        iids_proposal_count: proposal.iids_affiliated ? 1 : 0,
+        funded_proposal_count: proposal.funded ? 1 : 0,
+        requested_total: proposal.total_cost,
+        funded_total: proposal.funded ? proposal.total_cost : 0,
+      })
+    })
+
+    return Array.from(byCollege.values())
+  }, [filteredProposals])
+
+  const proposalCountByCollege = useMemo(
+    () => [...proposalsByCollege].sort((a, b) => b.proposal_count - a.proposal_count),
+    [proposalsByCollege],
+  )
+
+  const proposalDollarsByCollege = useMemo(
+    () => [...proposalsByCollege].sort((a, b) => b.requested_total - a.requested_total),
+    [proposalsByCollege],
+  )
+
   const toggleSort = <T extends string>(key: T, currentKey: T, currentDir: SortDir, setKey: (value: T) => void, setDir: (value: SortDir) => void) => {
     if (key === currentKey) {
       setDir(currentDir === 'asc' ? 'desc' : 'asc')
@@ -183,6 +275,71 @@ export default function SimplifiedProposalsTab({ data, loading }: Props) {
           proposals are currently marked funded, and the amount requested across the portfolio.
         </p>
       </ChartCard>
+
+      {proposalsByCollege.length > 0 && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <ChartCard
+            title="Proposal Volume By College"
+            subtitle="Aggregated proposal counts for the currently visible proposal set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalCountByCollege.length * 56 + 40)}>
+              <BarChart
+                data={proposalCountByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeProposalTooltip mode="count" />} />
+                <Bar
+                  dataKey="proposal_count"
+                  name="Proposal Count"
+                  fill="#3b82f6"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard
+            title="Requested Dollars By College"
+            subtitle="Aggregated requested totals for the currently visible proposal set"
+          >
+            <ResponsiveContainer width="100%" height={Math.max(260, proposalDollarsByCollege.length * 56 + 40)}>
+              <BarChart
+                data={proposalDollarsByCollege}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => formatDollar(Number(value))}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="college"
+                  width={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CollegeProposalTooltip mode="dollars" />} />
+                <Bar
+                  dataKey="requested_total"
+                  name="Requested Dollars"
+                  fill="#f1b300"
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </div>
+      )}
 
       <ChartCard
         title="PI Proposal Rollup"
