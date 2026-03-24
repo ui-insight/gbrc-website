@@ -2044,6 +2044,63 @@ def get_pi_usage_summary() -> dict:
             if user_key:
                 pi_data[pi_key]["distinct_users"].add(user_key)
 
+        # Pre-build pinetid → set of CRC user_keys for fast lookup
+        crc_by_pinetid: dict[str, set[str]] = {}
+        for crc_row in crc_rows_for_view:
+            pnetid = crc_row["_pinetid"]
+            if pnetid and crc_row["_user_key"]:
+                if pnetid not in crc_by_pinetid:
+                    crc_by_pinetid[pnetid] = set()
+                crc_by_pinetid[pnetid].add(crc_row["_user_key"])
+
+        # Build pinetid → pi_key mapping from PI emails
+        pinetid_to_pi_key: dict[str, str] = {}
+        for pi_key, info in pi_data.items():
+            email = info["pi_email"].strip().lower()
+            if email and "@" in email:
+                netid = email.split("@")[0]
+                pinetid_to_pi_key[netid] = pi_key
+
+        # For unmatched pinetids, try to discover the PI by:
+        # 1. Checking if pinetid@uidaho.edu appears as a PI Email in charges/events
+        # 2. Checking if a CRC user with that pinetid IS the PI (email prefix == pinetid)
+        for pnetid in crc_by_pinetid:
+            if pnetid in pinetid_to_pi_key:
+                continue
+            candidate_email = f"{pnetid}@uidaho.edu"
+            # Check charges for a PI with this email
+            for c in charge_rows:
+                if c["_pi_email"] == candidate_email:
+                    pk = _resolve_pi_key(c["_pi_name"], c["_pi_email"])
+                    if pk and pk in pi_data:
+                        pinetid_to_pi_key[pnetid] = pk
+                        break
+            if pnetid in pinetid_to_pi_key:
+                continue
+            # Check events
+            for ev in event_rows:
+                if ev["_pi_email"] == candidate_email:
+                    pk = _resolve_pi_key(ev["_pi_name"], ev["_pi_email"])
+                    if pk and pk in pi_data:
+                        pinetid_to_pi_key[pnetid] = pk
+                        break
+            if pnetid in pinetid_to_pi_key:
+                continue
+            # Last resort: match canonical PI name from a CRC row where the user IS the PI
+            for crc_row in crc_rows_for_view:
+                if crc_row["_pinetid"] != pnetid:
+                    continue
+                row_email = crc_row["_email"]
+                if row_email and row_email.split("@")[0] == pnetid:
+                    crc_pi_name = crc_row["_name"]
+                    if not crc_pi_name:
+                        continue
+                    for pk, pinfo in pi_data.items():
+                        if _canonical_pi_name(pinfo["pi_name"]).lower() == crc_pi_name:
+                            pinetid_to_pi_key[pnetid] = pk
+                            break
+                    break
+
         result_pis = []
         for info in pi_data.values():
             if info["has_charges"] and info["has_events"]:
@@ -2070,12 +2127,11 @@ def get_pi_usage_summary() -> dict:
             crc_years = sorted({row["_fy"] for row in crc_matches})
 
             # Count unique CRC accounts that roll up to this PI via pinetid
-            pi_netid = pi_email.split("@")[0] if pi_email else ""
+            pi_key_current = _resolve_pi_key(info["pi_name"], info["pi_email"])
             crc_users_under_pi: set[str] = set()
-            if pi_netid:
-                for crc_row in crc_rows_for_view:
-                    if crc_row["_pinetid"] == pi_netid and crc_row["_user_key"]:
-                        crc_users_under_pi.add(crc_row["_user_key"])
+            for pnetid, mapped_pk in pinetid_to_pi_key.items():
+                if mapped_pk == pi_key_current:
+                    crc_users_under_pi.update(crc_by_pinetid.get(pnetid, set()))
 
             result_pis.append({
                 "pi_email": info["pi_email"],
